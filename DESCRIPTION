@@ -1,0 +1,22 @@
+Package: pullit
+Title: Pulling financial data from Bloomberg made easy
+Version: 0.0.0.9000
+Authors@R: person("Olivier", "Bauthéac", email = "o.bautheac@gmail.com", role = c("aut", "cre"))
+Description: Provides a set of function for conveniently pulling financial data from Bloomberg.
+Depends: R (>= 3.4.0)
+Imports:
+  bbgsymbols,
+  data.table,
+  dplyr,
+  magrittr,
+  methods,
+  purrr,
+  Rblpapi,
+  stringr,
+  tidyr
+Suggests:
+  factorem
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
