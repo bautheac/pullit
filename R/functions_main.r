@@ -65,13 +65,7 @@
 #' \dontrun{bbg_futures_TS()}
 #'
 #' @import bbgsymbols
-#' @importFrom data.table rbindlist
-#' @importFrom dplyr distinct filter left_join mutate select
 #' @importFrom magrittr "%>%" "%<>%"
-#' @importFrom purrr flatten_chr
-#' @importFrom stats complete.cases
-#' @importFrom stringr str_extract
-#' @importFrom tidyr gather
 #'
 #' @export
 
@@ -91,14 +85,14 @@ bbg_futures_TS <- function(active_contract_tickers = "C A Comdty",
   data <- lapply(active_contract_tickers, function(y){
 
     tickers <- sapply(TS_positions, function(x) futures_ticker(y, TS_position = x, roll_type, roll_days, roll_months, roll_adjustment))
-    data <- bbg_pull_historical(tickers, fields = filter(fields, instrument == "futures", type == "market") %>% select(symbol) %>% flatten_chr(),
+    data <- bbg_pull_historical(tickers, fields = dplyr::filter(fields, instrument == "futures", type == "market") %>% dplyr::select(symbol) %>% purrr::flatten_chr(),
                                 start, end, ...)
 
     data <- if (length(tickers) > 1L) lapply(seq_along(TS_positions), function(x) {
       if (nrow(data[[x]]) > 0L) { data[[x]]$ticker <- tickers[x]; data[[x]]$`TS position` <- TS_positions[x] }
       data[[x]]
     }) %>%
-      rbindlist(use.names = TRUE)
+      data.table::rbindlist(use.names = TRUE)
     else {
       if(nrow(data) < 1L) data[1L, ] <- rep(NA, ncol(data))
       else { data$ticker <- tickers; data$`TS position` <- TS_positions }
@@ -107,28 +101,29 @@ bbg_futures_TS <- function(active_contract_tickers = "C A Comdty",
     data$`active contract ticker` <- y
     data
   }) %>%
-    rbindlist(use.names = TRUE)
+    data.table::rbindlist(use.names = TRUE)
 
   data %<>%
-    gather(field, value, -c(`active contract ticker`, ticker, `TS position`, date)) %>%
-    select(`active contract ticker`, ticker, `TS position`, field, date, value) %>%
-    filter(complete.cases(.))
+    tidyr::gather(field, value, -c(`active contract ticker`, ticker, `TS position`, date)) %>%
+    dplyr::select(`active contract ticker`, ticker, `TS position`, field, date, value) %>%
+    dplyr::filter(stats::complete.cases(.))
 
   if (nrow(data) == 0L) warning("No term structure data found.")
 
-  tickers <- distinct(data, `active contract ticker`, ticker, `TS position`) %>%
-    mutate(`roll type` = str_extract(ticker, pattern = "(?<= )[ABDFNOR](?=:)"),
-           `roll days` = str_extract(ticker, pattern = "(?<=:)\\d{2}(?=_)") %>% as.numeric(),
-           `roll months` = str_extract(ticker, pattern = "(?<=:)\\d(?=_)") %>% as.numeric(),
-           `roll adjustment` = str_extract(ticker, pattern = "(?<=_)[DNRW](?= )")) %>%
-    left_join(filter(rolls, roll == "type") %>% select(symbol, name), by = c("roll type" = "symbol")) %>%
-    select(`active contract ticker`, ticker, `TS position`, `roll type` = name, `roll days`, `roll months`, `roll adjustment`) %>%
-    left_join(filter(rolls, roll == "adjustment") %>% select(symbol, name), by = c("roll type" = "symbol")) %>%
-    select(`active contract ticker`, `TS position`, ticker, `roll type`, `roll days`, `roll months`, `roll adjustment` = name)
+  tickers <- dplyr::distinct(data, `active contract ticker`, ticker, `TS position`) %>%
+    dplyr::mutate(`roll type` = stringr::str_extract(ticker, pattern = "(?<= )[A-Z](?=:)"),
+           `roll days` = stringr::str_extract(ticker, pattern = "(?<=:)\\d{2}(?=_)") %>% as.numeric(),
+           `roll months` = stringr::str_extract(ticker, pattern = "(?<=:)\\d(?=_)") %>% as.numeric(),
+           `roll adjustment` = stringr::str_extract(ticker, pattern = "(?<=_)[A-Z](?= )")) %>%
+    dplyr::left_join(dplyr::filter(rolls, roll == "type") %>% dplyr::select(symbol, name), by = c("roll type" = "symbol")) %>%
+    dplyr::select(`active contract ticker`, ticker, `TS position`, `roll type` = name, `roll days`, `roll months`, `roll adjustment`) %>%
+    dplyr::left_join(dplyr::filter(rolls, roll == "adjustment") %>% dplyr::select(symbol, name), by = c("roll type" = "symbol")) %>%
+    dplyr::select(`active contract ticker`, `TS position`, ticker, `roll type`, `roll days`, `roll months`, `roll adjustment` = name)
 
-  .FuturesTS(tickers = tickers,
-             fields = distinct(data, `active contract ticker`, `TS position`, field),
-             dataset = data %>% select(-ticker)
+  methods::new("FuturesTS",
+      tickers = tickers,
+      fields = dplyr::distinct(data, `active contract ticker`, `TS position`, field),
+      dataset = data %>% dplyr::select(-ticker)
   )
 }
 
@@ -178,12 +173,7 @@ bbg_futures_TS <- function(active_contract_tickers = "C A Comdty",
 #' \dontrun{bbg_futures_aggregate()}
 #'
 #' @import bbgsymbols
-#' @importFrom data.table rbindlist
-#' @importFrom dplyr distinct filter mutate select
 #' @importFrom magrittr "%>%" "%<>%"
-#' @importFrom purrr flatten_chr
-#' @importFrom stats complete.cases
-#' @importFrom tidyr gather
 #'
 #' @export
 
@@ -194,20 +184,21 @@ bbg_futures_aggregate <- function(active_contract_tickers = "C A Comdty",
 
   if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers.")
 
-  data <- lapply(active_contract_tickers, function(x) bbg_pull_historical(x, fields = filter(fields, instrument == "futures", type == "aggregate") %>% select(symbol) %>% flatten_chr(), start, end, ...) %>%
-                   mutate(`active contract ticker` = x)) %>%
-    rbindlist(use.names = TRUE)
+  data <- lapply(active_contract_tickers, function(x) bbg_pull_historical(x, fields = dplyr::filter(fields, instrument == "futures", type == "aggregate") %>% dplyr::select(symbol) %>% purrr::flatten_chr(), start, end, ...) %>%
+                   dplyr::mutate(`active contract ticker` = x)) %>%
+    data.table::rbindlist(use.names = TRUE)
 
   data %<>%
-    gather(field, value, -c(`active contract ticker`, date)) %>%
-    filter(complete.cases(.)) %>%
-    select(`active contract ticker`, field, date, value)
+    tidyr::gather(field, value, -c(`active contract ticker`, date)) %>%
+    dplyr::filter(stats::complete.cases(.)) %>%
+    dplyr::select(`active contract ticker`, field, date, value)
 
   if (nrow(data) == 0L) warning("No aggregate data found.")
 
-  .FuturesAggregate(tickers = distinct(data, `active contract ticker`) %>% flatten_chr(),
-                    fields = distinct(data, `active contract ticker`, field),
-                    dataset = data
+  methods::new("FuturesAggregate",
+      tickers = dplyr::distinct(data, `active contract ticker`) %>% purrr::flatten_chr(),
+      fields = dplyr::distinct(data, `active contract ticker`, field),
+      dataset = data
   )
 }
 
@@ -288,12 +279,7 @@ bbg_futures_aggregate <- function(active_contract_tickers = "C A Comdty",
 #' \dontrun{bbg_futures_CFTC()}
 #'
 #' @import bbgsymbols
-#' @importFrom data.table rbindlist
-#' @importFrom dplyr everything distinct filter mutate select
 #' @importFrom magrittr "%>%" "%<>%"
-#' @importFrom purrr flatten_chr
-#' @importFrom stats complete.cases
-#' @importFrom tidyr gather
 #'
 #' @export
 
@@ -306,37 +292,38 @@ bbg_futures_CFTC <- function(active_contract_tickers = "C A Comdty",
 
   data <- lapply(active_contract_tickers, function(x) {
 
-    tickers <- filter(tickers_cftc, `active contract ticker` == y) %>% select(ticker) %>% flatten_chr()
+    tickers <- dplyr::filter(tickers_cftc, `active contract ticker` == y) %>% dplyr::select(ticker) %>% purrr::flatten_chr()
 
     data <- bbg_pull_historical(tickers, fields = "PX_LAST", start, end, ...) %>%
-      mutate(`active contract ticker` = x)
+      dplyr::mutate(`active contract ticker` = x)
 
     data <- if (length(tickers) > 1L)
       lapply(seq_along(tickers), function(y) {
         if(nrow(data[[y]]) > 0L) data[[y]]$ticker <- tickers[y]
         data[[y]]
       }) %>%
-      rbindlist(use.names = TRUE)
+      data.table::rbindlist(use.names = TRUE)
     else {
       if(nrow(data) < 1L) data[1L, ] <- rep(NA, ncol(data))
       data$ticker <- tickers
       data
     } %>%
-      select(ticker, everything())
+      dplyr::select(ticker, dplyr::everything())
 
     data %>%
-      left_join(select(tickers_cftc, format, underlying, `unit` = unit, participant, position), by = "ticker")
+      dplyr::left_join(dplyr::select(tickers_cftc, format, underlying, `unit` = unit, participant, position), by = "ticker")
 
   }) %>%
-    rbindlist(use.names = TRUE) %>%
-    select(`active contract ticker`, format, underlying, `unit`, participant, position, date, value = PX_LAST) %>%
-    filter(complete.cases(.))
+    data.table::rbindlist(use.names = TRUE) %>%
+    dplyr::select(`active contract ticker`, format, underlying, `unit`, participant, position, date, value = PX_LAST) %>%
+    dplyr::filter(stats::complete.cases(.))
 
   if (nrow(data) == 0L) warning("No CFTC data found.")
 
-  .FuturesCFTC(tickers = distinct(data, `active contract ticker`) %>% flatten_chr(),
-               fields = distinct(data, `active contract ticker`, format, underlying, `unit`, participant, position),
-               dataset = data
+  methods::new("FuturesCFTC",
+      tickers = dplyr::distinct(data, `active contract ticker`) %>% purrr::flatten_chr(),
+      fields = dplyr::distinct(data, `active contract ticker`, format, underlying, `unit`, participant, position),
+      dataset = data
   )
 }
 
@@ -394,12 +381,7 @@ bbg_futures_CFTC <- function(active_contract_tickers = "C A Comdty",
 #' \dontrun{bbg_equity_market()}
 #'
 #' @import bbgsymbols
-#' @importFrom data.table rbindlist
-#' @importFrom dplyr distinct filter mutate select
 #' @importFrom magrittr "%>%" "%<>%"
-#' @importFrom purrr flatten_chr
-#' @importFrom stats complete.cases
-#' @importFrom tidyr gather
 #'
 #' @export
 
@@ -411,24 +393,25 @@ bbg_equity_market <- function(tickers = "NEM US Equity",
   if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg tickers.")
 
   data <- lapply(tickers, function(x) bbg_pull_historical(x,
-                                                          fields = filter(fields, instrument == "equity", type == "market") %>%
-                                                            select(symbol) %>% flatten_chr(),
+                                                          fields = dplyr::filter(fields, instrument == "equity", type == "market") %>%
+                                                            dplyr::select(symbol) %>% purrr::flatten_chr(),
                                                           start,
                                                           end,
                                                           ...) %>%
-                   mutate(ticker = x)) %>%
-    rbindlist(use.names = TRUE)
+                   dplyr::mutate(ticker = x)) %>%
+    data.table::rbindlist(use.names = TRUE)
 
   data %<>%
-    gather(field, value, -c(ticker, date)) %>%
-    filter(complete.cases(.)) %>%
-    select(ticker, field, date, value)
+    tidyr::gather(field, value, -c(ticker, date)) %>%
+    dplyr::filter(stats::complete.cases(.)) %>%
+    dplyr::select(ticker, field, date, value)
 
   if (nrow(data) == 0L) warning("No market data found.")
 
-  .EquityMarket(tickers = distinct(data, ticker),
-                fields = distinct(data, ticker, field),
-                dataset = data
+  methods::new("EquityMarket",
+      tickers = dplyr::distinct(data, ticker),
+      fields = dplyr::distinct(data, ticker, field),
+      dataset = data
   )
 }
 
@@ -478,13 +461,8 @@ bbg_equity_market <- function(tickers = "NEM US Equity",
 #' \dontrun{bbg_equity_BS()}
 #'
 #' @import bbgsymbols
-#' @importFrom data.table ":=" rbindlist
-#' @importFrom dplyr arrange distinct filter group_by left_join mutate n row_number select ungroup
+#' @importFrom data.table ":="
 #' @importFrom magrittr "%>%" "%<>%"
-#' @importFrom purrr flatten_chr
-#' @importFrom stats complete.cases
-#' @importFrom stringr str_detect
-#' @importFrom tidyr gather
 #'
 #' @export
 
@@ -495,44 +473,46 @@ bbg_equity_BS <- function(tickers = "NEM US Equity",
 
   if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg tickers.")
 
-  symbols <- filter(fields, instrument == "equity", type == "balance sheet", ! str_detect(symbol, "\\s+[-+]\\s+")) %>%
-    distinct(symbol) %>% flatten_chr()
+  symbols <- dplyr::filter(fields, instrument == "equity", type == "balance sheet", ! stringr::str_detect(symbol, "\\s+[-+]\\s+")) %>%
+    dplyr::distinct(symbol) %>% purrr::flatten_chr()
   data <- lapply(tickers, function(x) bbg_pull_historical(x, fields = symbols, start, end, ...) %>%
-                   mutate(ticker = x)) %>%
-    rbindlist(use.names = TRUE)
+                   dplyr::mutate(ticker = x)) %>%
+    data.table::rbindlist(use.names = TRUE)
 
-  symbols <- filter(fields, instrument == "equity", type == "balance sheet", str_detect(symbol, "\\s+[-+]\\s+")) %>%
-    distinct(symbol) %>% flatten_chr()
+  symbols <- dplyr::filter(fields, instrument == "equity", type == "balance sheet", stringr::str_detect(symbol, "\\s+[-+]\\s+")) %>%
+    dplyr::distinct(symbol) %>% purrr::flatten_chr()
 
-  for(i in symbols) data %<>% mutate(!! i := eval(parse(text = i)))
+  for(i in symbols) data %<>% dplyr::mutate(!! i := eval(parse(text = i)))
 
   data %<>%
-    gather(field, value, -c(ticker, date)) %>%
-    filter(complete.cases(.)) %>%
-    left_join(filter(fields, instrument == "equity", type == "balance sheet") %>%
-                group_by(section, subsection, symbol) %>%
-                filter(row_number() == 1L) %>%
-                ungroup() %>%
-                select(section, subsection, rank, name, symbol),
+    tidyr::gather(field, value, -c(ticker, date)) %>%
+    dplyr::filter(stats::complete.cases(.)) %>%
+    dplyr::left_join(dplyr::filter(fields, instrument == "equity", type == "balance sheet") %>%
+                dplyr::group_by(section, subsection, symbol) %>%
+                dplyr::filter(dplyr::row_number() == 1L) %>%
+                dplyr::ungroup() %>%
+                dplyr::select(section, subsection, rank, name, symbol),
               by = c("field = symbol")) %>%
-    select(ticker, section, subsection, rank, name, field, date, value)
+    dplyr::select(ticker, section, subsection, rank, name, field, date, value)
 
   data <- fields %>%
-    filter(instrument == "equity", type == "balance sheet") %>%
-    group_by(section, subsection, symbol) %>%
-    filter(n() > 1L, row_number() == 2L) %>%
-    ungroup() %>%
-    select(section, subsection, rank, name, symbol) %>%
-    left_join(data, by = c("symbol = field")) %>%
+    dplyr::filter(instrument == "equity", type == "balance sheet") %>%
+    dplyr::group_by(section, subsection, symbol) %>%
+    dplyr::filter(dplyr::n() > 1L, dplyr::row_number() == 2L) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(section, subsection, rank, name, symbol) %>%
+    dplyr::left_join(data, by = c("symbol = field")) %>%
     rbind(data) %>%
-    arrange(ticker, section, subsection, rank)
+    dplyr::arrange(ticker, section, subsection, rank)
 
   if (nrow(data) == 0L) warning("No balance sheet data found.")
 
-  .EquityBS(tickers = distinct(data, ticker) %>% flatten_chr(),
-            fields = distinct(data, ticker, section, subsection, name),
-            dataset = select(data, -c(rank, symbol))
+  methods::new("EquityBS",
+      tickers = dplyr::distinct(data, ticker) %>% purrr::flatten_chr(),
+      fields = dplyr::distinct(data, ticker, section, subsection, name),
+      dataset = dplyr::select(data, -c(rank, symbol))
   )
+
 }
 
 
@@ -581,13 +561,8 @@ bbg_equity_BS <- function(tickers = "NEM US Equity",
 #' \dontrun{bbg_equity_CF()}
 #'
 #' @import bbgsymbols
-#' @importFrom data.table ":=" rbindlist
-#' @importFrom dplyr arrange distinct filter group_by left_join mutate n row_number select ungroup
+#' @importFrom data.table ":="
 #' @importFrom magrittr "%>%" "%<>%"
-#' @importFrom purrr flatten_chr
-#' @importFrom stats complete.cases
-#' @importFrom stringr str_detect
-#' @importFrom tidyr gather
 #'
 #' @export
 
@@ -598,44 +573,46 @@ bbg_equity_CF <- function(tickers = "NEM US Equity",
 
   if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg tickers.")
 
-  symbols <- filter(fields, instrument == "equity", type == "cash flow", ! str_detect(symbol, "\\s+[-+]\\s+")) %>%
-    distinct(symbol) %>% flatten_chr()
+  symbols <- dplyr::filter(fields, instrument == "equity", type == "cash flow", ! stringr::str_detect(symbol, "\\s+[-+]\\s+")) %>%
+    dplyr::distinct(symbol) %>% purrr::flatten_chr()
   data <- lapply(tickers, function(x) bbg_pull_historical(x, fields = symbols, start, end, ...) %>%
-                   mutate(ticker = x)) %>%
-    rbindlist(use.names = TRUE)
+                   dplyr::mutate(ticker = x)) %>%
+    data.table::rbindlist(use.names = TRUE)
 
-  symbols <- filter(fields, instrument == "equity", type == "cash flow", str_detect(symbol, "\\s+[-+]\\s+")) %>%
-    distinct(symbol) %>% flatten_chr()
+  symbols <- dplyr::filter(fields, instrument == "equity", type == "cash flow", stringr::str_detect(symbol, "\\s+[-+]\\s+")) %>%
+    dplyr::distinct(symbol) %>% purrr::flatten_chr()
 
-  for(i in symbols) data %<>% mutate(!! i := eval(parse(text = i)))
+  for(i in symbols) data %<>% dplyr::mutate(!! i := eval(parse(text = i)))
 
   data %<>%
-    gather(field, value, -c(ticker, date)) %>%
-    filter(complete.cases(.)) %>%
-    left_join(filter(fields, instrument == "equity", type == "cash flow") %>%
-                group_by(section, symbol) %>%
-                filter(row_number() == 1L) %>%
-                ungroup() %>%
-                select(section, rank, name, symbol),
+    tidyr::gather(field, value, -c(ticker, date)) %>%
+    dplyr::filter(stats::complete.cases(.)) %>%
+    dplyr::left_join(dplyr::filter(fields, instrument == "equity", type == "cash flow") %>%
+                       dplyr::group_by(section, symbol) %>%
+                       dplyr::filter(dplyr::row_number() == 1L) %>%
+                       dplyr::ungroup() %>%
+                  dplyr::select(section, rank, name, symbol),
               by = c("field = symbol")) %>%
-    select(ticker, section, rank, name, field, date, value)
+    dplyr::select(ticker, section, rank, name, field, date, value)
 
   data <- fields %>%
-    filter(instrument == "equity", type == "cash flow") %>%
-    group_by(section, symbol) %>%
-    filter(n() > 1L, row_number() == 2L) %>%
-    ungroup() %>%
-    select(section, rank, name, symbol) %>%
-    left_join(data, by = c("symbol = field")) %>%
+    dplyr::filter(instrument == "equity", type == "cash flow") %>%
+    dplyr::group_by(section, symbol) %>%
+    dplyr::filter(dplyr::n() > 1L, dplyr::row_number() == 2L) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(section, rank, name, symbol) %>%
+    dplyr::left_join(data, by = c("symbol = field")) %>%
     rbind(data) %>%
-    arrange(ticker, date, section, rank)
+    dplyr::arrange(ticker, date, section, rank)
 
   if (nrow(data) == 0L) warning("No cash flow data found.")
 
-  .EquityCF(tickers = distinct(data, ticker) %>% flatten_chr(),
-            fields = distinct(data, ticker, section, name),
-            dataset = select(data, -c(rank, symbol))
+  methods::new("EquityCF",
+      tickers = dplyr::distinct(data, ticker) %>% purrr::flatten_chr(),
+      fields = dplyr::distinct(data, ticker, section, name),
+      dataset = dplyr::select(data, -c(rank, symbol))
   )
+
 }
 
 
@@ -679,13 +656,8 @@ bbg_equity_CF <- function(tickers = "NEM US Equity",
 #' \dontrun{bbg_equity_IS()}
 #'
 #' @import bbgsymbols
-#' @importFrom data.table ":=" rbindlist
-#' @importFrom dplyr arrange distinct filter group_by left_join mutate n row_number select ungroup
+#' @importFrom data.table ":="
 #' @importFrom magrittr "%>%" "%<>%"
-#' @importFrom purrr flatten_chr
-#' @importFrom stats complete.cases
-#' @importFrom stringr str_detect
-#' @importFrom tidyr gather
 #'
 #' @export
 
@@ -696,33 +668,34 @@ bbg_equity_IS <- function(tickers = "NEM US Equity",
 
   if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg tickers.")
 
-  symbols <- filter(fields, instrument == "equity", type == "income statement", ! str_detect(symbol, "\\s+[-+]\\s+")) %>%
-    distinct(symbol) %>% flatten_chr()
+  symbols <- dplyr::filter(fields, instrument == "equity", type == "income statement", ! stringr::str_detect(symbol, "\\s+[-+]\\s+")) %>%
+    dplyr::distinct(symbol) %>% purrr::flatten_chr()
   data <- lapply(tickers, function(x) bbg_pull_historical(x, fields = symbols, start, end, ...) %>%
-                   mutate(ticker = x)) %>%
-    rbindlist(use.names = TRUE)
+                   dplyr::mutate(ticker = x)) %>%
+    data.table::rbindlist(use.names = TRUE)
 
-  symbols <- filter(fields, instrument == "equity", type == "income statement", str_detect(symbol, "\\s+[-+]\\s+")) %>%
-    distinct(symbol) %>% flatten_chr()
+  symbols <- dplyr::filter(fields, instrument == "equity", type == "income statement", stringr::str_detect(symbol, "\\s+[-+]\\s+")) %>%
+    dplyr::distinct(symbol) %>% purrr::flatten_chr()
 
-  for(i in symbols) data %<>% mutate(!! i := eval(parse(text = i)))
+  for(i in symbols) data %<>% dplyr::mutate(!! i := eval(parse(text = i)))
 
   data %<>%
-    gather(field, value, -c(ticker, date)) %>%
-    filter(complete.cases(.)) %>%
-    left_join(filter(fields, instrument == "equity", type == "income statement") %>%
-                select(rank, name, symbol),
+    tidyr::gather(field, value, -c(ticker, date)) %>%
+    dplyr::filter(stats::complete.cases(.)) %>%
+    dplyr::left_join(dplyr::filter(fields, instrument == "equity", type == "income statement") %>%
+                dplyr::select(rank, name, symbol),
               by = c("field = symbol")) %>%
-    select(ticker, rank, name, field, date, value)
+    dplyr::select(ticker, rank, name, field, date, value)
 
   if (nrow(data) == 0L) warning("No income statement data found.")
 
-  .EquityIS(tickers = distinct(data, ticker) %>% flatten_chr(),
-            start = min(distinct(data, date)),
-            end = max(distinct(data, date)),
-            fields = distinct(data, ticker, name),
-            dataset = select(data, -symbol)
-  )
+  methods::new("EquityIS",
+               tickers = dplyr::distinct(data, ticker) %>% purrr::flatten_chr(),
+               start = min(dplyr::distinct(data, date)),
+               end = max(dplyr::distinct(data, date)),
+               fields = dplyr::distinct(data, ticker, name),
+               dataset = dplyr::select(data, -symbol))
+
 }
 
 
@@ -773,13 +746,7 @@ bbg_equity_IS <- function(tickers = "NEM US Equity",
 #' \dontrun{bbg_equity_ratios()}
 #'
 #' @import bbgsymbols
-#' @importFrom data.table rbindlist
-#' @importFrom dplyr arrange distinct filter left_join mutate select
 #' @importFrom magrittr "%>%" "%<>%"
-#' @importFrom purrr flatten_chr
-#' @importFrom stats complete.cases
-#' @importFrom stringr str_detect
-#' @importFrom tidyr gather
 #'
 #' @export
 
@@ -790,27 +757,28 @@ bbg_equity_ratios <- function(tickers = "NEM US Equity",
 
   if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg tickers.")
 
-  symbols <- filter(fields, instrument == "equity", type == "ratios") %>%
-    distinct(symbol) %>%
-    flatten_chr()
+  symbols <- dplyr::filter(fields, instrument == "equity", type == "ratios") %>%
+    dplyr::distinct(symbol) %>%
+    purrr::flatten_chr()
   data <- lapply(tickers, function(x) bbg_pull_historical(x, fields = symbols, start, end, ...) %>%
-                   mutate(ticker = x)) %>%
-    rbindlist(use.names = TRUE)
+                   dplyr::mutate(ticker = x)) %>%
+    data.table::rbindlist(use.names = TRUE)
 
   data %<>%
-    gather(field, value, -c(ticker, date)) %>%
-    filter(complete.cases(.)) %>%
-    left_join(filter(fields, instrument == "equity", type == "ratios") %>%
-                select(section, rank, name, symbol),
+    tidyr::gather(field, value, -c(ticker, date)) %>%
+    dplyr::filter(stats::complete.cases(.)) %>%
+    dplyr::left_join(dplyr::filter(fields, instrument == "equity", type == "ratios") %>%
+                       dplyr::select(section, rank, name, symbol),
               by = c("field = symbol")) %>%
-    select(ticker, type = section, rank, name, field, date, value)
+    dplyr::select(ticker, type = section, rank, name, field, date, value)
 
   if (nrow(data) == 0L) warning("No ratios data found.")
 
-  .EquityRatios(tickers = distinct(data, ticker) %>% flatten_chr(),
-                fields = distinct(data, ticker, type, name),
-                dataset = select(data, -c(rank, symbol))
-  )
+  methods::new("EquityRatios",
+               tickers = dplyr::distinct(data, ticker) %>% purrr::flatten_chr(),
+               fields = dplyr::distinct(data, ticker, type, name),
+               dataset = dplyr::select(data, -c(rank, symbol)))
+
 }
 
 

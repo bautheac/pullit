@@ -26,10 +26,6 @@
 #'
 #' @details See 'DOCS #2072138 <GO>' on a Bloomberg terminal to learn more about the Bloomberg rolling conventions.
 #'
-#' @importFrom dplyr if_else
-#' @importFrom purrr flatten_chr is_scalar_character is_scalar_integer
-#' @importFrom stringr str_split
-#'
 #' @export
 
 futures_ticker <- function(active_contract_ticker = "C A Comdty",
@@ -39,17 +35,17 @@ futures_ticker <- function(active_contract_ticker = "C A Comdty",
                            roll_months = 0L,
                            roll_adjustment = "N"){
 
-  if (! is_scalar_character(active_contract_ticker)) stop("The parameter 'active_contract_ticker' must be supplied as a scalar character vector.")
-  if (! is_scalar_integer(TS_position)) stop("The parameter 'TS_position' must be supplied as a scalar integer vector.")
-  if (! all(is_scalar_character(roll_type), roll_type %in% c("A", "B", "D", "F", "N", "O", "R")))
+  if (! rlang::is_scalar_character(active_contract_ticker)) stop("The parameter 'active_contract_ticker' must be supplied as a scalar character vector.")
+  if (! rlang::is_scalar_integer(TS_position)) stop("The parameter 'TS_position' must be supplied as a scalar integer vector.")
+  if (! all(rlang::is_scalar_character(roll_type), roll_type %in% c("A", "B", "D", "F", "N", "O", "R")))
     stop("The parameter 'roll_type' must be one of 'A', 'B', 'D', 'F', 'N', 'O' or 'R'.")
-  if (! all(is_scalar_integer(roll_days), roll_days <= 31L)) stop("The parameter 'roll_days' must be supplied as a scalar integer vector between 0 and 31.")
-  if (! all(is_scalar_integer(roll_months), roll_months <= 12L)) stop("The parameter 'roll_months' must be supplied as a scalar integer vector between 0 and 12.")
-  if (! all(is_scalar_character(roll_adjustment), roll_adjustment %in% c("D", "N", "R", "W")))
+  if (! all(rlang::is_scalar_integer(roll_days), roll_days <= 31L)) stop("The parameter 'roll_days' must be supplied as a scalar integer vector between 0 and 31.")
+  if (! all(rlang::is_scalar_integer(roll_months), roll_months <= 12L)) stop("The parameter 'roll_months' must be supplied as a scalar integer vector between 0 and 12.")
+  if (! all(rlang::is_scalar_character(roll_adjustment), roll_adjustment %in% c("D", "N", "R", "W")))
     stop("The parameter 'roll_adjustment' must be one of 'D', 'N', 'R' or 'W'.")
 
-  split <- str_split(string = active_contract_ticker, pattern = "A ", simplify = FALSE) %>% flatten_chr()
-  paste0(split[NROW(split) - 1L], TS_position, " ", roll_type, ":", if_else(roll_days < 10L, paste0(0L, roll_days), paste0(roll_days)), "_", roll_months, "_", roll_adjustment, " ", split[NROW(split)])
+  split <- stringr::str_split(string = active_contract_ticker, pattern = "A ", simplify = FALSE) %>% purrr::flatten_chr()
+  paste0(split[NROW(split) - 1L], TS_position, " ", roll_type, ":", dplyr::if_else(roll_days < 10L, paste0(0L, roll_days), paste0(roll_days)), "_", roll_months, "_", roll_adjustment, " ", split[NROW(split)])
 
 }
 
@@ -80,28 +76,25 @@ futures_ticker <- function(active_contract_ticker = "C A Comdty",
 #' @examples \dontrun{bbg_pull_historical()}
 #'
 #' @details Write more Bloomberg stuff here.
-#'
-#' @importFrom Rblpapi bdh blpConnect blpDisconnect
-#'
 
 bbg_pull_historical <- function(tickers = "C A Comdty", fields = "PX_LAST", start = "2018-01-01", end = "2018-06-30", ...){
 
   if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg tickers.")
   if (! is.character(fields)) stop("The parameter 'fields' must be supplied as a character vector of Bloomberg fields.")
-  if (! all(is_scalar_character(start), is_scalar_character(end), grepl(pattern = "^\\d{4}-\\d{2}-\\d{2}$", x = c(start, end))))
+  if (! all(rlang::is_scalar_character(start), rlang::is_scalar_character(end), grepl(pattern = "^\\d{4}-\\d{2}-\\d{2}$", x = c(start, end))))
     stop("The parameters 'start' and 'end' must be supplied as scalar character vectors of dates in the following format: 'yyyy-mm-dd'")
 
   con <- tryCatch({
-    blpConnect()
+    Rblpapi::blpConnect()
   }, error = function(e) stop("Unable to connect Bloomberg. Please open a Bloomberg session on this terminal.", call. = FALSE))
 
-  bbg_pull <- bdh(securities = tickers,
+  bbg_pull <- Rblpapi::bdh(securities = tickers,
                   fields = fields,
                   start.date = as.Date(start),
                   end.date = as.Date(end),
                   options = ...,
                   con = con)
 
-  blpDisconnect(con); bbg_pull
+  Rblpapi::blpDisconnect(con); bbg_pull
 
 }

@@ -1,149 +1,10 @@
-if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "active contract ticker", "field", "fields", "instrument", "name", "participant", "position", "PX_LAST",
-                                                        "roll", "roll adjustment", "roll days", "roll months", "roll type", "rolls", "section", "subsection", "symbol",
-                                                        "ticker", "tickers_cftc", "TS position", "type", "underlying", "unit", "value", "y"))
-
-setOldClass(c("tbl_df", "tbl", "data.frame"))
-
-# class definitions ####
-
-#' S4 class for futures term structure objects
-#'
-#' @importFrom methods is new
-#'
-#' @export
-.FuturesTS <- setClass("FuturesTS",
-                                  slots = list(tickers = "tbl_df",
-                                               fields = "tbl_df",
-                                               dataset = "tbl_df")
-)
-
-#' S4 class for futures aggregate objects
-#'
-#' @importFrom methods is new
-#'
-#' @export
-.FuturesAggregate <- setClass("FuturesAggregate",
-                              slots = list(tickers = "character",
-                                           fields = "tbl_df",
-                                           dataset = "tbl_df")
-)
-
-#' S4 class for futures CFTC objects
-#'
-#' @importFrom methods is new
-#'
-#' @export
-.FuturesCFTC <- setClass("FuturesCFTC",
-                         slots = list(tickers = "character",
-                                      fields = "tbl_df",
-                                      dataset = "tbl_df")
-)
-
-#' S4 class for equity market objects
-#'
-#' @importFrom methods is new
-#'
-#' @export
-.EquityMarket <- setClass("EquityMarket",
-                          slots = list(tickers = "tbl_df",
-                                       fields = "character",
-                                       dataset = "tbl_df")
-)
-
-#' S4 class for equity balance sheet objects
-#'
-#' @importFrom methods is new
-#'
-#' @export
-.EquityBS <- setClass("EquityBS",
-                      slots = list(tickers = "tbl_df",
-                                   fields = "tbl_df",
-                                   dataset = "tbl_df")
-)
-
-#' S4 class for equity cash flow statement objects
-#'
-#' @importFrom methods is new
-#'
-#' @export
-.EquityCF <- setClass("EquityCF",
-                      slots = list(tickers = "tbl_df",
-                                   start = "Date",
-                                   end = "Date",
-                                   fields = "tbl_df",
-                                   dataset = "tbl_df")
-)
-
-#' S4 class for equity income statement objects
-#'
-#' @importFrom methods is new
-#'
-#' @export
-.EquityIS <- setClass("EquityIS",
-                      slots = list(tickers = "tbl_df",
-                                   start = "Date",
-                                   end = "Date",
-                                   fields = "tbl_df",
-                                   dataset = "tbl_df")
-)
-
-#' S4 class for equity ratios objects
-#'
-#' @importFrom methods is new
-#'
-#' @export
-.EquityRatios <- setClass("EquityRatios",
-                          slots = list(tickers = "tbl_df",
-                                       start = "Date",
-                                       end = "Date",
-                                       fields = "tbl_df",
-                                       dataset = "tbl_df")
-)
-
-
-
-
-# generics ####
-
-#' Generic method for accessing the 'tickers' slot of various S4 objects from the \code{pullit} package.
-#'
-#' @param object an S4 object with a 'tickers' slot.
-#'
-#' @export
-setGeneric("tickers", function(object) standardGeneric("tickers"))
-
-#' Generic method for accessing the 'periods' for which various S4 objects from the \code{pullit} package contain data.
-#'
-#' @param object an S4 object with a 'periods' slot.
-#'
-#' @export
-setGeneric("periods", function(object) standardGeneric("periods"))
-
-#' Generic method for accessing the 'fields' slot of various S4 objects from the \code{pullit} package.
-#'
-#' @param object an S4 object with a 'fields' slot.
-#'
-#' @export
-setGeneric("fields", function(object) standardGeneric("fields"))
-
-#' Generic method for accessing the 'dataset' slot of various S4 objects from the \code{pullit} package.
-#'
-#' @param object an S4 object with a 'dataset' slot.
-#'
-#' @export
-setGeneric("dataset", function(object) standardGeneric("dataset"))
-
-
-
-# methods ####
-
-## FuturesTS ####
+# FuturesTS ####
 
 #' Show method for S4 object of class \code{FuturesTS}.
 #'
 #' @param object an S4 object of class \linkS4class{FuturesTS}.
 #'
-#' @importFrom methods show
+#' @importFrom methods is show
 #'
 #' @export
 setMethod("show", signature(object = "FuturesTS"), function(object) {
@@ -229,13 +90,13 @@ setMethod("fields", "FuturesTS", function(object) object@fields )
 setMethod("dataset", "FuturesTS", function(object) object@dataset )
 
 
-## FuturesAggregate ####
+# FuturesAggregate ####
 
 #' Show method for S4 object of class \code{FuturesAggregate}.
 #'
 #' @param object an S4 object of class \linkS4class{FuturesAggregate}.
 #'
-#' @importFrom methods show
+#' @importFrom methods is show
 #'
 #' @export
 setMethod("show", signature(object = "FuturesAggregate"), function(object) {
@@ -268,16 +129,15 @@ setMethod("tickers", "FuturesAggregate", function(object) object@tickers)
 #'      \item{\code{end}: most recent date observed with data.}
 #'    }
 #'
-#' @importFrom dplyr arrange funs group_by summarise_at ungroup vars
-#' @importFrom magrittr "%>%" "%<>%"
+#' @importFrom magrittr "%>%"
 #'
 #' @export
 setMethod("periods", "FuturesAggregate", function(object) {
   object@dataset %>%
-    group_by(`active contract ticker`, field) %>%
-    summarise_at(vars(date), funs(start = min, end = max)) %>%
-    ungroup() %>%
-    arrange(`active contract ticker`, field)
+    dplyr::group_by(`active contract ticker`, field) %>%
+    dplyr::summarise_at(dplyr::vars(date), dplyr::funs(start = min, end = max)) %>%
+    dplyr::ungroup() %>%
+    dplyr::arrange(`active contract ticker`, field)
 })
 
 #' 'fields' slot accessor method for S4 objects of class \linkS4class{FuturesAggregate}.
@@ -309,13 +169,13 @@ setMethod("fields", "FuturesAggregate", function(object) object@fields )
 setMethod("dataset", "FuturesAggregate", function(object) object@dataset )
 
 
-## FuturesCFTC ####
+# FuturesCFTC ####
 
 #' Show method for S4 object of class \code{FuturesCFTC}.
 #'
 #' @param object an S4 object of class \linkS4class{FuturesCFTC}.
 #'
-#' @importFrom methods show
+#' @importFrom methods is show
 #'
 #' @export
 setMethod("show", signature(object = "FuturesCFTC"), function(object) {
@@ -352,16 +212,15 @@ setMethod("tickers", "FuturesCFTC", function(object) object@tickers)
 #'     \item{\code{end}: most recent date observed with data.}
 #'   }
 #'
-#' @importFrom dplyr arrange funs group_by summarise_at ungroup vars
-#' @importFrom magrittr "%>%" "%<>%"
+#' @importFrom magrittr "%>%"
 #'
 #' @export
 setMethod("periods", "FuturesCFTC", function(object) {
   object@dataset %>%
-    group_by(`active contract ticker`, format, underlying, unit, participant, position) %>%
-    summarise_at(vars(date), funs(start = min, end = max)) %>%
-    ungroup() %>%
-    arrange(`active contract ticker`, format, underlying, unit, participant, position)
+    dplyr::group_by(`active contract ticker`, format, underlying, unit, participant, position) %>%
+    dplyr::summarise_at(dplyr::vars(date), dplyr::funs(start = min, end = max)) %>%
+    dplyr::ungroup() %>%
+    dplyr::arrange(`active contract ticker`, format, underlying, unit, participant, position)
 })
 
 #' 'fields' slot accessor method for S4 objects of class \linkS4class{FuturesCFTC}.
@@ -427,13 +286,13 @@ setMethod("fields", "FuturesCFTC", function(object) object@fields )
 setMethod("dataset", "FuturesCFTC", function(object) object@dataset )
 
 
-## EquityMarket ####
+# EquityMarket ####
 
 #' Show method for S4 object of class \code{EquityMarket}.
 #'
 #' @param object an S4 object of class \linkS4class{EquityMarket}.
 #'
-#' @importFrom methods show
+#' @importFrom methods is show
 #'
 #' @export
 setMethod("show", signature(object = "EquityMarket"), function(object) {
@@ -466,16 +325,15 @@ setMethod("tickers", "EquityMarket", function(object) object@tickers)
 #'     \item{\code{end}: most recent date with observed data.}
 #'   }
 #'
-#' @importFrom dplyr arrange funs group_by summarise_at ungroup vars
-#' @importFrom magrittr "%>%" "%<>%"
+#' @importFrom magrittr "%>%"
 #'
 #' @export
 setMethod("periods", "EquityMarket", function(object) {
   object@dataset %>%
-    group_by(ticker, field) %>%
-    summarise_at(vars(date), funs(start = min, end = max)) %>%
-    ungroup() %>%
-    arrange(ticker, field)
+    dplyr::group_by(ticker, field) %>%
+    dplyr::summarise_at(dplyr::vars(date), dplyr::funs(start = min, end = max)) %>%
+    dplyr::ungroup() %>%
+    dplyr::arrange(ticker, field)
 })
 
 #' 'fields' slot accessor method for S4 objects of class \linkS4class{EquityMarket}.
@@ -510,13 +368,13 @@ setMethod("dataset", "EquityMarket", function(object) object@dataset )
 
 
 
-## EquityBS ####
+# EquityBS ####
 
 #' Show method for S4 object of class \code{EquityBS}.
 #'
 #' @param object an S4 object of class \linkS4class{EquityBS}.
 #'
-#' @importFrom methods show
+#' @importFrom methods is show
 #'
 #' @export
 setMethod("show", signature(object = "EquityBS"), function(object) {
@@ -551,16 +409,15 @@ setMethod("tickers", "EquityBS", function(object) object@tickers)
 #'     \item{\code{end}: most recent date with observed data.}
 #'   }
 #'
-#' @importFrom dplyr arrange funs group_by summarise_at ungroup vars
-#' @importFrom magrittr "%>%" "%<>%"
+#' @importFrom magrittr "%>%"
 #'
 #' @export
 setMethod("periods", "EquityBS", function(object) {
   object@dataset %>%
-    group_by(ticker, section, subsection, name) %>%
-    summarise_at(vars(date), funs(start = min, end = max)) %>%
-    ungroup() %>%
-    arrange(ticker, section, subsection, name)
+    dplyr::group_by(ticker, section, subsection, name) %>%
+    dplyr::summarise_at(dplyr::vars(date), dplyr::funs(start = min, end = max)) %>%
+    dplyr::ungroup() %>%
+    dplyr::arrange(ticker, section, subsection, name)
 })
 
 #' 'fields' slot accessor method for S4 objects of class \linkS4class{EquityBS}.
@@ -602,13 +459,13 @@ setMethod("dataset", "EquityBS", function(object) object@dataset )
 
 
 
-## EquityCF ####
+# EquityCF ####
 
 #' Show method for S4 object of class \code{EquityCF}.
 #'
 #' @param object an S4 object of class \linkS4class{EquityCF}.
 #'
-#' @importFrom methods show
+#' @importFrom methods is show
 #'
 #' @export
 setMethod("show", signature(object = "EquityCF"), function(object) {
@@ -642,16 +499,15 @@ setMethod("tickers", "EquityCF", function(object) object@tickers)
 #'     \item{\code{end}: most recent date with observed data.}
 #'   }
 #'
-#' @importFrom dplyr arrange funs group_by summarise_at ungroup vars
-#' @importFrom magrittr "%>%" "%<>%"
+#' @importFrom magrittr "%>%"
 #'
 #' @export
 setMethod("periods", "EquityCF", function(object) {
   object@dataset %>%
-    group_by(ticker, section, name) %>%
-    summarise_at(vars(date), funs(start = min, end = max)) %>%
-    ungroup() %>%
-    arrange(ticker, section, name)
+    dplyr::group_by(ticker, section, name) %>%
+    dplyr::summarise_at(dplyr::vars(date), dplyr::funs(start = min, end = max)) %>%
+    dplyr::ungroup() %>%
+    dplyr::arrange(ticker, section, name)
 })
 
 #' 'fields' slot accessor method for S4 objects of class \linkS4class{EquityCF}.
@@ -692,13 +548,13 @@ setMethod("dataset", "EquityCF", function(object) object@dataset )
 
 
 
-## EquityIS ####
+# EquityIS ####
 
 #' Show method for S4 object of class \code{EquityIS}.
 #'
 #' @param object an S4 object of class \linkS4class{EquityIS}.
 #'
-#' @importFrom methods show
+#' @importFrom methods is show
 #'
 #' @export
 setMethod("show", signature(object = "EquityIS"), function(object) {
@@ -731,16 +587,15 @@ setMethod("tickers", "EquityIS", function(object) object@tickers)
 #'     \item{\code{end}: most recent date with observed data.}
 #'   }
 #'
-#' @importFrom dplyr arrange funs group_by summarise_at ungroup vars
-#' @importFrom magrittr "%>%" "%<>%"
+#' @importFrom magrittr "%>%"
 #'
 #' @export
 setMethod("periods", "EquityIS", function(object) {
   object@dataset %>%
-    group_by(ticker, name) %>%
-    summarise_at(vars(date), funs(start = min, end = max)) %>%
-    ungroup() %>%
-    arrange(ticker, name)
+    dplyr::group_by(ticker, name) %>%
+    dplyr::summarise_at(dplyr::vars(date), dplyr::funs(start = min, end = max)) %>%
+    dplyr::ungroup() %>%
+    dplyr::arrange(ticker, name)
 })
 
 #' 'fields' slot accessor method for S4 objects of class \linkS4class{EquityIS}.
@@ -775,13 +630,13 @@ setMethod("dataset", "EquityIS", function(object) object@dataset )
 
 
 
-## EquityRatios ####
+# EquityRatios ####
 
 #' Show method for S4 object of class \code{EquityRatios}.
 #'
 #' @param object an S4 object of class \linkS4class{EquityRatios}.
 #'
-#' @importFrom methods show
+#' @importFrom methods is show
 #'
 #' @export
 setMethod("show", signature(object = "EquityRatios"), function(object) {
@@ -815,16 +670,15 @@ setMethod("tickers", "EquityRatios", function(object) object@tickers)
 #'     \item{\code{end}: most recent date with observed data.}
 #'   }
 #'
-#' @importFrom dplyr arrange funs group_by summarise_at ungroup vars
-#' @importFrom magrittr "%>%" "%<>%"
+#' @importFrom magrittr "%>%"
 #'
 #' @export
 setMethod("periods", "EquityRatios", function(object) {
   object@dataset %>%
-    group_by(ticker, type, name) %>%
-    summarise_at(vars(date), funs(start = min, end = max)) %>%
-    ungroup() %>%
-    arrange(ticker, type, name)
+    dplyr::group_by(ticker, type, name) %>%
+    dplyr::summarise_at(dplyr::vars(date), dplyr::funs(start = min, end = max)) %>%
+    dplyr::ungroup() %>%
+    dplyr::arrange(ticker, type, name)
 })
 
 #' 'fields' slot accessor method for S4 objects of class \linkS4class{EquityRatios}.

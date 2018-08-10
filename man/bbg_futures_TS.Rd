@@ -4,9 +4,10 @@
 \alias{bbg_futures_TS}
 \title{Futures term structure historical data from Bloomberg}
 \usage{
-bbg_futures_TS(active_contract_tickers = "C A Comdty", start = "2018-01-01",
-  end = "2018-06-30", TS_positions = 1L, roll_type = "A",
-  roll_days = 0L, roll_months = 0L, roll_adjustment = "N", ...)
+bbg_futures_TS(active_contract_tickers = "C A Comdty",
+  start = "2018-01-01", end = "2018-06-30", TS_positions = 1L,
+  roll_type = "A", roll_days = 0L, roll_months = 0L,
+  roll_adjustment = "N", ...)
 }
 \arguments{
 \item{active_contract_tickers}{A chatacter vector. Specifies the Bloomberg futures active contract tickers to query data for.
