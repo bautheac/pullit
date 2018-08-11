@@ -48,7 +48,7 @@
 #'         \item{\code{field}: futures Bloomberg market data fields for which data has been found.}
 #'       }
 #'     }
-#'     \item{\code{dataset}: a tibble. Columns include:
+#'     \item{\code{data}: a tibble. Columns include:
 #'       \itemize{
 #'         \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
 #'         \item{\code{TS position}: futures chain term structure positions for which data has been found.}
@@ -123,7 +123,7 @@ bbg_futures_TS <- function(active_contract_tickers = "C A Comdty",
   methods::new("FuturesTS",
       tickers = tickers,
       fields = dplyr::distinct(data, `active contract ticker`, `TS position`, field),
-      dataset = data %>% dplyr::select(-ticker)
+      data = data %>% dplyr::select(-ticker)
   )
 }
 
@@ -157,7 +157,7 @@ bbg_futures_TS <- function(active_contract_tickers = "C A Comdty",
 #'         \item{\code{field}: futures Bloomberg aggregate data fields for which data has been found.}
 #'       }
 #'     }
-#'     \item{\code{dataset}: a tibble. Columns inlude:
+#'     \item{\code{data}: a tibble. Columns inlude:
 #'       \itemize{
 #'         \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
 #'         \item{\code{field}: Bloomberg aggregate data fields for which data has been found.}
@@ -198,7 +198,7 @@ bbg_futures_aggregate <- function(active_contract_tickers = "C A Comdty",
   methods::new("FuturesAggregate",
       tickers = dplyr::distinct(data, `active contract ticker`) %>% purrr::flatten_chr(),
       fields = dplyr::distinct(data, `active contract ticker`, field),
-      dataset = data
+      data = data
   )
 }
 
@@ -259,7 +259,7 @@ bbg_futures_aggregate <- function(active_contract_tickers = "C A Comdty",
 #'        }
 #'      }
 #'    }
-#'     \item{\code{dataset}: a tibble. Columns inlude:
+#'     \item{\code{data}: a tibble. Columns inlude:
 #'       \itemize{
 #'         \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
 #'         \item{\code{format}: report formats for which data has been found.}
@@ -323,7 +323,7 @@ bbg_futures_CFTC <- function(active_contract_tickers = "C A Comdty",
   methods::new("FuturesCFTC",
       tickers = dplyr::distinct(data, `active contract ticker`) %>% purrr::flatten_chr(),
       fields = dplyr::distinct(data, `active contract ticker`, format, underlying, `unit`, participant, position),
-      dataset = data
+      data = data
   )
 }
 
@@ -365,7 +365,7 @@ bbg_futures_CFTC <- function(active_contract_tickers = "C A Comdty",
 #'         \item{\code{field}: equity Bloomberg market data fields for which data has been found.}
 #'       }
 #'     }
-#'     \item{\code{dataset}: a tibble. Columns include:
+#'     \item{\code{data}: a tibble. Columns include:
 #'       \itemize{
 #'         \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
 #'         \item{\code{field}: equity Bloomberg market data fields for which data has been found.}
@@ -411,7 +411,7 @@ bbg_equity_market <- function(tickers = "NEM US Equity",
   methods::new("EquityMarket",
       tickers = dplyr::distinct(data, ticker),
       fields = dplyr::distinct(data, ticker, field),
-      dataset = data
+      data = data
   )
 }
 
@@ -442,7 +442,7 @@ bbg_equity_market <- function(tickers = "NEM US Equity",
 #'         \item{\code{name}: balance sheet Bloomberg data field names for which data has been found.}
 #'       }
 #'     }
-#'     \item{\code{dataset}: a tibble. Columns include:
+#'     \item{\code{data}: a tibble. Columns include:
 #'       \itemize{
 #'         \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
 #'         \item{\code{section}: balance sheet sections ('asset', 'liabilities') for which data has been found.}
@@ -510,7 +510,7 @@ bbg_equity_BS <- function(tickers = "NEM US Equity",
   methods::new("EquityBS",
       tickers = dplyr::distinct(data, ticker) %>% purrr::flatten_chr(),
       fields = dplyr::distinct(data, ticker, section, subsection, name),
-      dataset = dplyr::select(data, -c(rank, symbol))
+      data = dplyr::select(data, -c(rank, symbol))
   )
 
 }
@@ -543,7 +543,7 @@ bbg_equity_BS <- function(tickers = "NEM US Equity",
 #'         \item{\code{name}: cash flow statement Bloomberg field names for which data has been found.}
 #'       }
 #'     }
-#'     \item{\code{dataset}: a tibble. Columns include:
+#'     \item{\code{data}: a tibble. Columns include:
 #'       \itemize{
 #'         \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
 #'         \item{\code{section}: cash flow statement sections ('operating', 'financing', 'investing',
@@ -610,7 +610,7 @@ bbg_equity_CF <- function(tickers = "NEM US Equity",
   methods::new("EquityCF",
       tickers = dplyr::distinct(data, ticker) %>% purrr::flatten_chr(),
       fields = dplyr::distinct(data, ticker, section, name),
-      dataset = dplyr::select(data, -c(rank, symbol))
+      data = dplyr::select(data, -c(rank, symbol))
   )
 
 }
@@ -640,7 +640,7 @@ bbg_equity_CF <- function(tickers = "NEM US Equity",
 #'         \item{\code{name}: income statement Bloomberg field names for which data has been found.}
 #'       }
 #'     }
-#'     \item{\code{dataset}: a tibble. Columns include:
+#'     \item{\code{data}: a tibble. Columns include:
 #'       \itemize{
 #'         \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
 #'         \item{\code{name}: income statement Bloomberg field names for which data has been found.}
@@ -694,7 +694,7 @@ bbg_equity_IS <- function(tickers = "NEM US Equity",
                start = min(dplyr::distinct(data, date)),
                end = max(dplyr::distinct(data, date)),
                fields = dplyr::distinct(data, ticker, name),
-               dataset = dplyr::select(data, -symbol))
+               data = dplyr::select(data, -symbol))
 
 }
 
@@ -728,7 +728,7 @@ bbg_equity_IS <- function(tickers = "NEM US Equity",
 #'         \item{\code{name}: financial ratio Bloomberg data field names for which data has been found.}
 #'       }
 #'     }
-#'     \item{\code{dataset}: a tibble. Columns include:
+#'     \item{\code{data}: a tibble. Columns include:
 #'       \itemize{
 #'         \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
 #'         \item{\code{type}: financial ratio types ('profitability', 'margin', 'asset turnover',
@@ -777,7 +777,7 @@ bbg_equity_ratios <- function(tickers = "NEM US Equity",
   methods::new("EquityRatios",
                tickers = dplyr::distinct(data, ticker) %>% purrr::flatten_chr(),
                fields = dplyr::distinct(data, ticker, type, name),
-               dataset = dplyr::select(data, -c(rank, symbol)))
+               data = dplyr::select(data, -c(rank, symbol)))
 
 }
 

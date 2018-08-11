@@ -3,25 +3,25 @@
 #' @param object an S4 object with a 'tickers' slot.
 #'
 #' @export
-setGeneric("tickers", function(object) standardGeneric("tickers"))
+setGeneric("get_tickers", function(object) standardGeneric("get_tickers"))
 
 #' Generic method for accessing the 'periods' for which various S4 objects from the \code{pullit} package contain data.
 #'
 #' @param object an S4 object with a 'periods' slot.
 #'
 #' @export
-setGeneric("periods", function(object) standardGeneric("periods"))
+setGeneric("get_periods", function(object) standardGeneric("get_periods"))
 
 #' Generic method for accessing the 'fields' slot of various S4 objects from the \code{pullit} package.
 #'
 #' @param object an S4 object with a 'fields' slot.
 #'
 #' @export
-setGeneric("fields", function(object) standardGeneric("fields"))
+setGeneric("get_fields", function(object) standardGeneric("get_fields"))
 
-#' Generic method for accessing the 'dataset' slot of various S4 objects from the \code{pullit} package.
+#' Generic method for accessing the 'data' slot of various S4 objects from the \code{pullit} package.
 #'
-#' @param object an S4 object with a 'dataset' slot.
+#' @param object an S4 object with a 'data' slot.
 #'
 #' @export
-setGeneric("dataset", function(object) standardGeneric("dataset"))
+setGeneric("get_data", function(object) standardGeneric("get_data"))

@@ -32,7 +32,7 @@ An S4 object of class \code{\linkS4class{EquityRatios}} with slots:
         \item{\code{name}: financial ratio Bloomberg data field names for which data has been found.}
       }
     }
-    \item{\code{dataset}: a tibble. Columns include:
+    \item{\code{data}: a tibble. Columns include:
       \itemize{
         \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
         \item{\code{type}: financial ratio types ('profitability', 'margin', 'asset turnover',

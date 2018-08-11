@@ -30,7 +30,7 @@ An S4 object of class \code{\linkS4class{FuturesAggregate}} with slots:
         \item{\code{field}: futures Bloomberg aggregate data fields for which data has been found.}
       }
     }
-    \item{\code{dataset}: a tibble. Columns inlude:
+    \item{\code{data}: a tibble. Columns inlude:
       \itemize{
         \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
         \item{\code{field}: Bloomberg aggregate data fields for which data has been found.}

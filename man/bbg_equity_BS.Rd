@@ -33,7 +33,7 @@ An S4 object of class \code{\linkS4class{EquityBS}} with slots:
         \item{\code{name}: balance sheet Bloomberg data field names for which data has been found.}
       }
     }
-    \item{\code{dataset}: a tibble. Columns include:
+    \item{\code{data}: a tibble. Columns include:
       \itemize{
         \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
         \item{\code{section}: balance sheet sections ('asset', 'liabilities') for which data has been found.}

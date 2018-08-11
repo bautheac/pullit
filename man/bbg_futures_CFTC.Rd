@@ -60,7 +60,7 @@ An S4 object of class \code{\linkS4class{FuturesCFTC}} with slots:
        }
      }
    }
-    \item{\code{dataset}: a tibble. Columns inlude:
+    \item{\code{data}: a tibble. Columns inlude:
       \itemize{
         \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
         \item{\code{format}: report formats for which data has been found.}

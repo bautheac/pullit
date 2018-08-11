@@ -64,7 +64,7 @@ An S4 object of class \code{\linkS4class{FuturesTS}} with slots:
         \item{\code{field}: futures Bloomberg market data fields for which data has been found.}
       }
     }
-    \item{\code{dataset}: a tibble. Columns include:
+    \item{\code{data}: a tibble. Columns include:
       \itemize{
         \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
         \item{\code{TS position}: futures chain term structure positions for which data has been found.}

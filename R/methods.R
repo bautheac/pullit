@@ -4,15 +4,15 @@
 #'
 #' @param object an S4 object of class \linkS4class{FuturesTS}.
 #'
-#' @importFrom methods is show
+#' @importFrom methods show
 #'
 #' @export
-setMethod("show", signature(object = "FuturesTS"), function(object) {
-  cat(is(object)[[1]],
+setMethod("show", "FuturesTS", function(object) {
+  cat(methods::is(object)[[1]],
       "Slots inlude:\n",
       "  tickers: access with tickers()\n",
       "  fields: access with fields()\n",
-      "  dataset: access with dataset()\n",
+      "  data: access with get_data()\n",
       "See also: periods()")
 })
 
@@ -32,7 +32,7 @@ setMethod("show", signature(object = "FuturesTS"), function(object) {
 #'    }
 #'
 #' @export
-setMethod("tickers", "FuturesTS", function(object) object@tickers)
+setMethod("get_tickers", "FuturesTS", function(object) object@tickers)
 
 #' 'periods' method for S4 objects of class \linkS4class{FuturesTS}.
 #'
@@ -47,16 +47,15 @@ setMethod("tickers", "FuturesTS", function(object) object@tickers)
 #'      \item{\code{end}: most recent date with observed data.}
 #'    }
 #'
-#' @importFrom dplyr arrange funs group_by summarise_at ungroup vars
-#' @importFrom magrittr "%>%" "%<>%"
+#' @importFrom magrittr "%>%"
 #'
 #' @export
-setMethod("periods", "FuturesTS", function(object) {
-  object@dataset %>%
-    group_by(`active contract ticker`, `TS position`, field) %>%
-    summarise_at(vars(date), funs(start = min, end = max)) %>%
-    ungroup() %>%
-    arrange(`active contract ticker`, `TS position`, field)
+setMethod("get_periods", "FuturesTS", function(object) {
+  object@data %>%
+    dplyr::group_by(`active contract ticker`, `TS position`, field) %>%
+    dplyr::summarise_at(dplyr::vars(date), dplyr::funs(start = min, end = max)) %>%
+    dplyr::ungroup() %>%
+    dplyr::arrange(`active contract ticker`, `TS position`, field)
 })
 
 #' 'fields' slot accessor method for S4 objects of class \linkS4class{FuturesTS}.
@@ -71,9 +70,9 @@ setMethod("periods", "FuturesTS", function(object) {
 #'    }
 #'
 #' @export
-setMethod("fields", "FuturesTS", function(object) object@fields )
+setMethod("get_fields", "FuturesTS", function(object) object@fields )
 
-#' 'dataset' slot accessor method for S4 objects of class \linkS4class{FuturesTS}.
+#' 'data' slot accessor method for S4 objects of class \linkS4class{FuturesTS}.
 #'
 #' @param object an S4 object of class \linkS4class{FuturesTS}.
 #'
@@ -87,7 +86,7 @@ setMethod("fields", "FuturesTS", function(object) object@fields )
 #'    }
 #'
 #' @export
-setMethod("dataset", "FuturesTS", function(object) object@dataset )
+setMethod("get_data", "FuturesTS", function(object) object@data )
 
 
 # FuturesAggregate ####
@@ -96,15 +95,15 @@ setMethod("dataset", "FuturesTS", function(object) object@dataset )
 #'
 #' @param object an S4 object of class \linkS4class{FuturesAggregate}.
 #'
-#' @importFrom methods is show
+#' @importFrom methods show
 #'
 #' @export
-setMethod("show", signature(object = "FuturesAggregate"), function(object) {
-  cat(is(object)[[1]],
+setMethod("show", "FuturesAggregate", function(object) {
+  cat(methods::is(object)[[1]],
       "Slots inlude:\n",
       "  tickers: access with tickers()\n",
       "  fields: access with fields()\n",
-      "  dataset: access with dataset()\n",
+      "  data: access with data()\n",
       "See also: periods()")
 })
 
@@ -115,7 +114,7 @@ setMethod("show", signature(object = "FuturesAggregate"), function(object) {
 #' @return A character vector: active contract Bloomberg tickers for which data has been found.
 #'
 #' @export
-setMethod("tickers", "FuturesAggregate", function(object) object@tickers)
+setMethod("get_tickers", "FuturesAggregate", function(object) object@tickers)
 
 #' 'periods' method for S4 objects of class \linkS4class{FuturesAggregate}.
 #'
@@ -132,8 +131,8 @@ setMethod("tickers", "FuturesAggregate", function(object) object@tickers)
 #' @importFrom magrittr "%>%"
 #'
 #' @export
-setMethod("periods", "FuturesAggregate", function(object) {
-  object@dataset %>%
+setMethod("get_periods", "FuturesAggregate", function(object) {
+  object@data %>%
     dplyr::group_by(`active contract ticker`, field) %>%
     dplyr::summarise_at(dplyr::vars(date), dplyr::funs(start = min, end = max)) %>%
     dplyr::ungroup() %>%
@@ -151,9 +150,9 @@ setMethod("periods", "FuturesAggregate", function(object) {
 #'    }
 #'
 #' @export
-setMethod("fields", "FuturesAggregate", function(object) object@fields )
+setMethod("get_fields", "FuturesAggregate", function(object) object@fields )
 
-#' 'dataset' slot accessor method for S4 objects of class \linkS4class{FuturesAggregate}.
+#' 'data' slot accessor method for S4 objects of class \linkS4class{FuturesAggregate}.
 #'
 #' @param object an S4 object of class \linkS4class{FuturesAggregate}.
 #'
@@ -166,7 +165,7 @@ setMethod("fields", "FuturesAggregate", function(object) object@fields )
 #'    }
 #'
 #' @export
-setMethod("dataset", "FuturesAggregate", function(object) object@dataset )
+setMethod("get_data", "FuturesAggregate", function(object) object@data )
 
 
 # FuturesCFTC ####
@@ -175,15 +174,15 @@ setMethod("dataset", "FuturesAggregate", function(object) object@dataset )
 #'
 #' @param object an S4 object of class \linkS4class{FuturesCFTC}.
 #'
-#' @importFrom methods is show
+#' @importFrom methods show
 #'
 #' @export
-setMethod("show", signature(object = "FuturesCFTC"), function(object) {
-  cat(is(object)[[1]],
+setMethod("show", "FuturesCFTC", function(object) {
+  cat(methods::is(object)[[1]],
       "Slots inlude:\n",
       "  tickers: access with tickers()\n",
       "  fields: access with fields()\n",
-      "  dataset: access with dataset()\n",
+      "  data: access with data()\n",
       "See also: periods()")
 })
 
@@ -194,7 +193,7 @@ setMethod("show", signature(object = "FuturesCFTC"), function(object) {
 #' @return A character vector: active contract Bloomberg tickers for which data has been found.
 #'
 #' @export
-setMethod("tickers", "FuturesCFTC", function(object) object@tickers)
+setMethod("get_tickers", "FuturesCFTC", function(object) object@tickers)
 
 #' 'periods' method for S4 objects of class \linkS4class{FuturesCFTC}.
 #'
@@ -215,8 +214,8 @@ setMethod("tickers", "FuturesCFTC", function(object) object@tickers)
 #' @importFrom magrittr "%>%"
 #'
 #' @export
-setMethod("periods", "FuturesCFTC", function(object) {
-  object@dataset %>%
+setMethod("get_periods", "FuturesCFTC", function(object) {
+  object@data %>%
     dplyr::group_by(`active contract ticker`, format, underlying, unit, participant, position) %>%
     dplyr::summarise_at(dplyr::vars(date), dplyr::funs(start = min, end = max)) %>%
     dplyr::ungroup() %>%
@@ -264,9 +263,9 @@ setMethod("periods", "FuturesCFTC", function(object) {
 #'   }
 #'
 #' @export
-setMethod("fields", "FuturesCFTC", function(object) object@fields )
+setMethod("get_fields", "FuturesCFTC", function(object) object@fields )
 
-#' 'dataset' slot accessor method for S4 objects of class \linkS4class{FuturesCFTC}.
+#' 'data' slot accessor method for S4 objects of class \linkS4class{FuturesCFTC}.
 #'
 #' @param object an S4 object of class \linkS4class{FuturesCFTC}.
 #'
@@ -283,7 +282,7 @@ setMethod("fields", "FuturesCFTC", function(object) object@fields )
 #'   }
 #'
 #' @export
-setMethod("dataset", "FuturesCFTC", function(object) object@dataset )
+setMethod("get_data", "FuturesCFTC", function(object) object@data )
 
 
 # EquityMarket ####
@@ -292,15 +291,15 @@ setMethod("dataset", "FuturesCFTC", function(object) object@dataset )
 #'
 #' @param object an S4 object of class \linkS4class{EquityMarket}.
 #'
-#' @importFrom methods is show
+#' @importFrom methods show
 #'
 #' @export
-setMethod("show", signature(object = "EquityMarket"), function(object) {
-  cat(is(object)[[1]],
+setMethod("show", "EquityMarket", function(object) {
+  cat(methods::is(object)[[1]],
       "Slots inlude:\n",
       "  tickers: access with tickers()\n",
       "  fields: access with fields()\n",
-      "  dataset: access with dataset()\n",
+      "  data: access with data()\n",
       "See also: periods()")
 })
 
@@ -311,7 +310,7 @@ setMethod("show", signature(object = "EquityMarket"), function(object) {
 #' @return A character vector: equity Bloomberg tickers for which data has been found.
 #'
 #' @export
-setMethod("tickers", "EquityMarket", function(object) object@tickers)
+setMethod("get_tickers", "EquityMarket", function(object) object@tickers)
 
 #' 'periods' method for S4 objects of class \linkS4class{EquityMarket}.
 #'
@@ -328,8 +327,8 @@ setMethod("tickers", "EquityMarket", function(object) object@tickers)
 #' @importFrom magrittr "%>%"
 #'
 #' @export
-setMethod("periods", "EquityMarket", function(object) {
-  object@dataset %>%
+setMethod("get_periods", "EquityMarket", function(object) {
+  object@data %>%
     dplyr::group_by(ticker, field) %>%
     dplyr::summarise_at(dplyr::vars(date), dplyr::funs(start = min, end = max)) %>%
     dplyr::ungroup() %>%
@@ -347,9 +346,9 @@ setMethod("periods", "EquityMarket", function(object) {
 #'   }
 #'
 #' @export
-setMethod("fields", "EquityMarket", function(object) object@fields )
+setMethod("get_fields", "EquityMarket", function(object) object@fields )
 
-#' 'dataset' slot accessor method for S4 objects of class \linkS4class{EquityMarket}.
+#' 'data' slot accessor method for S4 objects of class \linkS4class{EquityMarket}.
 #'
 #' @param object an S4 object of class \linkS4class{EquityMarket}.
 #'
@@ -362,7 +361,7 @@ setMethod("fields", "EquityMarket", function(object) object@fields )
 #'   }
 #'
 #' @export
-setMethod("dataset", "EquityMarket", function(object) object@dataset )
+setMethod("get_data", "EquityMarket", function(object) object@data )
 
 
 
@@ -374,15 +373,15 @@ setMethod("dataset", "EquityMarket", function(object) object@dataset )
 #'
 #' @param object an S4 object of class \linkS4class{EquityBS}.
 #'
-#' @importFrom methods is show
+#' @importFrom methods show
 #'
 #' @export
-setMethod("show", signature(object = "EquityBS"), function(object) {
-  cat(is(object)[[1]],
+setMethod("show", "EquityBS", function(object) {
+  cat(methods::is(object)[[1]],
       "Slots inlude:\n",
       "  tickers: access with tickers()\n",
       "  fields: access with fields()\n",
-      "  dataset: access with dataset()\n",
+      "  data: access with data()\n",
       "See also: periods()")
 })
 
@@ -393,7 +392,7 @@ setMethod("show", signature(object = "EquityBS"), function(object) {
 #' @return A character vector: equity Bloomberg tickers for which data has been found.
 #'
 #' @export
-setMethod("tickers", "EquityBS", function(object) object@tickers)
+setMethod("get_tickers", "EquityBS", function(object) object@tickers)
 
 #' 'periods' method for S4 objects of class \linkS4class{EquityBS}.
 #'
@@ -412,8 +411,8 @@ setMethod("tickers", "EquityBS", function(object) object@tickers)
 #' @importFrom magrittr "%>%"
 #'
 #' @export
-setMethod("periods", "EquityBS", function(object) {
-  object@dataset %>%
+setMethod("get_periods", "EquityBS", function(object) {
+  object@data %>%
     dplyr::group_by(ticker, section, subsection, name) %>%
     dplyr::summarise_at(dplyr::vars(date), dplyr::funs(start = min, end = max)) %>%
     dplyr::ungroup() %>%
@@ -434,9 +433,9 @@ setMethod("periods", "EquityBS", function(object) {
 #'   }
 #'
 #' @export
-setMethod("fields", "EquityBS", function(object) object@fields )
+setMethod("get_fields", "EquityBS", function(object) object@fields )
 
-#' 'dataset' slot accessor method for S4 objects of class \linkS4class{EquityBS}.
+#' 'data' slot accessor method for S4 objects of class \linkS4class{EquityBS}.
 #'
 #' @param object an S4 object of class \linkS4class{EquityBS}.
 #'
@@ -452,7 +451,7 @@ setMethod("fields", "EquityBS", function(object) object@fields )
 #'   }
 #'
 #' @export
-setMethod("dataset", "EquityBS", function(object) object@dataset )
+setMethod("get_data", "EquityBS", function(object) object@data )
 
 
 
@@ -465,15 +464,15 @@ setMethod("dataset", "EquityBS", function(object) object@dataset )
 #'
 #' @param object an S4 object of class \linkS4class{EquityCF}.
 #'
-#' @importFrom methods is show
+#' @importFrom methods show
 #'
 #' @export
-setMethod("show", signature(object = "EquityCF"), function(object) {
-  cat(is(object)[[1]],
+setMethod("show", "EquityCF", function(object) {
+  cat(methods::is(object)[[1]],
       "Slots inlude:\n",
       "  tickers: access with tickers()\n",
       "  fields: access with fields()\n",
-      "  dataset: access with dataset()\n",
+      "  data: access with data()\n",
       "See also: periods()")
 })
 
@@ -484,7 +483,7 @@ setMethod("show", signature(object = "EquityCF"), function(object) {
 #' @return A character vector: equity Bloomberg tickers for which data has been found.
 #'
 #' @export
-setMethod("tickers", "EquityCF", function(object) object@tickers)
+setMethod("get_tickers", "EquityCF", function(object) object@tickers)
 
 #' 'periods' method for S4 objects of class \linkS4class{EquityCF}.
 #'
@@ -502,8 +501,8 @@ setMethod("tickers", "EquityCF", function(object) object@tickers)
 #' @importFrom magrittr "%>%"
 #'
 #' @export
-setMethod("periods", "EquityCF", function(object) {
-  object@dataset %>%
+setMethod("get_periods", "EquityCF", function(object) {
+  object@data %>%
     dplyr::group_by(ticker, section, name) %>%
     dplyr::summarise_at(dplyr::vars(date), dplyr::funs(start = min, end = max)) %>%
     dplyr::ungroup() %>%
@@ -523,9 +522,9 @@ setMethod("periods", "EquityCF", function(object) {
 #'   }
 #'
 #' @export
-setMethod("fields", "EquityCF", function(object) object@fields )
+setMethod("get_fields", "EquityCF", function(object) object@fields )
 
-#' 'dataset' slot accessor method for S4 objects of class \linkS4class{EquityCF}.
+#' 'data' slot accessor method for S4 objects of class \linkS4class{EquityCF}.
 #'
 #' @param object an S4 object of class \linkS4class{EquityCF}.
 #'
@@ -540,7 +539,7 @@ setMethod("fields", "EquityCF", function(object) object@fields )
 #'   }
 #'
 #' @export
-setMethod("dataset", "EquityCF", function(object) object@dataset )
+setMethod("get_data", "EquityCF", function(object) object@data )
 
 
 
@@ -554,15 +553,15 @@ setMethod("dataset", "EquityCF", function(object) object@dataset )
 #'
 #' @param object an S4 object of class \linkS4class{EquityIS}.
 #'
-#' @importFrom methods is show
+#' @importFrom methods show
 #'
 #' @export
-setMethod("show", signature(object = "EquityIS"), function(object) {
-  cat(is(object)[[1]],
+setMethod("show", "EquityIS", function(object) {
+  cat(methods::is(object)[[1]],
       "Slots inlude:\n",
       "  tickers: access with tickers()\n",
       "  fields: access with fields()\n",
-      "  dataset: access with dataset()\n",
+      "  data: access with data()\n",
       "See also: periods()")
 })
 
@@ -573,7 +572,7 @@ setMethod("show", signature(object = "EquityIS"), function(object) {
 #' @return A character vector: equity Bloomberg tickers for which data has been found.
 #'
 #' @export
-setMethod("tickers", "EquityIS", function(object) object@tickers)
+setMethod("get_tickers", "EquityIS", function(object) object@tickers)
 
 #' 'periods' method for S4 objects of class \linkS4class{EquityIS}.
 #'
@@ -590,8 +589,8 @@ setMethod("tickers", "EquityIS", function(object) object@tickers)
 #' @importFrom magrittr "%>%"
 #'
 #' @export
-setMethod("periods", "EquityIS", function(object) {
-  object@dataset %>%
+setMethod("get_periods", "EquityIS", function(object) {
+  object@data %>%
     dplyr::group_by(ticker, name) %>%
     dplyr::summarise_at(dplyr::vars(date), dplyr::funs(start = min, end = max)) %>%
     dplyr::ungroup() %>%
@@ -609,9 +608,9 @@ setMethod("periods", "EquityIS", function(object) {
 #'   }
 #'
 #' @export
-setMethod("fields", "EquityIS", function(object) object@fields )
+setMethod("get_fields", "EquityIS", function(object) object@fields )
 
-#' 'dataset' slot accessor method for S4 objects of class \linkS4class{EquityIS}.
+#' 'data' slot accessor method for S4 objects of class \linkS4class{EquityIS}.
 #'
 #' @param object an S4 object of class \linkS4class{EquityIS}.
 #'
@@ -624,7 +623,7 @@ setMethod("fields", "EquityIS", function(object) object@fields )
 #'   }
 #'
 #' @export
-setMethod("dataset", "EquityIS", function(object) object@dataset )
+setMethod("get_data", "EquityIS", function(object) object@data )
 
 
 
@@ -636,15 +635,15 @@ setMethod("dataset", "EquityIS", function(object) object@dataset )
 #'
 #' @param object an S4 object of class \linkS4class{EquityRatios}.
 #'
-#' @importFrom methods is show
+#' @importFrom methods show
 #'
 #' @export
-setMethod("show", signature(object = "EquityRatios"), function(object) {
-  cat(is(object)[[1]],
+setMethod("show", "EquityRatios", function(object) {
+  cat(methods::is(object)[[1]],
       "Slots inlude:\n",
       "  tickers: access with tickers()\n",
       "  fields: access with fields()\n",
-      "  dataset: access with dataset()\n",
+      "  data: access with data()\n",
       "See also: periods()")
 })
 
@@ -655,7 +654,7 @@ setMethod("show", signature(object = "EquityRatios"), function(object) {
 #' @return A character vector: equity Bloomberg tickers for which data has been found.
 #'
 #' @export
-setMethod("tickers", "EquityRatios", function(object) object@tickers)
+setMethod("get_tickers", "EquityRatios", function(object) object@tickers)
 
 #' 'periods' method for S4 objects of class \linkS4class{EquityRatios}.
 #'
@@ -673,8 +672,8 @@ setMethod("tickers", "EquityRatios", function(object) object@tickers)
 #' @importFrom magrittr "%>%"
 #'
 #' @export
-setMethod("periods", "EquityRatios", function(object) {
-  object@dataset %>%
+setMethod("get_periods", "EquityRatios", function(object) {
+  object@data %>%
     dplyr::group_by(ticker, type, name) %>%
     dplyr::summarise_at(dplyr::vars(date), dplyr::funs(start = min, end = max)) %>%
     dplyr::ungroup() %>%
@@ -694,9 +693,11 @@ setMethod("periods", "EquityRatios", function(object) {
 #'   }
 #'
 #' @export
-setMethod("fields", "EquityRatios", function(object) object@fields )
+setMethod("get_fields", "EquityRatios", function(object) object@fields )
 
-#' 'dataset' slot accessor method for S4 objects of class \linkS4class{EquityRatios}.
+
+
+#' 'data' slot accessor method for S4 objects of class \linkS4class{EquityRatios}.
 #'
 #' @param object an S4 object of class \linkS4class{EquityRatios}.
 #'
@@ -711,5 +712,5 @@ setMethod("fields", "EquityRatios", function(object) object@fields )
 #'   }
 #'
 #' @export
-setMethod("dataset", "EquityRatios", function(object) object@dataset )
+setMethod("get_data", "EquityRatios", function(object) object@data )
 
