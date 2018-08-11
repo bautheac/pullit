@@ -38,6 +38,7 @@ An S4 object of class \code{\linkS4class{FuturesAggregate}} with slots:
         \item{\code{value}: corresponding value.}
       }
     }
+    \item{\code{call}: a scalar character vector showing the original call to the constructor.}
   }
 }
 \description{

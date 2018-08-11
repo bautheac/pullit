@@ -25,3 +25,10 @@ setGeneric("get_fields", function(object) standardGeneric("get_fields"))
 #'
 #' @export
 setGeneric("get_data", function(object) standardGeneric("get_data"))
+
+#' Generic method for accessing the 'data' slot of various S4 objects from the \code{pullit} package.
+#'
+#' @param object an S4 object with a 'call' slot.
+#'
+#' @export
+setGeneric("get_call", function(object) standardGeneric("get_call"))

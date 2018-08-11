@@ -72,6 +72,7 @@ An S4 object of class \code{\linkS4class{FuturesCFTC}} with slots:
         \item{\code{value}: observed value}
       }
     }
+    \item{\code{call}: a scalar character vector showing the original call to the constructor.}
  }
 }
 \description{

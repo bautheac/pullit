@@ -6,34 +6,34 @@ setOldClass(c("tbl_df", "tbl", "data.frame"))
 
 #' S4 class for futures term structure objects
 #' @export
-setClass("FuturesTS", representation(tickers = "tbl_df", fields = "tbl_df", data = "tbl_df"))
+setClass("FuturesTS", representation(tickers = "tbl_df", fields = "tbl_df", data = "tbl_df", call = "character"))
 
 #' S4 class for futures aggregate objects
 #' @export
-setClass("FuturesAggregate", representation(tickers = "character", fields = "tbl_df", data = "tbl_df"))
+setClass("FuturesAggregate", representation(tickers = "character", fields = "tbl_df", data = "tbl_df", call = "character"))
 
 #' S4 class for futures CFTC objects
 #' @export
-setClass("FuturesCFTC", representation(tickers = "character", fields = "tbl_df", data = "tbl_df"))
+setClass("FuturesCFTC", representation(tickers = "character", fields = "tbl_df", data = "tbl_df", call = "character"))
 
 #' S4 class for equity market objects
 #' @export
-setClass("EquityMarket", representation(tickers = "tbl_df", fields = "character", data = "tbl_df"))
+setClass("EquityMarket", representation(tickers = "tbl_df", fields = "character", data = "tbl_df", call = "character"))
 
 #' S4 class for equity balance sheet objects
 #' @export
-setClass("EquityBS", representation(tickers = "tbl_df", fields = "tbl_df", data = "tbl_df"))
+setClass("EquityBS", representation(tickers = "tbl_df", fields = "tbl_df", data = "tbl_df", call = "character"))
 
 #' S4 class for equity cash flow statement objects
 #' @export
-setClass("EquityCF", representation(tickers = "tbl_df", fields = "tbl_df", data = "tbl_df"))
+setClass("EquityCF", representation(tickers = "tbl_df", fields = "tbl_df", data = "tbl_df", call = "character"))
 
 #' S4 class for equity income statement objects
 #' @export
-setClass("EquityIS", representation(tickers = "tbl_df", fields = "tbl_df", data = "tbl_df"))
+setClass("EquityIS", representation(tickers = "tbl_df", fields = "tbl_df", data = "tbl_df", call = "character"))
 
 #' S4 class for equity ratios objects
 #' @export
-setClass("EquityRatios", representation(tickers = "tbl_df", fields = "tbl_df", data = "tbl_df"))
+setClass("EquityRatios", representation(tickers = "tbl_df", fields = "tbl_df", data = "tbl_df", call = "character"))
 
 

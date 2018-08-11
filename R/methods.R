@@ -88,6 +88,15 @@ setMethod("get_fields", "FuturesTS", function(object) object@fields )
 #' @export
 setMethod("get_data", "FuturesTS", function(object) object@data )
 
+#' 'call' slot accessor method for S4 objects of class \linkS4class{FuturesTS}.
+#'
+#' @param object an S4 object of class \linkS4class{FuturesTS}.
+#'
+#' @return A scalar character vector showing the original call to the constructor function,
+#'
+#' @export
+setMethod("get_call", "FuturesTS", function(object) object@call )
+
 
 # FuturesAggregate ####
 
@@ -166,6 +175,15 @@ setMethod("get_fields", "FuturesAggregate", function(object) object@fields )
 #'
 #' @export
 setMethod("get_data", "FuturesAggregate", function(object) object@data )
+
+#' 'call' slot accessor method for S4 objects of class \linkS4class{FuturesAggregate}.
+#'
+#' @param object an S4 object of class \linkS4class{FuturesAggregate}.
+#'
+#' @return A scalar character vector showing the original call to the constructor function,
+#'
+#' @export
+setMethod("get_call", "FuturesAggregate", function(object) object@call )
 
 
 # FuturesCFTC ####
@@ -284,6 +302,15 @@ setMethod("get_fields", "FuturesCFTC", function(object) object@fields )
 #' @export
 setMethod("get_data", "FuturesCFTC", function(object) object@data )
 
+#' 'call' slot accessor method for S4 objects of class \linkS4class{FuturesCFTC}.
+#'
+#' @param object an S4 object of class \linkS4class{FuturesCFTC}.
+#'
+#' @return A scalar character vector showing the original call to the constructor function,
+#'
+#' @export
+setMethod("get_call", "FuturesCFTC", function(object) object@call )
+
 
 # EquityMarket ####
 
@@ -363,6 +390,14 @@ setMethod("get_fields", "EquityMarket", function(object) object@fields )
 #' @export
 setMethod("get_data", "EquityMarket", function(object) object@data )
 
+#' 'call' slot accessor method for S4 objects of class \linkS4class{EquityMarket}.
+#'
+#' @param object an S4 object of class \linkS4class{EquityMarket}.
+#'
+#' @return A scalar character vector showing the original call to the constructor function,
+#'
+#' @export
+setMethod("get_call", "EquityMarket", function(object) object@call )
 
 
 
@@ -453,6 +488,14 @@ setMethod("get_fields", "EquityBS", function(object) object@fields )
 #' @export
 setMethod("get_data", "EquityBS", function(object) object@data )
 
+#' 'call' slot accessor method for S4 objects of class \linkS4class{EquityBS}.
+#'
+#' @param object an S4 object of class \linkS4class{EquityBS}.
+#'
+#' @return A scalar character vector showing the original call to the constructor function,
+#'
+#' @export
+setMethod("get_call", "EquityBS", function(object) object@call )
 
 
 
@@ -541,6 +584,14 @@ setMethod("get_fields", "EquityCF", function(object) object@fields )
 #' @export
 setMethod("get_data", "EquityCF", function(object) object@data )
 
+#' 'call' slot accessor method for S4 objects of class \linkS4class{EquityCF}.
+#'
+#' @param object an S4 object of class \linkS4class{EquityCF}.
+#'
+#' @return A scalar character vector showing the original call to the constructor function,
+#'
+#' @export
+setMethod("get_call", "EquityCF", function(object) object@call )
 
 
 
@@ -625,6 +676,14 @@ setMethod("get_fields", "EquityIS", function(object) object@fields )
 #' @export
 setMethod("get_data", "EquityIS", function(object) object@data )
 
+#' 'call' slot accessor method for S4 objects of class \linkS4class{EquityIS}.
+#'
+#' @param object an S4 object of class \linkS4class{EquityIS}.
+#'
+#' @return A scalar character vector showing the original call to the constructor function,
+#'
+#' @export
+setMethod("get_call", "EquityIS", function(object) object@call )
 
 
 
@@ -714,3 +773,11 @@ setMethod("get_fields", "EquityRatios", function(object) object@fields )
 #' @export
 setMethod("get_data", "EquityRatios", function(object) object@data )
 
+#' 'call' slot accessor method for S4 objects of class \linkS4class{EquityRatios}.
+#'
+#' @param object an S4 object of class \linkS4class{EquityRatios}.
+#'
+#' @return A scalar character vector showing the original call to the constructor function,
+#'
+#' @export
+setMethod("get_call", "EquityRatios", function(object) object@call )

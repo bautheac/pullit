@@ -57,6 +57,7 @@
 #'         \item{\code{value}: corresponding value.}
 #'       }
 #'     }
+#'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
 #'   }
 #'
 #' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
@@ -123,7 +124,8 @@ bbg_futures_TS <- function(active_contract_tickers = "C A Comdty",
   methods::new("FuturesTS",
       tickers = tickers,
       fields = dplyr::distinct(data, `active contract ticker`, `TS position`, field),
-      data = data %>% dplyr::select(-ticker)
+      data = data %>% dplyr::select(-ticker),
+      call = deparse(match.call())
   )
 }
 
@@ -165,6 +167,7 @@ bbg_futures_TS <- function(active_contract_tickers = "C A Comdty",
 #'         \item{\code{value}: corresponding value.}
 #'       }
 #'     }
+#'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
 #'   }
 #'
 #' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
@@ -198,7 +201,8 @@ bbg_futures_aggregate <- function(active_contract_tickers = "C A Comdty",
   methods::new("FuturesAggregate",
       tickers = dplyr::distinct(data, `active contract ticker`) %>% purrr::flatten_chr(),
       fields = dplyr::distinct(data, `active contract ticker`, field),
-      data = data
+      data = data,
+      call = deparse(match.call())
   )
 }
 
@@ -271,6 +275,7 @@ bbg_futures_aggregate <- function(active_contract_tickers = "C A Comdty",
 #'         \item{\code{value}: observed value}
 #'       }
 #'     }
+#'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
 #'  }
 #'
 #' @seealso The \code{\link[bbgsymbols]{tickers_cftc}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
@@ -323,7 +328,8 @@ bbg_futures_CFTC <- function(active_contract_tickers = "C A Comdty",
   methods::new("FuturesCFTC",
       tickers = dplyr::distinct(data, `active contract ticker`) %>% purrr::flatten_chr(),
       fields = dplyr::distinct(data, `active contract ticker`, format, underlying, `unit`, participant, position),
-      data = data
+      data = data,
+      call = deparse(match.call())
   )
 }
 
@@ -373,6 +379,7 @@ bbg_futures_CFTC <- function(active_contract_tickers = "C A Comdty",
 #'         \item{\code{value}: corresponding value.}
 #'       }
 #'     }
+#'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
 #'   }
 #'
 #' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
@@ -411,7 +418,8 @@ bbg_equity_market <- function(tickers = "NEM US Equity",
   methods::new("EquityMarket",
       tickers = dplyr::distinct(data, ticker),
       fields = dplyr::distinct(data, ticker, field),
-      data = data
+      data = data,
+      call = deparse(match.call())
   )
 }
 
@@ -453,6 +461,7 @@ bbg_equity_market <- function(tickers = "NEM US Equity",
 #'         \item{\code{value}: corresponding observation.}
 #'       }
 #'     }
+#'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
 #'   }
 #'
 #' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
@@ -510,7 +519,8 @@ bbg_equity_BS <- function(tickers = "NEM US Equity",
   methods::new("EquityBS",
       tickers = dplyr::distinct(data, ticker) %>% purrr::flatten_chr(),
       fields = dplyr::distinct(data, ticker, section, subsection, name),
-      data = dplyr::select(data, -c(rank, symbol))
+      data = dplyr::select(data, -c(rank, symbol)),
+      call = deparse(match.call())
   )
 
 }
@@ -553,6 +563,7 @@ bbg_equity_BS <- function(tickers = "NEM US Equity",
 #'         \item{\code{value}: corresponding observation.}
 #'       }
 #'     }
+#'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
 #'   }
 #'
 #' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
@@ -610,7 +621,8 @@ bbg_equity_CF <- function(tickers = "NEM US Equity",
   methods::new("EquityCF",
       tickers = dplyr::distinct(data, ticker) %>% purrr::flatten_chr(),
       fields = dplyr::distinct(data, ticker, section, name),
-      data = dplyr::select(data, -c(rank, symbol))
+      data = dplyr::select(data, -c(rank, symbol)),
+      call = deparse(match.call())
   )
 
 }
@@ -648,6 +660,7 @@ bbg_equity_CF <- function(tickers = "NEM US Equity",
 #'         \item{\code{value}: corresponding observation.}
 #'       }
 #'     }
+#'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
 #'   }
 #'
 #' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
@@ -694,7 +707,9 @@ bbg_equity_IS <- function(tickers = "NEM US Equity",
                start = min(dplyr::distinct(data, date)),
                end = max(dplyr::distinct(data, date)),
                fields = dplyr::distinct(data, ticker, name),
-               data = dplyr::select(data, -symbol))
+               data = dplyr::select(data, -symbol),
+               call = deparse(match.call())
+               )
 
 }
 
@@ -738,6 +753,7 @@ bbg_equity_IS <- function(tickers = "NEM US Equity",
 #'         \item{\code{value}: corresponding observation.}
 #'       }
 #'     }
+#'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
 #'   }
 #'
 #' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
@@ -777,7 +793,9 @@ bbg_equity_ratios <- function(tickers = "NEM US Equity",
   methods::new("EquityRatios",
                tickers = dplyr::distinct(data, ticker) %>% purrr::flatten_chr(),
                fields = dplyr::distinct(data, ticker, type, name),
-               data = dplyr::select(data, -c(rank, symbol)))
+               data = dplyr::select(data, -c(rank, symbol)),
+               call = deparse(match.call())
+               )
 
 }
 
