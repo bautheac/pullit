@@ -1,3 +1,83 @@
+#' Futures market historical data from Bloomberg
+#'
+#' @description Provided with a set of Bloomberg futures active contract tickers, term structure positions, roll parameters and a time period,
+#'   queries Bloomberg for the corresponding term structure historical data.
+#'
+#' @param type A scalar character vector, 'term sructure' or 'aggregate'. 'term structure' returns individual futures chain data for a selected
+#'   portion of the term structure (specify desired positions in \code{TS_positions}) while 'aggregate' returns aggregated data over the whole
+#'   term structure for the corresponding names (specify desired names via corresponding tickers in \code{active_contract_tickers}).
+#'   Defaults to 'term structure'.
+#' @param active_contract_tickers A chatacter vector. Specifies the Bloomberg futures active contract tickers to query data for.
+#'   Defaults to 'C A Comdty', the Bloomberg active contract ticker for the XCBT corn futures series.
+#' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
+#'   Defaults to '2018-01-01'.
+#' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
+#'   Defaults to '2018-06-30'.
+#' @param TS_positions An integer vector. Specifies the term structure positions to query data for.
+#' Defaults to 1: front nearby contract for the corresponding futures series.
+#' @param roll_type A scalar chatacter vector. Specifies roll type to use for term structure ticker construction.
+#'   Must be one of 'A', 'B', 'D', 'F', 'N', 'O' or 'R'.
+#'   Defaults to 'A' or 'With active future': rolls to the most actively traded contract in the futures series.
+#' @param roll_days A scalar integer vector. Specifies the day the roll should be done.
+#'   Refers to the day of the month (\code{roll_type} = 'F') or the number of days before a reference date
+#'   (\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O', \code{roll_type} = 'R').
+#'   Works in tandem with `roll_months` below.
+#'   Defaults to 0.
+#' @param roll_months A scalar integer vector. Specifies the month the roll should be done.
+#'   Refers to the number of months before a reference date (\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O',
+#'   \code{roll_type} = 'R'). Works in tandem with `roll_days` above.
+#'   Defaults to 0.
+#' @param roll_adjustment A scalar chatacter vector. Specifies roll adjustment method to use for term structure ticker construction.
+#'   Must be one of 'D', 'N', 'R', or 'W'. Defaults to 'N' or 'None'.
+#' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
+#' @param ... Optional parameters to pass to the \code{\link[Rblpapi]{bdh}} function from the \code{Rblpapi} package used
+#'   for the query (\code{options} parameter).
+#'
+#' @return An S4 object of class \code{\linkS4class{FuturesTS}} (\code{type = 'term structure'}) or \code{\linkS4class{FuturesAggregate}}
+#'   \code{type = 'aggregate'}). Slots include:
+#'   \itemize{
+#'     \item{\code{tickers}: a data.table showing the tickers for which data has been found.}
+#'     \item{\code{fields}: a data.table showing the data fields for which data has been found.}
+#'     \item{\code{data}: a data.table containing the data retrieved.}
+#'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
+#'   }
+#'
+#' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg data fields used here.
+#'
+#' @examples
+#' \dontrun{
+#'   bbg_futures_market(type = 'term structure')
+#'   bbg_futures_market(type = 'aggregate')
+#' }
+#'
+#' @export
+bbg_futures_market <- function(type = "term structure",
+                               active_contract_tickers = "C A Comdty",
+                               start = "2018-01-01",
+                               end = "2018-06-30",
+                               TS_positions = 1L,
+                               roll_type = "A",
+                               roll_days = 0L,
+                               roll_months = 0L,
+                               roll_adjustment = "N",
+                               verbose = TRUE,
+                               ...){
+
+  if (! rlang::is_scalar_character(type) & type %in% c("term structure", "aggregate"))
+    stop("The parameter 'type' must be supplied as a scalar character vector; one of 'term structure' or 'aggregate'.")
+  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers.")
+  if (! is.integer(TS_positions)) stop("The parameter 'TS_positions' must be supplied as a vector of integers.")
+  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector.")
+
+  switch(type,
+         `term structure` = bbg_futures_TS(active_contract_tickers = active_contract_tickers, start = start, end = end, TS_positions = TS_positions,
+                                           roll_type = roll_type, roll_days = roll_days, roll_months = roll_months, roll_adjustment = roll_adjustment,
+                                           verbose = verbose, ...),
+         `aggregate` = bbg_futures_aggregate(active_contract_tickers = active_contract_tickers, start = start, end = end, verbose = verbose, ...)
+  )
+}
+
+
 #' Futures term structure historical data from Bloomberg
 #'
 #' @description Provided with a set of Bloomberg futures active contract tickers, term structure positions, roll parameters and a time period,
@@ -25,6 +105,7 @@
 #'   Defaults to 0.
 #' @param roll_adjustment A scalar chatacter vector. Specifies roll adjustment method to use for term structure ticker construction.
 #'   Must be one of 'D', 'N', 'R', or 'W'. Defaults to 'N' or 'None'.
+#' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
 #' @param ... Optional parameters to pass to the \code{\link[Rblpapi]{bdh}} function from the \code{Rblpapi} package used
 #'   for the query (\code{options} parameter).
 #'
@@ -68,8 +149,6 @@
 #' @import bbgsymbols
 #' @importFrom magrittr "%>%" "%<>%"
 #'
-#' @export
-
 bbg_futures_TS <- function(active_contract_tickers = "C A Comdty",
                            start = "2018-01-01",
                            end = "2018-06-30",
@@ -78,15 +157,20 @@ bbg_futures_TS <- function(active_contract_tickers = "C A Comdty",
                            roll_days = 0L,
                            roll_months = 0L,
                            roll_adjustment = "N",
+                           verbose = TRUE,
                            ...){
+
+  call <- deparse(match.call())
+  data(list = c("fields", "rolls"), package = "bbgsymbols", envir = environment())
 
   if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers.")
   if (! is.integer(TS_positions)) stop("The parameter 'TS_positions' must be supplied as a vector of integers.")
+  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector.")
 
   data <- lapply(active_contract_tickers, function(y){
-
+    if (verbose) message(y)
     tickers <- sapply(TS_positions, function(x) futures_ticker(y, TS_position = x, roll_type, roll_days, roll_months, roll_adjustment))
-    data <- bbg_pull_historical(tickers, fields = dplyr::filter(fields, instrument == "futures", type == "market") %>% dplyr::select(symbol) %>% purrr::flatten_chr(),
+    data <- bbg_pull_historical_market(tickers, fields = dplyr::filter(fields, instrument == "futures", type == "market") %>% dplyr::select(symbol) %>% purrr::flatten_chr(),
                                 start, end, ...)
 
     data <- if (length(tickers) > 1L) lapply(seq_along(TS_positions), function(x) {
@@ -107,30 +191,33 @@ bbg_futures_TS <- function(active_contract_tickers = "C A Comdty",
   data %<>%
     tidyr::gather(field, value, -c(`active contract ticker`, ticker, `TS position`, date)) %>%
     dplyr::select(`active contract ticker`, ticker, `TS position`, field, date, value) %>%
-    dplyr::filter(stats::complete.cases(.))
+    dplyr::arrange(`active contract ticker`, ticker, field, date) %>%
+    dplyr::filter(stats::complete.cases(.)) %>%
+    dplyr::mutate(date = as.Date(date, origin = "1970-01-01"))
 
   if (nrow(data) == 0L) warning("No term structure data found.")
 
   tickers <- dplyr::distinct(data, `active contract ticker`, ticker, `TS position`) %>%
     dplyr::mutate(`roll type` = stringr::str_extract(ticker, pattern = "(?<= )[A-Z](?=:)"),
            `roll days` = stringr::str_extract(ticker, pattern = "(?<=:)\\d{2}(?=_)") %>% as.numeric(),
-           `roll months` = stringr::str_extract(ticker, pattern = "(?<=:)\\d(?=_)") %>% as.numeric(),
+           `roll months` = stringr::str_extract(ticker, pattern = "(?<=_)\\d(?=_)") %>% as.numeric(),
            `roll adjustment` = stringr::str_extract(ticker, pattern = "(?<=_)[A-Z](?= )")) %>%
     dplyr::left_join(dplyr::filter(rolls, roll == "type") %>% dplyr::select(symbol, name), by = c("roll type" = "symbol")) %>%
     dplyr::select(`active contract ticker`, ticker, `TS position`, `roll type` = name, `roll days`, `roll months`, `roll adjustment`) %>%
-    dplyr::left_join(dplyr::filter(rolls, roll == "adjustment") %>% dplyr::select(symbol, name), by = c("roll type" = "symbol")) %>%
+    dplyr::left_join(dplyr::filter(rolls, roll == "adjustment") %>% dplyr::select(symbol, name), by = c("roll adjustment" = "symbol")) %>%
     dplyr::select(`active contract ticker`, `TS position`, ticker, `roll type`, `roll days`, `roll months`, `roll adjustment` = name)
 
   methods::new("FuturesTS",
-      tickers = tickers,
-      fields = dplyr::distinct(data, `active contract ticker`, `TS position`, field),
-      data = data %>% dplyr::select(-ticker),
-      call = deparse(match.call())
+      tickers = tickers %>%
+        data.table::as.data.table(),
+      fields = dplyr::distinct(data, `active contract ticker`, `TS position`, field) %>%
+                  data.table::as.data.table(),
+      data = data %>%
+        dplyr::select(-ticker) %>%
+        data.table::as.data.table(),
+      call = call
   )
 }
-
-
-
 
 
 
@@ -147,6 +234,7 @@ bbg_futures_TS <- function(active_contract_tickers = "C A Comdty",
 #'   Defaults to '2018-01-01'.
 #' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
 #'   Defaults to '2018-06-30'.
+#' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
 #' @param ... Optional parameters to pass to the \code{\link[Rblpapi]{bdh}} function from the \code{Rblpapi} package used
 #'   for the query (\code{options} parameter).
 #'
@@ -179,30 +267,42 @@ bbg_futures_TS <- function(active_contract_tickers = "C A Comdty",
 #' @importFrom magrittr "%>%" "%<>%"
 #'
 #' @export
-
 bbg_futures_aggregate <- function(active_contract_tickers = "C A Comdty",
                                   start = "2018-01-01",
                                   end = "2018-06-30",
+                                  verbose = TRUE,
                                   ...){
 
-  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers.")
+  call <- deparse(match.call())
+  data(list = c("fields"), package = "bbgsymbols", envir = environment())
 
-  data <- lapply(active_contract_tickers, function(x) bbg_pull_historical(x, fields = dplyr::filter(fields, instrument == "futures", type == "aggregate") %>% dplyr::select(symbol) %>% purrr::flatten_chr(), start, end, ...) %>%
-                   dplyr::mutate(`active contract ticker` = x)) %>%
+  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers.")
+  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector.")
+
+  data <- lapply(active_contract_tickers, function(x) {
+    if (verbose) message(x)
+    bbg_pull_historical_market(x, fields = dplyr::filter(fields, instrument == "futures", type == "aggregate") %>% dplyr::select(symbol) %>% purrr::flatten_chr(), start, end, ...) %>%
+                   dplyr::mutate(`active contract ticker` = x)}
+    ) %>%
     data.table::rbindlist(use.names = TRUE)
 
   data %<>%
     tidyr::gather(field, value, -c(`active contract ticker`, date)) %>%
     dplyr::filter(stats::complete.cases(.)) %>%
+    dplyr::arrange(`active contract ticker`, field, date) %>%
+    dplyr::mutate(date = as.Date(date, origin = "1970-01-01")) %>%
     dplyr::select(`active contract ticker`, field, date, value)
 
   if (nrow(data) == 0L) warning("No aggregate data found.")
 
   methods::new("FuturesAggregate",
-      tickers = dplyr::distinct(data, `active contract ticker`) %>% purrr::flatten_chr(),
-      fields = dplyr::distinct(data, `active contract ticker`, field),
-      data = data,
-      call = deparse(match.call())
+      tickers = dplyr::distinct(data, `active contract ticker`) %>%
+        purrr::flatten_chr(),
+      fields = dplyr::distinct(data, `active contract ticker`, field) %>%
+        data.table::as.data.table(),
+      data = data %>%
+        data.table::as.data.table(),
+      call = call
   )
 }
 
@@ -221,6 +321,7 @@ bbg_futures_aggregate <- function(active_contract_tickers = "C A Comdty",
 #'   Defaults to '2018-01-01'.
 #' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
 #'   Defaults to '2018-06-30'.
+#' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
 #' @param ... Optional parameters to pass to the \code{\link[Rblpapi]{bdh}} function from the \code{Rblpapi} package used
 #'   for the query (\code{options} parameter).
 #'
@@ -287,65 +388,52 @@ bbg_futures_aggregate <- function(active_contract_tickers = "C A Comdty",
 #' @importFrom magrittr "%>%" "%<>%"
 #'
 #' @export
-
 bbg_futures_CFTC <- function(active_contract_tickers = "C A Comdty",
                              start = "2018-01-01",
                              end = "2018-06-30",
+                             verbose = TRUE,
                              ...){
 
+  call <- deparse(match.call())
+  data(list = c("tickers_cftc"), package = "bbgsymbols", envir = environment())
+
   if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers.")
+  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector.")
 
   data <- lapply(active_contract_tickers, function(x) {
+    if (verbose) message(x)
+    tickers <- dplyr::filter(tickers_cftc, `active contract ticker` == x) %>% dplyr::select(ticker) %>% purrr::flatten_chr()
+    if (NROW(tickers) == 0L) stop(paste0("No CFTC data for ", x, "."))
+    data <- bbg_pull_historical_market(tickers, fields = "PX_LAST", start, end, ...)
 
-    tickers <- dplyr::filter(tickers_cftc, `active contract ticker` == y) %>% dplyr::select(ticker) %>% purrr::flatten_chr()
-
-    data <- bbg_pull_historical(tickers, fields = "PX_LAST", start, end, ...) %>%
-      dplyr::mutate(`active contract ticker` = x)
-
-    data <- if (length(tickers) > 1L)
-      lapply(seq_along(tickers), function(y) {
-        if(nrow(data[[y]]) > 0L) data[[y]]$ticker <- tickers[y]
-        data[[y]]
-      }) %>%
+    data <- lapply(seq_along(tickers), function(y) {
+      if(nrow(data[[y]]) == 0L) NULL
+      else dplyr::mutate(data[[y]], ticker = tickers[y])
+    }) %>%
       data.table::rbindlist(use.names = TRUE)
-    else {
-      if(nrow(data) < 1L) data[1L, ] <- rep(NA, ncol(data))
-      data$ticker <- tickers
-      data
-    } %>%
-      dplyr::select(ticker, dplyr::everything())
 
     data %>%
-      dplyr::left_join(dplyr::select(tickers_cftc, format, underlying, `unit` = unit, participant, position), by = "ticker")
+      dplyr::mutate(`active contract ticker` = x) %>%
+      dplyr::left_join(dplyr::select(tickers_cftc, format, underlying, `unit` = unit, participant, position, ticker), by = "ticker")
 
   }) %>%
     data.table::rbindlist(use.names = TRUE) %>%
     dplyr::select(`active contract ticker`, format, underlying, `unit`, participant, position, date, value = PX_LAST) %>%
-    dplyr::filter(stats::complete.cases(.))
+    dplyr::filter(stats::complete.cases(.)) %>%
+    dplyr::mutate(date = as.Date(date, origin = "1970-01-01"))
 
   if (nrow(data) == 0L) warning("No CFTC data found.")
 
   methods::new("FuturesCFTC",
-      tickers = dplyr::distinct(data, `active contract ticker`) %>% purrr::flatten_chr(),
-      fields = dplyr::distinct(data, `active contract ticker`, format, underlying, `unit`, participant, position),
-      data = data,
-      call = deparse(match.call())
+      tickers = dplyr::distinct(data, `active contract ticker`) %>%
+        purrr::flatten_chr(),
+      fields = dplyr::distinct(data, `active contract ticker`, format, underlying, `unit`, participant, position) %>%
+        data.table::as.data.table(),
+      data = data %>%
+        data.table::as.data.table(),
+      call = call
   )
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 #' Market historical data from Bloomberg
@@ -359,6 +447,7 @@ bbg_futures_CFTC <- function(active_contract_tickers = "C A Comdty",
 #'   Defaults to '2018-01-01'.
 #' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
 #'   Defaults to '2018-06-30'.
+#' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
 #' @param ... Optional parameters to pass to the \code{\link[Rblpapi]{bdh}} function from the \code{Rblpapi} package used
 #'   for the query (\code{options} parameter).
 #'
@@ -395,411 +484,180 @@ bbg_futures_CFTC <- function(active_contract_tickers = "C A Comdty",
 bbg_equity_market <- function(tickers = "NEM US Equity",
                               start = "2018-01-01",
                               end = "2018-06-30",
+                              verbose = TRUE,
                               ...){
 
-  if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg tickers.")
+  call <- deparse(match.call())
+  data(list = c("fields"), package = "bbgsymbols", envir = environment())
 
-  data <- lapply(tickers, function(x) bbg_pull_historical(x,
-                                                          fields = dplyr::filter(fields, instrument == "equity", type == "market") %>%
-                                                            dplyr::select(symbol) %>% purrr::flatten_chr(),
-                                                          start,
-                                                          end,
-                                                          ...) %>%
-                   dplyr::mutate(ticker = x)) %>%
+  if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg tickers.")
+  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector.")
+
+  data <- lapply(tickers, function(x) {
+    if (verbose) message(x)
+    bbg_pull_historical_market(x, fields = dplyr::filter(fields, instrument == "equity", type == "market") %>% dplyr::select(symbol) %>% purrr::flatten_chr(),
+                               start, end, ...) %>%
+      dplyr::mutate(ticker = x)
+  }) %>%
     data.table::rbindlist(use.names = TRUE)
 
   data %<>%
     tidyr::gather(field, value, -c(ticker, date)) %>%
     dplyr::filter(stats::complete.cases(.)) %>%
-    dplyr::select(ticker, field, date, value)
+    dplyr::select(ticker, field, date, value) %>%
+    dplyr::mutate(date = as.Date(date, origin = "1970-01-01")) %>%
+    dplyr::arrange(ticker, field, date)
 
   if (nrow(data) == 0L) warning("No market data found.")
 
   methods::new("EquityMarket",
-      tickers = dplyr::distinct(data, ticker),
-      fields = dplyr::distinct(data, ticker, field),
-      data = data,
-      call = deparse(match.call())
+      tickers = dplyr::distinct(data, ticker) %>%
+        data.table::as.data.table(),
+      fields = dplyr::distinct(data, ticker, field) %>%
+        data.table::as.data.table(),
+      data = data %>%
+        data.table::as.data.table(),
+      call = call
   )
 }
 
 
-#' Balance sheet historical data from Bloomberg
+
+
+#' Equity historical book data from Bloomberg
 #'
-#' @description Provided with a set of Bloomberg equity tickers and a time period,
-#'   queries Bloomberg for the corresponding balance sheet historical data.
+#' @description Retrieve equity historical book data from Bloomberg. Books include 'key stats', 'income statement', 'balance sheet',
+#'   'cash flow statement' and 'ratios' with the corresponding data fields retrieved from the 'fields' dataset of the \code{bbgsymbols}
+#'   package.
 #'
+#' @param book A scalar chatacter vector, 'key stats', 'income statement', 'balance sheet', 'cash flow statement' or 'ratios'.
+#'   Defaults to 'key stats' which returns historical data for a set of key financial indicators; a quick dynamic financial
+#'   snapshot of the selected names.
 #' @param tickers A chatacter vector. Specifies the Bloomberg equity tickers to query data for.
 #'   Defaults to 'NEM US Equity', the Bloomberg equity ticker for the Newmont Minning Corporation.
 #' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
 #'   Defaults to '2018-01-01'.
 #' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
 #'   Defaults to '2018-06-30'.
+#' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
 #' @param ... Optional parameters to pass to the \code{\link[Rblpapi]{bdh}} function from the \code{Rblpapi} package used
 #'   for the query (\code{options} parameter).
 #'
-#' @return An S4 object of class \code{\linkS4class{EquityBS}} with slots:
+#' @return An S4 object of class \code{\linkS4class{EquityKS}} (\code{book = 'key stats'}), \code{\linkS4class{EquityIS}}
+#'   (\code{book = 'income statement'}), \code{\linkS4class{EquityBS}} (\code{book = 'balance sheet'}),
+#'    \code{\linkS4class{EquityCF}} (\code{book = 'cash flow statement'}), \code{\linkS4class{EquityRatios}}
+#'    (\code{book = 'ratios'}). Slots include:
 #'   \itemize{
-#'     \item{\code{tickers}: a character vector. Equity Bloomberg tickers for which data has been found.}
-#'     \item{\code{fields}: a tibble. Columns include:
-#'       \itemize{
-#'         \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
-#'         \item{\code{section}: balance sheet sections ('asset', 'liabilities') for which data has been found.}
-#'         \item{\code{subsection}: balance sheet subsections ('asset': 'current', 'long term'; 'liabilities':
-#'           'debt', 'equity') for which data has been found.}
-#'         \item{\code{name}: balance sheet Bloomberg data field names for which data has been found.}
-#'       }
-#'     }
-#'     \item{\code{data}: a tibble. Columns include:
-#'       \itemize{
-#'         \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
-#'         \item{\code{section}: balance sheet sections ('asset', 'liabilities') for which data has been found.}
-#'         \item{\code{subsection}: balance sheet subsections ('asset': 'current', 'long term'; 'liabilities':
-#'           'debt', 'equity') for which data has been found.}
-#'         \item{\code{name}: balance sheet Bloomberg data field names for which data has been found.}
-#'         \item{\code{date}: observation date.}
-#'         \item{\code{value}: corresponding observation.}
-#'       }
-#'     }
-#'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
+#'     \item{\code{tickers}: a data.table. Equity Bloomberg tickers for which data has been found.}
+#'     \item{\code{fields}: a data.table. Data fields for which data has been found.}
+#'     \item{\code{data}: a data.table The data retrieved in the query.}
+#'     \item{\code{call}: a scalar character vector. The original call to the constructor.}
 #'   }
 #'
 #' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
 #'
 #' @examples
-#' \dontrun{bbg_equity_BS()}
+#' \dontrun{
+#'   bbg_equity_books(book = 'key stats')
+#'   bbg_equity_books(book = 'income statement')
+#'   bbg_equity_books(book = 'balance sheet')
+#'   bbg_equity_books(book = 'cash flow statement')
+#'   bbg_equity_books(book = 'ratios')
+#' }
 #'
 #' @import bbgsymbols
-#' @importFrom data.table ":="
-#' @importFrom magrittr "%>%" "%<>%"
+#' @importFrom magrittr "%>%"
 #'
 #' @export
+bbg_equity_books <- function(book = "key stats",
+                             tickers = "NEM US Equity",
+                             start = "2018-01-01",
+                             end = "2018-06-30",
+                             verbose = TRUE,
+                             ...){
 
-bbg_equity_BS <- function(tickers = "NEM US Equity",
-                          start = "2018-01-01",
-                          end = "2018-06-30",
-                          ...){
+  call <- deparse(match.call())
+  data(list = c("fields"), package = "bbgsymbols", envir = environment())
 
-  if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg tickers.")
+  if (! rlang::is_scalar_character(book) & book %in% c("key stats", "income statement", "balance sheet", "cash flow", "ratios"))
+    stop("The parameter 'book' must be supplied as a scalar character vector, one of 'key stats', 'income statement', 'balance sheet', 'cash flow' or 'ratios'.")
+  if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg equity tickers.")
+  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector (TRUE or FALSE).")
+  if (! "periodicitySelection" %in% names(list(...))) utils::modifyList(list(...), list(periodicitySelection = "MONTHLY"))
 
-  symbols <- dplyr::filter(fields, instrument == "equity", type == "balance sheet", ! stringr::str_detect(symbol, "\\s+[-+]\\s+")) %>%
-    dplyr::distinct(symbol) %>% purrr::flatten_chr()
-  data <- lapply(tickers, function(x) bbg_pull_historical(x, fields = symbols, start, end, ...) %>%
-                   dplyr::mutate(ticker = x)) %>%
+  symbols <- dplyr::filter(fields, instrument == "equity", type == book)
+
+  data <- lapply(dplyr::distinct(symbols, symbol) %>% purrr::flatten_chr(), function(x) {
+    if (verbose) message(x)
+    bbg_pull_historical_books(tickers = tickers, field = x, start, end, ...)
+  }) %>%
     data.table::rbindlist(use.names = TRUE)
 
-  symbols <- dplyr::filter(fields, instrument == "equity", type == "balance sheet", stringr::str_detect(symbol, "\\s+[-+]\\s+")) %>%
-    dplyr::distinct(symbol) %>% purrr::flatten_chr()
-
-  for(i in symbols) data %<>% dplyr::mutate(!! i := eval(parse(text = i)))
-
-  data %<>%
-    tidyr::gather(field, value, -c(ticker, date)) %>%
-    dplyr::filter(stats::complete.cases(.)) %>%
-    dplyr::left_join(dplyr::filter(fields, instrument == "equity", type == "balance sheet") %>%
-                dplyr::group_by(section, subsection, symbol) %>%
-                dplyr::filter(dplyr::row_number() == 1L) %>%
-                dplyr::ungroup() %>%
-                dplyr::select(section, subsection, rank, name, symbol),
-              by = c("field = symbol")) %>%
-    dplyr::select(ticker, section, subsection, rank, name, field, date, value)
-
-  data <- fields %>%
-    dplyr::filter(instrument == "equity", type == "balance sheet") %>%
-    dplyr::group_by(section, subsection, symbol) %>%
-    dplyr::filter(dplyr::n() > 1L, dplyr::row_number() == 2L) %>%
-    dplyr::ungroup() %>%
-    dplyr::select(section, subsection, rank, name, symbol) %>%
-    dplyr::left_join(data, by = c("symbol = field")) %>%
-    rbind(data) %>%
-    dplyr::arrange(ticker, section, subsection, rank)
-
-  if (nrow(data) == 0L) warning("No balance sheet data found.")
-
-  methods::new("EquityBS",
-      tickers = dplyr::distinct(data, ticker) %>% purrr::flatten_chr(),
-      fields = dplyr::distinct(data, ticker, section, subsection, name),
-      data = dplyr::select(data, -c(rank, symbol)),
-      call = deparse(match.call())
+  data <- switch(book,
+                 `key stats` = data %>%
+                   dplyr::filter(stats::complete.cases(.)) %>%
+                   dplyr::left_join(symbols %>%
+                                      dplyr::select(name, symbol) %>%
+                                      dplyr::mutate(name = forcats::as_factor(name)),
+                                    by = c("field" = "symbol")) %>%
+                   dplyr::arrange(ticker, name, date) %>%
+                   dplyr::select(ticker, name, date, value),
+                 `income statement` = data %>%
+                   dplyr::filter(stats::complete.cases(.)) %>%
+                   dplyr::left_join(symbols %>%
+                                      dplyr::select(name, symbol) %>%
+                                      dplyr::mutate(name = forcats::as_factor(name)),
+                                    by = c("field" = "symbol")) %>%
+                   dplyr::arrange(ticker, name, date) %>%
+                   dplyr::select(ticker, name, date, value),
+                 `balance sheet` = data %>%
+                   dplyr::filter(stats::complete.cases(.)) %>%
+                   dplyr::left_join(symbols %>%
+                                      dplyr::select(section, subsection, name, symbol) %>%
+                                      dplyr::mutate_at(dplyr::vars(section, name), dplyr::funs(forcats::as_factor(.))),
+                                    by = c("field" = "symbol")) %>%
+                   dplyr::arrange(ticker, section, subsection, name, date) %>%
+                   dplyr::select(ticker, section, subsection, name, date, value),
+                 `cash flow statement` = data %>%
+                   dplyr::filter(stats::complete.cases(.)) %>%
+                   dplyr::left_join(symbols %>%
+                                      dplyr::select(section, name, symbol) %>%
+                                      dplyr::mutate_at(dplyr::vars(section, name), dplyr::funs(forcats::as_factor(.))),
+                                    by = c("field" = "symbol")) %>%
+                   dplyr::arrange(ticker, section, name, date) %>%
+                   dplyr::select(ticker, section, name, date, value),
+                 `ratios` = data %>%
+                   dplyr::filter(stats::complete.cases(.)) %>%
+                   dplyr::left_join(symbols %>%
+                                      dplyr::select(section, subsection, name, symbol) %>%
+                                      dplyr::mutate_at(dplyr::vars(section, subsection, name), dplyr::funs(forcats::as_factor(.))),
+                                    by = c("field" = "symbol")) %>%
+                   dplyr::arrange(ticker, section, subsection, name, date) %>%
+                   dplyr::select(ticker, section, subsection, name, date, value)
   )
 
-}
+  if (nrow(data) == 0L) warning(paste("No", book, "data found.", sep = " "))
 
-
-
-
-#' Cash flow statement historical data from Bloomberg
-#'
-#' @description Provided with a set of Bloomberg equity tickers and a time period,
-#'   queries Bloomberg for the corresponding cash flow statement historical data.
-#'
-#' @param tickers A chatacter vector. Specifies the Bloomberg equity tickers to query data for.
-#'   Defaults to 'NEM US Equity', the Bloomberg equity ticker for the Newmont Minning Corporation.
-#' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-01-01'.
-#' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-06-30'.
-#' @param ... Optional parameters to pass to the \code{\link[Rblpapi]{bdh}} function from the \code{Rblpapi} package used
-#'   for the query (\code{options} parameter).
-#'
-#' @return An S4 object of class \code{\linkS4class{EquityCF}} with slots:
-#'   \itemize{
-#'     \item{\code{tickers}: a character vector. Equity Bloomberg tickers for which data has been found.}
-#'     \item{\code{fields}: a tibble. Columns include:
-#'       \itemize{
-#'         \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
-#'         \item{\code{section}: cash flow statement sections ('operating', 'financing', 'investing',
-#'           'total') for which data has been found.}
-#'         \item{\code{name}: cash flow statement Bloomberg field names for which data has been found.}
-#'       }
-#'     }
-#'     \item{\code{data}: a tibble. Columns include:
-#'       \itemize{
-#'         \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
-#'         \item{\code{section}: cash flow statement sections ('operating', 'financing', 'investing',
-#'           'total') for which data has been found.}
-#'         \item{\code{name}: cash flow statement Bloomberg field names for which data has been found.}
-#'         \item{\code{date}: observation date.}
-#'         \item{\code{value}: corresponding observation.}
-#'       }
-#'     }
-#'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
-#'   }
-#'
-#' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
-#'
-#' @examples
-#' \dontrun{bbg_equity_CF()}
-#'
-#' @import bbgsymbols
-#' @importFrom data.table ":="
-#' @importFrom magrittr "%>%" "%<>%"
-#'
-#' @export
-
-bbg_equity_CF <- function(tickers = "NEM US Equity",
-                          start = "2018-01-01",
-                          end = "2018-06-30",
-                          ...){
-
-  if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg tickers.")
-
-  symbols <- dplyr::filter(fields, instrument == "equity", type == "cash flow", ! stringr::str_detect(symbol, "\\s+[-+]\\s+")) %>%
-    dplyr::distinct(symbol) %>% purrr::flatten_chr()
-  data <- lapply(tickers, function(x) bbg_pull_historical(x, fields = symbols, start, end, ...) %>%
-                   dplyr::mutate(ticker = x)) %>%
-    data.table::rbindlist(use.names = TRUE)
-
-  symbols <- dplyr::filter(fields, instrument == "equity", type == "cash flow", stringr::str_detect(symbol, "\\s+[-+]\\s+")) %>%
-    dplyr::distinct(symbol) %>% purrr::flatten_chr()
-
-  for(i in symbols) data %<>% dplyr::mutate(!! i := eval(parse(text = i)))
-
-  data %<>%
-    tidyr::gather(field, value, -c(ticker, date)) %>%
-    dplyr::filter(stats::complete.cases(.)) %>%
-    dplyr::left_join(dplyr::filter(fields, instrument == "equity", type == "cash flow") %>%
-                       dplyr::group_by(section, symbol) %>%
-                       dplyr::filter(dplyr::row_number() == 1L) %>%
-                       dplyr::ungroup() %>%
-                  dplyr::select(section, rank, name, symbol),
-              by = c("field = symbol")) %>%
-    dplyr::select(ticker, section, rank, name, field, date, value)
-
-  data <- fields %>%
-    dplyr::filter(instrument == "equity", type == "cash flow") %>%
-    dplyr::group_by(section, symbol) %>%
-    dplyr::filter(dplyr::n() > 1L, dplyr::row_number() == 2L) %>%
-    dplyr::ungroup() %>%
-    dplyr::select(section, rank, name, symbol) %>%
-    dplyr::left_join(data, by = c("symbol = field")) %>%
-    rbind(data) %>%
-    dplyr::arrange(ticker, date, section, rank)
-
-  if (nrow(data) == 0L) warning("No cash flow data found.")
-
-  methods::new("EquityCF",
-      tickers = dplyr::distinct(data, ticker) %>% purrr::flatten_chr(),
-      fields = dplyr::distinct(data, ticker, section, name),
-      data = dplyr::select(data, -c(rank, symbol)),
-      call = deparse(match.call())
+  fields <-   switch(book,
+                     `key stats` = dplyr::distinct(data, ticker, name) %>%
+                       data.table::as.data.table(),
+                     `income statement` = dplyr::distinct(data, ticker, name) %>%
+                       data.table::as.data.table(),
+                     `balance sheet` = dplyr::distinct(data, ticker, section, subsection, name) %>%
+                       data.table::as.data.table(),
+                     `cash flow statement` = dplyr::distinct(data, ticker, section, name) %>%
+                       data.table::as.data.table(),
+                     `ratios` = dplyr::distinct(data, ticker, section, subsection, name) %>%
+                       data.table::as.data.table()
   )
 
+  methods::new(dplyr::case_when(book == "key stats" ~ "EquityKS", book == "balance sheet" ~ "EquityBS",
+                                book == "cash flow statement" ~ "EquityCF", book == "income statement" ~ "EquityIS",
+                                book == "ratios" ~ "EquityRatios"),
+               tickers = dplyr::distinct(data, ticker) %>% data.table::as.data.table(),
+               fields = fields,
+               data = data.table::as.data.table(data),
+               call = call
+  )
 }
-
-
-
-#' Income statement historical data from Bloomberg
-#'
-#' @description Provided with a set of Bloomberg equity tickers and a time period,
-#'   queries Bloomberg for the corresponding income statement historical data.
-#'
-#' @param tickers A chatacter vector. Specifies the Bloomberg equity tickers to query data for.
-#'   Defaults to 'NEM US Equity', the Bloomberg equity ticker for the Newmont Minning Corporation.
-#' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-01-01'.
-#' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-06-30'.
-#' @param ... Optional parameters to pass to the \code{\link[Rblpapi]{bdh}} function from the \code{Rblpapi} package used
-#'   for the query (\code{options} parameter).
-#'
-#' @return An S4 object of class \code{\linkS4class{EquityIS}} with slots:
-#'   \itemize{
-#'     \item{\code{tickers}: a character vector. Equity Bloomberg tickers for which data has been found.}
-#'     \item{\code{fields}: a tibble. Columns include:
-#'       \itemize{
-#'         \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
-#'         \item{\code{name}: income statement Bloomberg field names for which data has been found.}
-#'       }
-#'     }
-#'     \item{\code{data}: a tibble. Columns include:
-#'       \itemize{
-#'         \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
-#'         \item{\code{name}: income statement Bloomberg field names for which data has been found.}
-#'         \item{\code{date}: observation date.}
-#'         \item{\code{value}: corresponding observation.}
-#'       }
-#'     }
-#'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
-#'   }
-#'
-#' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
-#'
-#' @examples
-#' \dontrun{bbg_equity_IS()}
-#'
-#' @import bbgsymbols
-#' @importFrom data.table ":="
-#' @importFrom magrittr "%>%" "%<>%"
-#'
-#' @export
-
-bbg_equity_IS <- function(tickers = "NEM US Equity",
-                          start = "2018-01-01",
-                          end = "2018-06-30",
-                          ...){
-
-  if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg tickers.")
-
-  symbols <- dplyr::filter(fields, instrument == "equity", type == "income statement", ! stringr::str_detect(symbol, "\\s+[-+]\\s+")) %>%
-    dplyr::distinct(symbol) %>% purrr::flatten_chr()
-  data <- lapply(tickers, function(x) bbg_pull_historical(x, fields = symbols, start, end, ...) %>%
-                   dplyr::mutate(ticker = x)) %>%
-    data.table::rbindlist(use.names = TRUE)
-
-  symbols <- dplyr::filter(fields, instrument == "equity", type == "income statement", stringr::str_detect(symbol, "\\s+[-+]\\s+")) %>%
-    dplyr::distinct(symbol) %>% purrr::flatten_chr()
-
-  for(i in symbols) data %<>% dplyr::mutate(!! i := eval(parse(text = i)))
-
-  data %<>%
-    tidyr::gather(field, value, -c(ticker, date)) %>%
-    dplyr::filter(stats::complete.cases(.)) %>%
-    dplyr::left_join(dplyr::filter(fields, instrument == "equity", type == "income statement") %>%
-                dplyr::select(rank, name, symbol),
-              by = c("field = symbol")) %>%
-    dplyr::select(ticker, rank, name, field, date, value)
-
-  if (nrow(data) == 0L) warning("No income statement data found.")
-
-  methods::new("EquityIS",
-               tickers = dplyr::distinct(data, ticker) %>% purrr::flatten_chr(),
-               start = min(dplyr::distinct(data, date)),
-               end = max(dplyr::distinct(data, date)),
-               fields = dplyr::distinct(data, ticker, name),
-               data = dplyr::select(data, -symbol),
-               call = deparse(match.call())
-               )
-
-}
-
-
-
-
-
-
-#' Financial ratios historical data from Bloomberg
-#'
-#' @description Provided with a set of Bloomberg equity tickers and a time period,
-#'   queries Bloomberg for the corresponding financial ratios historical data.
-#'
-#' @param tickers A chatacter vector. Specifies the Bloomberg equity tickers to query data for.
-#'   Defaults to 'NEM US Equity', the Bloomberg equity ticker for the Newmont Minning Corporation.
-#' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-01-01'.
-#' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-06-30'.
-#' @param ... Optional parameters to pass to the \code{\link[Rblpapi]{bdh}} function from the \code{Rblpapi} package used
-#'   for the query (\code{options} parameter).
-#'
-#' @return An S4 object of class \code{\linkS4class{EquityRatios}} with slots:
-#'   \itemize{
-#'     \item{\code{tickers}: a character vector. Equity Bloomberg tickers for which data has been found.}
-#'     \item{\code{fields}: a tibble. Columns include:
-#'       \itemize{
-#'         \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
-#'         \item{\code{type}: financial ratio types ('profitability', 'margin', 'asset turnover',
-#'           'short term liquidity', 'long term solvency') for which data has been found.}
-#'         \item{\code{name}: financial ratio Bloomberg data field names for which data has been found.}
-#'       }
-#'     }
-#'     \item{\code{data}: a tibble. Columns include:
-#'       \itemize{
-#'         \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
-#'         \item{\code{type}: financial ratio types ('profitability', 'margin', 'asset turnover',
-#'           'short term liquidity', 'long term solvency') for which data has been found.}
-#'         \item{\code{name}: financial ratio Bloomberg data field names for which data has been found.}
-#'         \item{\code{date}: observation date.}
-#'         \item{\code{value}: corresponding observation.}
-#'       }
-#'     }
-#'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
-#'   }
-#'
-#' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
-#'
-#' @examples
-#' \dontrun{bbg_equity_ratios()}
-#'
-#' @import bbgsymbols
-#' @importFrom magrittr "%>%" "%<>%"
-#'
-#' @export
-
-bbg_equity_ratios <- function(tickers = "NEM US Equity",
-                              start = "2018-01-01",
-                              end = "2018-06-30",
-                              ...){
-
-  if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg tickers.")
-
-  symbols <- dplyr::filter(fields, instrument == "equity", type == "ratios") %>%
-    dplyr::distinct(symbol) %>%
-    purrr::flatten_chr()
-  data <- lapply(tickers, function(x) bbg_pull_historical(x, fields = symbols, start, end, ...) %>%
-                   dplyr::mutate(ticker = x)) %>%
-    data.table::rbindlist(use.names = TRUE)
-
-  data %<>%
-    tidyr::gather(field, value, -c(ticker, date)) %>%
-    dplyr::filter(stats::complete.cases(.)) %>%
-    dplyr::left_join(dplyr::filter(fields, instrument == "equity", type == "ratios") %>%
-                       dplyr::select(section, rank, name, symbol),
-              by = c("field = symbol")) %>%
-    dplyr::select(ticker, type = section, rank, name, field, date, value)
-
-  if (nrow(data) == 0L) warning("No ratios data found.")
-
-  methods::new("EquityRatios",
-               tickers = dplyr::distinct(data, ticker) %>% purrr::flatten_chr(),
-               fields = dplyr::distinct(data, ticker, type, name),
-               data = dplyr::select(data, -c(rank, symbol)),
-               call = deparse(match.call())
-               )
-
-}
-
-
-
-
 

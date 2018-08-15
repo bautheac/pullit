@@ -4,36 +4,61 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "active contract ti
 
 setOldClass(c("tbl_df", "tbl", "data.frame"))
 
+#' S4 class for Bloomberg historical data objects
+#'
+#' @importClassesFrom data.table data.table
+#'
+#' @export
+setClass("BBGHistorical",
+         representation(tickers = "data.table", fields = "data.table", data = "data.table", call = "character"))
+
 #' S4 class for futures term structure objects
 #' @export
-setClass("FuturesTS", representation(tickers = "tbl_df", fields = "tbl_df", data = "tbl_df", call = "character"))
+setClass("FuturesTS", contains = "BBGHistorical")
 
 #' S4 class for futures aggregate objects
 #' @export
-setClass("FuturesAggregate", representation(tickers = "character", fields = "tbl_df", data = "tbl_df", call = "character"))
+setClass("FuturesAggregate", contains = "BBGHistorical")
 
 #' S4 class for futures CFTC objects
 #' @export
-setClass("FuturesCFTC", representation(tickers = "character", fields = "tbl_df", data = "tbl_df", call = "character"))
+setClass("FuturesCFTC", contains = "BBGHistorical")
 
 #' S4 class for equity market objects
 #' @export
-setClass("EquityMarket", representation(tickers = "tbl_df", fields = "character", data = "tbl_df", call = "character"))
+setClass("EquityMarket", contains = "BBGHistorical")
+
+#' S4 class for equity key stats objects
+#' @export
+setClass("EquityKS", contains = "BBGHistorical")
 
 #' S4 class for equity balance sheet objects
 #' @export
-setClass("EquityBS", representation(tickers = "tbl_df", fields = "tbl_df", data = "tbl_df", call = "character"))
+setClass("EquityBS", contains = "BBGHistorical")
 
 #' S4 class for equity cash flow statement objects
 #' @export
-setClass("EquityCF", representation(tickers = "tbl_df", fields = "tbl_df", data = "tbl_df", call = "character"))
+setClass("EquityCF", contains = "BBGHistorical")
 
 #' S4 class for equity income statement objects
 #' @export
-setClass("EquityIS", representation(tickers = "tbl_df", fields = "tbl_df", data = "tbl_df", call = "character"))
+setClass("EquityIS", contains = "BBGHistorical")
 
 #' S4 class for equity ratios objects
 #' @export
-setClass("EquityRatios", representation(tickers = "tbl_df", fields = "tbl_df", data = "tbl_df", call = "character"))
+setClass("EquityRatios", contains = "BBGHistorical")
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

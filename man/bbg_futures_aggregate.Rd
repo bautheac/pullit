@@ -5,7 +5,7 @@
 \title{Futures aggregate historical data from Bloomberg}
 \usage{
 bbg_futures_aggregate(active_contract_tickers = "C A Comdty",
-  start = "2018-01-01", end = "2018-06-30", ...)
+  start = "2018-01-01", end = "2018-06-30", verbose = TRUE, ...)
 }
 \arguments{
 \item{active_contract_tickers}{A chatacter vector. Specifies the Bloomberg futures active contract tickers to query data for.
@@ -16,6 +16,8 @@ Defaults to '2018-01-01'.}
 
 \item{end}{A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
 Defaults to '2018-06-30'.}
+
+\item{verbose}{A logical scalar vector. Should progression messages be printed? Defaults to TRUE.}
 
 \item{...}{Optional parameters to pass to the \code{\link[Rblpapi]{bdh}} function from the \code{Rblpapi} package used
 for the query (\code{options} parameter).}

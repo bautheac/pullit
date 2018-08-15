@@ -51,33 +51,17 @@ futures_ticker <- function(active_contract_ticker = "C A Comdty",
 
 
 
-
-
-
-#' Pull historical data from Bloomberg
-#'
-#' @description Given a set of Bloomberg tickers and field symbols, pulls the corresponding data from Bloomberg for the period between
-#'   the dates specified in the \code{start} and \code{end} parameters.
+#' Pull historical market data from Bloomberg
 #'
 #' @param tickers A character vector. Specifies the Bloomberg tickers for the query.
-#'   Defaults to 'C A Comdty', the Bloomberg active contract ticker for the XCBT corn futures series.
 #' @param fields A character vector. Specifies the Bloomberg fields for the query.
-#'   Defaults to 'PX_LAST', the Bloomberg close price symbol for the corresponding ticker.
-#' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-01-01'.
-#' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-06-30'.
+#' @param start A scalar character vector. Specifies the starting date for the query
+#'   in the following format: 'yyyy-mm-dd'.
+#' @param end A scalar character vector. Specifies the end date for the query in the
+#'   following format: 'yyyy-mm-dd'.
 #' @param ... Optional parameters to pass to \code{\link[Rblpapi]{bdh}} function from the \code{Rblpapi} package used
 #'   for the query (\code{options} parameter).
-#'
-#' @return A dataframe (if only one ticker supplied in \code{tickers}) or list of dataframes (if more than one tickers supplied
-#'   in \code{tickers}) named after the tickers supplied in \code{tickers}
-#'
-#' @examples \dontrun{bbg_pull_historical()}
-#'
-#' @details Write more Bloomberg stuff here.
-
-bbg_pull_historical <- function(tickers = "C A Comdty", fields = "PX_LAST", start = "2018-01-01", end = "2018-06-30", ...){
+bbg_pull_historical_market <- function(tickers, fields, start, end, ...){
 
   if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg tickers.")
   if (! is.character(fields)) stop("The parameter 'fields' must be supplied as a character vector of Bloomberg fields.")
@@ -89,12 +73,51 @@ bbg_pull_historical <- function(tickers = "C A Comdty", fields = "PX_LAST", star
   }, error = function(e) stop("Unable to connect Bloomberg. Please open a Bloomberg session on this terminal.", call. = FALSE))
 
   bbg_pull <- Rblpapi::bdh(securities = tickers,
-                  fields = fields,
-                  start.date = as.Date(start),
-                  end.date = as.Date(end),
-                  options = ...,
-                  con = con)
-
+                           fields = fields,
+                           start.date = as.Date(start),
+                           end.date = as.Date(end),
+                           options = ...,
+                           con = con)
   Rblpapi::blpDisconnect(con); bbg_pull
 
 }
+
+
+
+#' Pull historical book data from Bloomberg
+#'
+#' @param tickers A character vector. Specifies the Bloomberg tickers for the query
+#' @param field A character vector. Specifies the Bloomberg field for the query.
+#' @param start A scalar character vector. Specifies the starting date for the query
+#'   in the following format: 'yyyy-mm-dd'.
+#' @param end A scalar character vector. Specifies the end date for the query in the
+#'   following format: 'yyyy-mm-dd'.
+#' @param ... Optional parameters to pass to \code{\link[Rblpapi]{bdh}} function from the \code{Rblpapi} package used
+#'   for the query (\code{options} parameter).
+bbg_pull_historical_books <- function(tickers, field, start, end, ...){
+
+  if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg tickers.")
+  if (! is.character(field)) stop("The parameter 'fields' must be supplied as a character vector of Bloomberg fields.")
+  if (! all(rlang::is_scalar_character(start), rlang::is_scalar_character(end), grepl(pattern = "^\\d{4}-\\d{2}-\\d{2}$", x = c(start, end))))
+    stop("The parameters 'start' and 'end' must be supplied as scalar character vectors of dates in the following format: 'yyyy-mm-dd'")
+
+  con <- tryCatch({
+    Rblpapi::blpConnect()
+  }, error = function(e) stop("Unable to connect Bloomberg. Please open a Bloomberg session on this terminal.", call. = FALSE))
+
+  bbg_pull <- Rblpapi::bdh(securities = tickers,
+                           field = field,
+                           start.date = as.Date(start),
+                           end.date = as.Date(end),
+                           options = unlist(list(...)),
+                           con = con)
+  bbg_pull <- if (! is.data.frame(bbg_pull))
+    lapply(names(bbg_pull), function(x) dplyr::mutate(bbg_pull[[x]], ticker = x)) %>%
+    data.table::rbindlist(use.names = TRUE)
+  else dplyr::mutate(bbg_pull, ticker = tickers)
+
+  Rblpapi::blpDisconnect(con); bbg_pull %>% tidyr::gather(field, value, -c(date, ticker))
+
+}
+
+
