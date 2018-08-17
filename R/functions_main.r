@@ -327,8 +327,13 @@ bbg_futures_aggregate <- function(active_contract_tickers = "C A Comdty",
 #'
 #' @return An S4 object of class \code{\linkS4class{FuturesCFTC}} with slots:
 #'   \itemize{
-#'     \item{\code{tickers}: a character vector. Active contract Bloomberg tickers for which data has been found.}
-#'     \item{\code{fields}: a tibble. Columns include:
+#'     \item{\code{tickers}: a data.table. Active contract and corresponding position Bloomberg tickers for which data has been found. Columns include:
+#'       \itemize{
+#'         \item{active contract ticker: futures series active contract Bloomberg ticker.}
+#'         \item{position ticker: CFTC position Bloomberg ticker.}
+#'       }
+#'     }
+#'     \item{\code{fields}: a data.table. Columns include:
 #'       \itemize{
 #'         \item{\code{format}: report formats ('legacy', 'disaggregated', 'supplemental' or 'traders in financial futures')
 #'           for which data has been found.}
@@ -362,16 +367,13 @@ bbg_futures_aggregate <- function(active_contract_tickers = "C A Comdty",
 #'             \item{other reportables: 'long', 'short', 'net', 'spreading'.}
 #'          }
 #'        }
+#'        \item{\code{position ticker}: corresponding CFTC position Bloomberg ticker.}
 #'      }
 #'    }
 #'     \item{\code{data}: a tibble. Columns inlude:
 #'       \itemize{
 #'         \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
-#'         \item{\code{format}: report formats for which data has been found.}
-#'         \item{\code{underlying}: underlying instruments for which data has been found..}
-#'         \item{\code{unit}: counting units for which data has been found.}
-#'         \item{\code{participant}: trader classifications for which data has been found.}
-#'         \item{\code{position}: trader positions for which data has been found.}
+#'         \item{\code{position ticker}: CFTC position Bloomberg tickers for which data has been found.}
 #'         \item{\code{date}: observation date.}
 #'         \item{\code{value}: observed value}
 #'       }
@@ -418,18 +420,19 @@ bbg_futures_CFTC <- function(active_contract_tickers = "C A Comdty",
 
   }) %>%
     data.table::rbindlist(use.names = TRUE) %>%
-    dplyr::select(`active contract ticker`, format, underlying, `unit`, participant, position, date, value = PX_LAST) %>%
+    dplyr::select(`active contract ticker`, ticker, format, underlying, `unit`, participant, position, date, value = PX_LAST) %>%
     dplyr::filter(stats::complete.cases(.)) %>%
     dplyr::mutate(date = as.Date(date, origin = "1970-01-01"))
 
   if (nrow(data) == 0L) warning("No CFTC data found.")
 
   methods::new("FuturesCFTC",
-      tickers = dplyr::distinct(data, `active contract ticker`) %>%
-        purrr::flatten_chr(),
-      fields = dplyr::distinct(data, `active contract ticker`, format, underlying, `unit`, participant, position) %>%
+      tickers = dplyr::distinct(data, `active contract ticker`, ticker) %>%
+        dplyr::select(`active contract ticker`, `position ticker` = ticker) %>%
         data.table::as.data.table(),
-      data = data %>%
+      fields = dplyr::distinct(data, `active contract ticker`, format, underlying, `unit`, participant, position, `position ticker` = ticker) %>%
+        data.table::as.data.table(),
+      data = dplyr::select(data, `active contract ticker`, `position ticker` = ticker, date, value) %>%
         data.table::as.data.table(),
       call = call
   )
@@ -601,7 +604,7 @@ bbg_equity_books <- function(book = "key stats",
                                       dplyr::mutate(name = forcats::as_factor(name)),
                                     by = c("field" = "symbol")) %>%
                    dplyr::arrange(ticker, name, date) %>%
-                   dplyr::select(ticker, name, date, value),
+                   dplyr::select(ticker, field, name, date, value),
                  `income statement` = data %>%
                    dplyr::filter(stats::complete.cases(.)) %>%
                    dplyr::left_join(symbols %>%
@@ -609,7 +612,7 @@ bbg_equity_books <- function(book = "key stats",
                                       dplyr::mutate(name = forcats::as_factor(name)),
                                     by = c("field" = "symbol")) %>%
                    dplyr::arrange(ticker, name, date) %>%
-                   dplyr::select(ticker, name, date, value),
+                   dplyr::select(ticker, field, name, date, value),
                  `balance sheet` = data %>%
                    dplyr::filter(stats::complete.cases(.)) %>%
                    dplyr::left_join(symbols %>%
@@ -617,7 +620,7 @@ bbg_equity_books <- function(book = "key stats",
                                       dplyr::mutate_at(dplyr::vars(section, name), dplyr::funs(forcats::as_factor(.))),
                                     by = c("field" = "symbol")) %>%
                    dplyr::arrange(ticker, section, subsection, name, date) %>%
-                   dplyr::select(ticker, section, subsection, name, date, value),
+                   dplyr::select(ticker, field, section, subsection, name, date, value),
                  `cash flow statement` = data %>%
                    dplyr::filter(stats::complete.cases(.)) %>%
                    dplyr::left_join(symbols %>%
@@ -625,7 +628,7 @@ bbg_equity_books <- function(book = "key stats",
                                       dplyr::mutate_at(dplyr::vars(section, name), dplyr::funs(forcats::as_factor(.))),
                                     by = c("field" = "symbol")) %>%
                    dplyr::arrange(ticker, section, name, date) %>%
-                   dplyr::select(ticker, section, name, date, value),
+                   dplyr::select(ticker, field, section, name, date, value),
                  `ratios` = data %>%
                    dplyr::filter(stats::complete.cases(.)) %>%
                    dplyr::left_join(symbols %>%
@@ -633,7 +636,7 @@ bbg_equity_books <- function(book = "key stats",
                                       dplyr::mutate_at(dplyr::vars(section, subsection, name), dplyr::funs(forcats::as_factor(.))),
                                     by = c("field" = "symbol")) %>%
                    dplyr::arrange(ticker, section, subsection, name, date) %>%
-                   dplyr::select(ticker, section, subsection, name, date, value)
+                   dplyr::select(ticker, field, section, subsection, name, date, value)
   )
 
   if (nrow(data) == 0L) warning(paste("No", book, "data found.", sep = " "))

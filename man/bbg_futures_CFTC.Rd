@@ -25,8 +25,13 @@ for the query (\code{options} parameter).}
 \value{
 An S4 object of class \code{\linkS4class{FuturesCFTC}} with slots:
   \itemize{
-    \item{\code{tickers}: a character vector. Active contract Bloomberg tickers for which data has been found.}
-    \item{\code{fields}: a tibble. Columns include:
+    \item{\code{tickers}: a data.table. Active contract and corresponding position Bloomberg tickers for which data has been found. Columns include:
+      \itemize{
+        \item{name ticker: futures series active contract Bloomberg ticker.}
+        \item{position ticker: CFTC position Bloomberg ticker.}
+      }
+    }
+    \item{\code{fields}: a data.table. Columns include:
       \itemize{
         \item{\code{format}: report formats ('legacy', 'disaggregated', 'supplemental' or 'traders in financial futures')
           for which data has been found.}
