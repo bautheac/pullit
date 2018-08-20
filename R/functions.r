@@ -64,10 +64,10 @@ bbg_futures_market <- function(type = "term structure",
                                ...){
 
   if (! rlang::is_scalar_character(type) & type %in% c("term structure", "aggregate"))
-    stop("The parameter 'type' must be supplied as a scalar character vector; one of 'term structure' or 'aggregate'.")
-  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers.")
-  if (! is.integer(TS_positions)) stop("The parameter 'TS_positions' must be supplied as a vector of integers.")
-  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector.")
+    stop("The parameter 'type' must be supplied as a scalar character vector; one of 'term structure' or 'aggregate'")
+  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers")
+  if (! is.integer(TS_positions)) stop("The parameter 'TS_positions' must be supplied as a vector of integers")
+  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector")
 
   switch(type,
          `term structure` = bbg_futures_TS(active_contract_tickers = active_contract_tickers, start = start, end = end, TS_positions = TS_positions,
@@ -132,7 +132,7 @@ bbg_futures_market <- function(type = "term structure",
 #'     \item{\code{data}: a tibble. Columns include:
 #'       \itemize{
 #'         \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
-#'         \item{\code{TS position}: futures chain term structure positions for which data has been found.}
+#'         \item{\code{ticker}: futures term structure Bloomberg tickers for which data has been found.}
 #'         \item{\code{field}: futures Bloomberg market data fields for which data has been found.}
 #'         \item{\code{date}: observation date.}
 #'         \item{\code{value}: corresponding value.}
@@ -162,9 +162,9 @@ bbg_futures_TS <- function(active_contract_tickers = "C A Comdty",
 
   data(list = c("tickers_futures", "fields", "rolls"), package = "bbgsymbols", envir = environment())
 
-  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers.")
-  if (! is.integer(TS_positions)) stop("The parameter 'TS_positions' must be supplied as a vector of integers.")
-  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector.")
+  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers")
+  if (! is.integer(TS_positions)) stop("The parameter 'TS_positions' must be supplied as a vector of integers")
+  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector")
 
   data <- lapply(active_contract_tickers, function(y){
     tickers <- sapply(TS_positions, function(x) futures_ticker(y, TS_position = x, roll_type, roll_days, roll_months, roll_adjustment))
@@ -174,7 +174,7 @@ bbg_futures_TS <- function(active_contract_tickers = "C A Comdty",
     data <- if (! is.data.frame(data)) {
       lapply(names(data), function(x) {
       if (nrow(data[[x]]) > 0L) {
-        data[[x]]$ticker <-x; data[[x]]$`TS position` <- stringr::str_extract(string = x, pattern = "(?<=^.{0,10})\\d(?=\\s[A-Z]:)")
+        data[[x]]$ticker <- x
         data[[x]]
       } else {
         NULL
@@ -185,7 +185,7 @@ bbg_futures_TS <- function(active_contract_tickers = "C A Comdty",
     else {
       if(nrow(data) < 1L) NULL
       else {
-        data$ticker <- tickers; data$`TS position` <- TS_positions
+        data$ticker <- tickers
         data
         }
     }
@@ -195,16 +195,17 @@ bbg_futures_TS <- function(active_contract_tickers = "C A Comdty",
     data.table::rbindlist(use.names = TRUE)
 
   data %<>%
-    tidyr::gather(field, value, -c(`active contract ticker`, ticker, `TS position`, date)) %>%
-    dplyr::select(`active contract ticker`, ticker, `TS position`, field, date, value) %>%
+    tidyr::gather(field, value, -c(`active contract ticker`, ticker, date)) %>%
+    dplyr::select(`active contract ticker`, ticker, field, date, value) %>%
     dplyr::arrange(`active contract ticker`, ticker, field, date) %>%
     dplyr::filter(stats::complete.cases(.)) %>%
     dplyr::mutate(date = as.Date(date, origin = "1970-01-01"))
 
   if (nrow(data) == 0L) warning("No term structure data found.")
 
-  tickers <- dplyr::distinct(data, `active contract ticker`, ticker, `TS position`) %>%
-    dplyr::mutate(`roll type` = stringr::str_extract(ticker, pattern = "(?<= )[A-Z](?=:)"),
+  tickers <- dplyr::distinct(data, `active contract ticker`, ticker) %>%
+    dplyr::mutate(`TS position` = stringr::str_extract(ticker, pattern = "(?<=^.{0,10})\\d(?=\\s[A-Z]:)"),
+                  `roll type` = stringr::str_extract(ticker, pattern = "(?<= )[A-Z](?=:)"),
                   `roll days` = stringr::str_extract(ticker, pattern = "(?<=:)\\d{2}(?=_)") %>% as.numeric(),
                   `roll months` = stringr::str_extract(ticker, pattern = "(?<=_)\\d(?=_)") %>% as.numeric(),
                   `roll adjustment` = stringr::str_extract(ticker, pattern = "(?<=_)[A-Z](?= )")) %>%
@@ -212,11 +213,11 @@ bbg_futures_TS <- function(active_contract_tickers = "C A Comdty",
     dplyr::select(`active contract ticker`, ticker, `TS position`, `roll type` = name, `roll days`, `roll months`, `roll adjustment`) %>%
     dplyr::left_join(dplyr::filter(rolls, roll == "adjustment") %>% dplyr::select(symbol, name), by = c("roll adjustment" = "symbol")) %>%
     dplyr::select(`active contract ticker`, `TS position`, `roll type`, `roll days`, `roll months`, `roll adjustment` = name) %>%
-    dplyr::left_join(tickers_futures, by = c("active contract ticker", "ticker"))
+    dplyr::left_join(tickers_futures, by = c("active contract ticker" = "ticker"))
 
   methods::new("FuturesTS",
                tickers = tibble::as.tibble(tickers),
-               fields = data.table::as.data.table(dplyr::distinct(data, `active contract ticker`, `TS position`, field)),
+               fields = data.table::as.data.table(dplyr::distinct(data, `active contract ticker`, ticker, field)),
                data = data.table::as.data.table(data),
                call = match.call()
   )
@@ -279,11 +280,12 @@ bbg_futures_aggregate <- function(active_contract_tickers = "C A Comdty",
   call <- deparse(match.call())
   data(list = c("tickers_futures", "fields"), package = "bbgsymbols", envir = environment())
 
-  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers.")
-  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector.")
+  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers")
+  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector")
 
   data <- lapply(active_contract_tickers, function(x) {
-    data <- bbg_pull_historical_market(x, fields = dplyr::filter(fields, instrument == "futures", type == "aggregate") %>% dplyr::select(symbol) %>% purrr::flatten_chr(), start, end, ...) %>%
+    data <- bbg_pull_historical_market(x, fields = dplyr::filter(fields, instrument == "futures", type == "aggregate") %>%
+                                         dplyr::select(symbol) %>% purrr::flatten_chr(), start, end, ...) %>%
                    dplyr::mutate(`active contract ticker` = x)
     if (verbose) message(x); data
     }) %>%
@@ -400,8 +402,8 @@ bbg_futures_CFTC <- function(active_contract_tickers = "C A Comdty",
 
   data(list = c("tickers_cftc", "tickers_futures"), package = "bbgsymbols", envir = environment())
 
-  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers.")
-  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector.")
+  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers")
+  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector")
 
   data <- lapply(active_contract_tickers, function(x) {
     tickers <- dplyr::filter(tickers_cftc, `active contract ticker` == x) %>% dplyr::select(ticker) %>% purrr::flatten_chr()
@@ -498,8 +500,8 @@ bbg_equity_market <- function(tickers = "NEM US Equity",
 
   data(list = c("fields"), package = "bbgsymbols", envir = environment())
 
-  if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg tickers.")
-  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector.")
+  if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg tickers")
+  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector")
 
   data <- lapply(tickers, function(x) {
     data <- bbg_pull_historical_market(x, fields = dplyr::filter(fields, instrument == "equity", type == "market") %>% dplyr::select(symbol) %>% purrr::flatten_chr(),
@@ -595,9 +597,9 @@ bbg_equity_books <- function(book = "key stats",
   data(list = c("fields"), package = "bbgsymbols", envir = environment())
 
   if (! rlang::is_scalar_character(book) & book %in% c("key stats", "income statement", "balance sheet", "cash flow statement", "ratios"))
-    stop("The parameter 'book' must be supplied as a scalar character vector, one of 'key stats', 'income statement', 'balance sheet', 'cash flow statement' or 'ratios'.")
-  if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg equity tickers.")
-  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector (TRUE or FALSE).")
+    stop("The parameter 'book' must be supplied as a scalar character vector, one of 'key stats', 'income statement', 'balance sheet', 'cash flow statement' or 'ratios'")
+  if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg equity tickers")
+  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector (TRUE or FALSE)")
   if (! "periodicitySelection" %in% names(list(...))) utils::modifyList(list(...), list(periodicitySelection = "MONTHLY"))
 
   symbols <- dplyr::filter(fields, instrument == "equity", type == book)
@@ -606,50 +608,10 @@ bbg_equity_books <- function(book = "key stats",
     data <- bbg_pull_historical_books(tickers = tickers, field = x, start, end, ...)
     if (verbose) message(x); data
   }) %>%
-    data.table::rbindlist(use.names = TRUE)
-
-  data <- switch(book,
-                 `key stats` = data %>%
-                   dplyr::filter(stats::complete.cases(.)) %>%
-                   dplyr::left_join(symbols %>%
-                                      dplyr::select(name, symbol) %>%
-                                      dplyr::mutate(name = forcats::as_factor(name)),
-                                    by = c("field" = "symbol")) %>%
-                   dplyr::arrange(ticker, name, date) %>%
-                   dplyr::select(ticker, field, name, date, value),
-                 `income statement` = data %>%
-                   dplyr::filter(stats::complete.cases(.)) %>%
-                   dplyr::left_join(symbols %>%
-                                      dplyr::select(name, symbol) %>%
-                                      dplyr::mutate(name = forcats::as_factor(name)),
-                                    by = c("field" = "symbol")) %>%
-                   dplyr::arrange(ticker, name, date) %>%
-                   dplyr::select(ticker, field, name, date, value),
-                 `balance sheet` = data %>%
-                   dplyr::filter(stats::complete.cases(.)) %>%
-                   dplyr::left_join(symbols %>%
-                                      dplyr::select(section, subsection, name, symbol) %>%
-                                      dplyr::mutate_at(dplyr::vars(section, name), dplyr::funs(forcats::as_factor(.))),
-                                    by = c("field" = "symbol")) %>%
-                   dplyr::arrange(ticker, section, subsection, name, date) %>%
-                   dplyr::select(ticker, field, section, subsection, name, date, value),
-                 `cash flow statement` = data %>%
-                   dplyr::filter(stats::complete.cases(.)) %>%
-                   dplyr::left_join(symbols %>%
-                                      dplyr::select(section, name, symbol) %>%
-                                      dplyr::mutate_at(dplyr::vars(section, name), dplyr::funs(forcats::as_factor(.))),
-                                    by = c("field" = "symbol")) %>%
-                   dplyr::arrange(ticker, section, name, date) %>%
-                   dplyr::select(ticker, field, section, name, date, value),
-                 `ratios` = data %>%
-                   dplyr::filter(stats::complete.cases(.)) %>%
-                   dplyr::left_join(symbols %>%
-                                      dplyr::select(section, subsection, name, symbol) %>%
-                                      dplyr::mutate_at(dplyr::vars(section, subsection, name), dplyr::funs(forcats::as_factor(.))),
-                                    by = c("field" = "symbol")) %>%
-                   dplyr::arrange(ticker, section, subsection, name, date) %>%
-                   dplyr::select(ticker, field, section, subsection, name, date, value)
-  )
+    data.table::rbindlist(use.names = TRUE) %>%
+    dplyr::filter(stats::complete.cases(.)) %>%
+    dplyr::arrange(ticker, field, date) %>%
+    dplyr::select(ticker, field, date, value)
 
   if (nrow(data) == 0L) warning(paste("No", book, "data found.", sep = " "))
 
@@ -664,14 +626,16 @@ bbg_equity_books <- function(book = "key stats",
     dplyr::select(ticker, field = name, value) %>%
     tidyr::spread(field, value)
 
-  fields <-   switch(book,
-                     `key stats` = data.table::as.data.table(dplyr::distinct(data, ticker, name)),
-                     `income statement` = data.table::as.data.table(dplyr::distinct(data, ticker, name)),
-                     `balance sheet` = data.table::as.data.table(dplyr::distinct(data, ticker, section, subsection, name)),
-                     `cash flow statement` = data.table::as.data.table(dplyr::distinct(data, ticker, section, name)),
-                     `ratios` = data.table::as.data.table(dplyr::distinct(data, ticker, section, subsection, name))
-  )
+  fields <- dplyr::left_join(dplyr::distinct(data, ticker, field), symbols, by = c("field" = "symbol"))
 
+  fields <- switch(book,
+                   `key stats` = data.table::as.data.table(dplyr::select(fields, ticker, field = name)),
+                   `income statement` = data.table::as.data.table(dplyr::select(fields, ticker, field = name)),
+                   `balance sheet` = data.table::as.data.table(dplyr::select(fields, ticker, section, subsection, field = name)),
+                   `cash flow statement` = data.table::as.data.table(dplyr::select(fields, ticker, section, field = name)),
+                   `ratios` = data.table::as.data.table(dplyr::select(data, ticker, section, subsection, field = name))
+
+  )
 
   methods::new(dplyr::case_when(book == "key stats" ~ "EquityKS", book == "balance sheet" ~ "EquityBS",
                                 book == "cash flow statement" ~ "EquityCF", book == "income statement" ~ "EquityIS",
@@ -682,36 +646,6 @@ bbg_equity_books <- function(book = "key stats",
                call = match.call()
   )
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -756,6 +690,14 @@ bbg_equity_books <- function(book = "key stats",
 #' @param roll_adjustment A scalar chatacter vector. Specifies roll adjustment method to use for term structure ticker construction.
 #'   Must be one of 'D', 'N', 'R', or 'W'. Defaults to 'N' or 'None'.
 #' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
+#' @param ... optional extra parameters for grouping:
+#'   \itemize{
+#'     \item{\code{asset_class}: a character vector. See column 'asset class' in \code{\link[bbgsymbols]{tickers_futures}}.}
+#'     \item{\code{sector}: a character vector. See column 'sector' in \code{\link[bbgsymbols]{tickers_futures}}.}
+#'     \item{\code{subsector}: a character vector. See column 'subsector' in \code{\link[bbgsymbols]{tickers_futures}}.}
+#'     \item{\code{exchange}: a character vector. See column 'symbol' in \code{\link[fewISOs]{exchanges}}.}
+#'     \item{\code{currency}: a character vector. See column 'symbol' in \code{\link[fewISOs]{currencies}}.}
+#'   }
 #'
 #' @return An S4 object of class \code{\linkS4class{FuturesTS}} (\code{type = 'term structure'}) or \code{\linkS4class{FuturesAggregate}}
 #'   \code{type = 'aggregate'}). Slots include:
@@ -785,13 +727,14 @@ storethat_futures_market <- function(file = NULL,
                                      roll_days = 0L,
                                      roll_months = 0L,
                                      roll_adjustment = "N",
-                                     verbose = TRUE){
+                                     verbose = TRUE,
+                                     ...){
 
   if (! rlang::is_scalar_character(type) & type %in% c("term structure", "aggregate"))
-    stop("The parameter 'type' must be supplied as a scalar character vector; one of 'term structure' or 'aggregate'.")
-  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers.")
-  if (! is.integer(TS_positions)) stop("The parameter 'TS_positions' must be supplied as a vector of integers.")
-  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector.")
+    stop("The parameter 'type' must be supplied as a scalar character vector; one of 'term structure' or 'aggregate'")
+  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers")
+  if (! is.integer(TS_positions)) stop("The parameter 'TS_positions' must be supplied as a vector of integers")
+  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector")
 
   switch(type,
          `term structure` = storethat_futures_TS(active_contract_tickers = active_contract_tickers, start = start, end = end, TS_positions = TS_positions,
@@ -833,6 +776,15 @@ storethat_futures_market <- function(file = NULL,
 #' @param roll_adjustment A scalar chatacter vector. Specifies roll adjustment method to use for term structure ticker construction.
 #'   Must be one of 'D', 'N', 'R', or 'W'. Defaults to 'N' or 'None'.
 #' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
+#' @param ... optional extra parameters for grouping:
+#'   \itemize{
+#'     \item{\code{asset_class}: a character vector. See column 'asset class' in \code{\link[bbgsymbols]{tickers_futures}}.}
+#'     \item{\code{sector}: a character vector. See column 'sector' in \code{\link[bbgsymbols]{tickers_futures}}.}
+#'     \item{\code{subsector}: a character vector. See column 'subsector' in \code{\link[bbgsymbols]{tickers_futures}}.}
+#'     \item{\code{exchange}: a character vector. See column 'symbol' in \code{\link[fewISOs]{exchanges}}.}
+#'     \item{\code{currency}: a character vector. See column 'symbol' in \code{\link[fewISOs]{currencies}}.}
+#'   }
+#'
 #'
 #' @return An S4 object of class \code{\linkS4class{FuturesTS}} with slots:
 #'   \itemize{
@@ -883,24 +835,34 @@ storethat_futures_TS <- function(file = NULL,
                                  roll_days = 0L,
                                  roll_months = 0L,
                                  roll_adjustment = "N",
-                                 verbose = TRUE){
+                                 verbose = TRUE,
+                                 ...){
 
-  data(list = c("fields", "rolls"), package = "bbgsymbols", envir = environment())
+  data(list = c("tickers_futures", "fields", "rolls"), package = "bbgsymbols", envir = environment())
 
-  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers.")
-  if (! is.integer(TS_positions)) stop("The parameter 'TS_positions' must be supplied as a vector of integers.")
-  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector.")
+  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be
+                                                    supplied as a character vector of Bloomberg tickers")
+  if (! is.integer(TS_positions)) stop("The parameter 'TS_positions' must be supplied as a vector of integers")
+  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector")
   if (is.null(file)) file <- "~/storethat.sqlite"
   else
-    if (! all(rlang::is_scalar_character(file) & stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
+    if (! all(rlang::is_scalar_character(file), stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
       stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite database file (ie. ~/storethat.sqlite)")
 
-  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
+  if ( any(c("asset_class", "sector", "subsector", "exchange", "currency") %in% names(list(...)))){
+    tickers <- futures_groups(file, ...)
+    if ( all(!is.null(tickers), NROW(tickers) == 0L)) stop("No ticker found for the specified grouping")
+    if (! any(active_contract_tickers %in% tickers))
+      warning("'", paste(active_contract_tickers[! active_contract_tickers %in% tickers], collapse = "', '"), "' not in specified grouping.")
+    active_contract_tickers <- tickers
+  }
 
+  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
   data <- lapply(active_contract_tickers, function(y){
     tickers <- sapply(TS_positions, function(x) futures_ticker(y, TS_position = x, roll_type, roll_days, roll_months, roll_adjustment))
 
-    query <- paste0("SELECT DISTINCT id, symbol AS ticker, active_contract_ticker_id, position FROM tickers_support_futures_ts WHERE symbol ",
+    query <- paste0("SELECT DISTINCT id, symbol AS ticker, active_contract_ticker_id
+                    FROM tickers_support_futures_ts WHERE symbol ",
                     ifelse(NROW(tickers) == 1L,
                            paste0("= '", tickers, "';"),
                            paste0("IN ('", paste(tickers, collapse = "', '"), "');"))
@@ -914,7 +876,7 @@ storethat_futures_TS <- function(file = NULL,
     )
     tickers <- tickers %>%
       dplyr::left_join(RSQLite::dbGetQuery(con, query), by = c("active_contract_ticker_id" = "id")) %>%
-      dplyr::select(id, ticker, `active contract ticker` = symbol, `TS position` = position)
+      dplyr::select(id, ticker, `active contract ticker` = symbol)
     query <- paste0("SELECT id, date FROM support_dates WHERE date >= '", start, "' AND date <= '", end, "';")
     dates <- RSQLite::dbGetQuery(con, query)
 
@@ -933,7 +895,7 @@ storethat_futures_TS <- function(file = NULL,
       dplyr::left_join(tickers, by = c("ticker_id" = "id")) %>%
       dplyr::left_join(dates, by = c("date_id" = "id")) %>%
       dplyr::select(-c(ticker_id, date_id)) %>%
-      tidyr::gather(field, value, -c(ticker, `active contract ticker`, `TS position`, date)) %>%
+      tidyr::gather(field, value, -c(ticker, `active contract ticker`, date)) %>%
       dplyr::filter(stats::complete.cases(.))
     if (verbose) message(y); data
   }) %>%
@@ -947,8 +909,9 @@ storethat_futures_TS <- function(file = NULL,
     dplyr::arrange(`active contract ticker`, ticker, field, date) %>%
     dplyr::mutate(date = as.Date(date, origin = "1970-01-01"))
 
-  tickers <- dplyr::distinct(data, `active contract ticker`, ticker, `TS position`) %>%
-    dplyr::mutate(`roll type` = stringr::str_extract(ticker, pattern = "(?<= )[A-Z](?=:)"),
+  tickers <- dplyr::distinct(data, `active contract ticker`, ticker) %>%
+    dplyr::mutate(`TS position` = stringr::str_extract(ticker, pattern = "(?<=^.{0,10})\\d(?=\\s[A-Z]:)"),
+                  `roll type` = stringr::str_extract(ticker, pattern = "(?<= )[A-Z](?=:)"),
                   `roll days` = stringr::str_extract(ticker, pattern = "(?<=:)\\d{2}(?=_)") %>% as.numeric(),
                   `roll months` = stringr::str_extract(ticker, pattern = "(?<=_)\\d(?=_)") %>% as.numeric(),
                   `roll adjustment` = stringr::str_extract(ticker, pattern = "(?<=_)[A-Z](?= )")) %>%
@@ -956,11 +919,11 @@ storethat_futures_TS <- function(file = NULL,
     dplyr::select(`active contract ticker`, ticker, `TS position`, `roll type` = name, `roll days`, `roll months`, `roll adjustment`) %>%
     dplyr::left_join(dplyr::filter(rolls, roll == "adjustment") %>% dplyr::select(symbol, name), by = c("roll adjustment" = "symbol")) %>%
     dplyr::select(`active contract ticker`, `TS position`, `roll type`, `roll days`, `roll months`, `roll adjustment` = name) %>%
-    dplyr::left_join(tickers_futures, by = c("active contract ticker", "ticker"))
+    dplyr::left_join(tickers_futures, by = c("active contract ticker" = "ticker"))
 
   methods::new("FuturesTS",
-               tickers = tickers,
-               fields = data.table::as.data.table(dplyr::distinct(data, `active contract ticker`, `TS position`, field)),
+               tickers = tibble::as.tibble(tickers),
+               fields = data.table::as.data.table(dplyr::distinct(data, `active contract ticker`, ticker, field)),
                data = data.table::as.data.table(data),
                call = match.call()
   )
@@ -983,6 +946,14 @@ storethat_futures_TS <- function(file = NULL,
 #' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
 #'   Defaults to '2018-06-30'.
 #' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
+#' @param ... optional extra parameters for grouping:
+#'   \itemize{
+#'     \item{\code{asset_class}: a character vector. See column 'asset class' in \code{\link[bbgsymbols]{tickers_futures}}.}
+#'     \item{\code{sector}: a character vector. See column 'sector' in \code{\link[bbgsymbols]{tickers_futures}}.}
+#'     \item{\code{subsector}: a character vector. See column 'subsector' in \code{\link[bbgsymbols]{tickers_futures}}.}
+#'     \item{\code{exchange}: a character vector. See column 'symbol' in \code{\link[fewISOs]{exchanges}}.}
+#'     \item{\code{currency}: a character vector. See column 'symbol' in \code{\link[fewISOs]{currencies}}.}
+#'   }
 #'
 #' @return An S4 object of class \code{\linkS4class{FuturesAggregate}} with slots:
 #'   \itemize{
@@ -1017,19 +988,27 @@ storethat_futures_aggregate <- function(file = NULL,
                                         active_contract_tickers = "C A Comdty",
                                         start = "2018-01-01",
                                         end = "2018-06-30",
-                                        verbose = TRUE){
+                                        verbose = TRUE,
+                                        ...){
 
   data(list = c("fields"), package = "bbgsymbols", envir = environment())
 
-  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers.")
-  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector.")
+  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers")
+  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector")
   if (is.null(file)) file <- "~/storethat.sqlite"
   else
     if (! all(rlang::is_scalar_character(file) & stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
       stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite database file (ie. ~/storethat.sqlite)")
 
-  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
+  if ( any(c("asset_class", "sector", "subsector", "exchange", "currency") %in% names(list(...)))){
+    tickers <- futures_groups(file, ...)
+    if ( all(!is.null(tickers), NROW(tickers) == 0L)) stop("No ticker found for the specified grouping")
+    if (! any(active_contract_tickers %in% tickers))
+      warning("'", paste(active_contract_tickers[! active_contract_tickers %in% tickers], collapse = "', '"), "' not in specified grouping.")
+    active_contract_tickers <- tickers
+  }
 
+  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
   data <- lapply(active_contract_tickers, function(x) {
     query <- paste0("SELECT DISTINCT id, symbol FROM tickers_futures WHERE symbol ",
                     paste0("= '", x, "';")
@@ -1094,6 +1073,14 @@ storethat_futures_aggregate <- function(file = NULL,
 #' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
 #'   Defaults to '2018-06-30'.
 #' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
+#' @param ... optional extra parameters for grouping:
+#'   \itemize{
+#'     \item{\code{asset_class}: a character vector. See column 'asset class' in \code{\link[bbgsymbols]{tickers_futures}}.}
+#'     \item{\code{sector}: a character vector. See column 'sector' in \code{\link[bbgsymbols]{tickers_futures}}.}
+#'     \item{\code{subsector}: a character vector. See column 'subsector' in \code{\link[bbgsymbols]{tickers_futures}}.}
+#'     \item{\code{exchange}: a character vector. See column 'symbol' in \code{\link[fewISOs]{exchanges}}.}
+#'     \item{\code{currency}: a character vector. See column 'symbol' in \code{\link[fewISOs]{currencies}}.}
+#'   }
 #'
 #' @return An S4 object of class \code{\linkS4class{FuturesCFTC}} with slots:
 #'   \itemize{
@@ -1164,19 +1151,27 @@ storethat_futures_cftc <- function(file = NULL,
                                    active_contract_tickers = "C A Comdty",
                                    start = "2018-01-01",
                                    end = "2018-06-30",
-                                   verbose = TRUE){
+                                   verbose = TRUE,
+                                   ...){
 
   data(list = c("fields"), package = "bbgsymbols", envir = environment())
 
-  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers.")
-  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector.")
+  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers")
+  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector")
   if (is.null(file)) file <- "~/storethat.sqlite"
   else
     if (! all(rlang::is_scalar_character(file) & stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
       stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite database file (ie. ~/storethat.sqlite)")
 
-  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
+  if ( any(c("asset_class", "sector", "subsector", "exchange", "currency") %in% names(list(...)))){
+    tickers <- futures_groups(file, ...)
+    if ( all(!is.null(tickers), NROW(tickers) == 0L)) stop("No ticker found for the specified grouping")
+    if (! any(active_contract_tickers %in% tickers))
+      warning("'", paste(active_contract_tickers[! active_contract_tickers %in% tickers], collapse = "', '"), "' not in specified grouping.")
+    active_contract_tickers <- tickers
+  }
 
+  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
   data <- lapply(active_contract_tickers, function(x) {
 
     query <- paste0("SELECT active_contract_ticker_id, active_contract_ticker, position_ticker_id, position_ticker
@@ -1256,6 +1251,17 @@ storethat_futures_cftc <- function(file = NULL,
 #' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
 #'   Defaults to '2018-06-30'.
 #' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
+#' @param ... optional extra parameters for grouping:
+#'   \itemize{
+#'     \item{\code{type}: a character vector. See 'SECURITY_TYP' data field on Bloomberg.}
+#'     \item{\code{exchange}: a character vector. See column 'symbol' in \code{\link[fewISOs]{exchanges}}.}
+#'     \item{\code{country}: a character vector. See column 'symbol' in \code{\link[fewISOs]{countries}}.}
+#'     \item{\code{currency}: a character vector. See column 'symbol' in \code{\link[fewISOs]{currencies}}.}
+#'     \item{\code{sector}: a character vector. See column 'sector name' in \code{\link{GICS}}.}
+#'     \item{\code{industry_group}: a character vector. See column 'industry group name' in \code{\link{GICS}}.}
+#'     \item{\code{industry}: a character vector. See column 'industry name' in \code{\link{GICS}}.}
+#'     \item{\code{subindustry}: a character vector. See column 'subindustry name' in \code{\link{GICS}}.}
+#'   }
 #'
 #' @return An S4 object of class \code{\linkS4class{EquityMarket}} with slots:
 #'   \itemize{
@@ -1290,18 +1296,27 @@ storethat_equity_market <- function(file = NULL,
                                     tickers = "NEM US Equity",
                                     start = "2018-01-01",
                                     end = "2018-06-30",
-                                    verbose = TRUE){
+                                    verbose = TRUE,
+                                    ...){
 
   data(list = c("fields"), package = "bbgsymbols", envir = environment())
 
-  if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg tickers.")
-  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector.")
+  if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg tickers")
+  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector")
   if (is.null(file)) file <- "~/storethat.sqlite"
   else
     if (! all(rlang::is_scalar_character(file) & stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
       stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite database file (ie. ~/storethat.sqlite)")
 
   con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
+
+  if ( any(c("type", "exchange", "country", "currency", "sector", "industry_group", "industry", "subindustry") %in% names(list(...)))){
+    data <- equity_groups(file, ...)
+    if ( all(!is.null(data), NROW(data) == 0L)) stop("No ticker found for the specified grouping")
+    if (! any(tickers %in% data))
+      warning("'", paste(tickers[! tickers %in% data], collapse = "', '"), "' not in specified grouping.")
+    tickers <- data
+  }
 
   data <- lapply(tickers, function(x) {
     query <- paste0("SELECT DISTINCT id, symbol FROM tickers_equity WHERE symbol ",
@@ -1312,7 +1327,7 @@ storethat_equity_market <- function(file = NULL,
     dates <- RSQLite::dbGetQuery(con, query)
 
     query <- paste0("SELECT * FROM data_equity_market WHERE ticker_id ",
-                    paste0("= ", x),
+                    paste0("= ", tickers$id),
                     " AND date_id ",
                     ifelse(NROW(dates$id) == 1L,
                            paste0("= ", dates$id),
@@ -1331,7 +1346,7 @@ storethat_equity_market <- function(file = NULL,
   }) %>%
     data.table::rbindlist(use.names = TRUE)
 
-  if (nrow(data) == 0L) warning("No market data found.")
+  if (nrow(data) == 0L) warning("No equity historical market data found.")
 
   data %<>%
     tidyr::gather(field, value, -c(ticker, date)) %>%
@@ -1340,15 +1355,30 @@ storethat_equity_market <- function(file = NULL,
     dplyr::arrange(ticker, field, date)
 
   tickers <- dplyr::distinct(data, ticker)$ticker
-  query <- paste0("SELECT * FROM tickers_equity WHERE symbol ",
+  query <- paste0("(SELECT symbol AS ticker, name, type, MIC_id, country_id, currency_id, GICS_id, FIGI, description
+                  FROM tickers_equity WHERE symbol ",
                   ifelse(NROW(tickers) == 1L,
-                         paste0("= ", tickers),
-                         paste0("IN (", paste0(tickers, collapse = ", "), ")")),
-                  ";"
+                         paste0("= '", tickers, "'"),
+                         paste0("IN ('", paste0(tickers, collapse = "', '"), "')")),
+                  ")"
   )
-  tickers <- RSQLite::dbGetQuery(con, query) %>%
-    dplyr::select(-id)
+  query <- paste0("(SELECT ticker, name, type, symbol AS exchange, country_id, currency_id, GICS_id, FIGI, description FROM ",
+                  query,
+                  " A LEFT JOIN (SELECT id, symbol FROM support_exchanges) B ON A.MIC_id = B.id)")
+  query <- paste0("(SELECT ticker, name, type, exchange, symbol AS country, currency_id, GICS_id, FIGI, description FROM ",
+                  query,
+                  " C LEFT JOIN (SELECT id, symbol FROM support_countries) D ON C.country_id = D.id)")
+  query <- paste0("(SELECT ticker, name, type, exchange, country, symbol AS currency, GICS_id, FIGI, description FROM ",
+                  query,
+                  " E LEFT JOIN (SELECT id, symbol FROM support_currencies) F ON E.currency_id = F.id)")
+  query <- paste0("SELECT ticker, name, type AS 'security type', exchange, country AS 'country of incorporation',
+                  currency, sector_name AS sector, industry_group_name AS 'industry group', industry_name AS 'industry',
+                  subindustry_name AS subindustry, FIGI, description FROM ",
+                  query,
+                  " G LEFT JOIN (SELECT sector_name, industry_group_name, industry_name, subindustry_name, id FROM
+                  support_GICS) H ON G.GICS_id = H.id;")
 
+  tickers <- RSQLite::dbGetQuery(con, query)
   RSQLite::dbDisconnect(con)
 
   methods::new("EquityMarket",
@@ -1379,6 +1409,17 @@ storethat_equity_market <- function(file = NULL,
 #' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
 #'   Defaults to '2018-06-30'.
 #' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
+#' @param ... optional extra parameters for grouping:
+#'   \itemize{
+#'     \item{\code{type}: a character vector. See 'SECURITY_TYP' data field on Bloomberg.}
+#'     \item{\code{exchange}: a character vector. See column 'symbol' in \code{\link[fewISOs]{exchanges}}.}
+#'     \item{\code{country}: a character vector. See column 'symbol' in \code{\link[fewISOs]{countries}}.}
+#'     \item{\code{currency}: a character vector. See column 'symbol' in \code{\link[fewISOs]{currencies}}.}
+#'     \item{\code{sector}: a character vector. See column 'sector name' in \code{\link{GICS}}.}
+#'     \item{\code{industry_group}: a character vector. See column 'industry group name' in \code{\link{GICS}}.}
+#'     \item{\code{industry}: a character vector. See column 'industry name' in \code{\link{GICS}}.}
+#'     \item{\code{subindustry}: a character vector. See column 'subindustry name' in \code{\link{GICS}}.}
+#'   }
 #'
 #' @return An S4 object of class \code{\linkS4class{EquityKS}} (\code{book = 'key stats'}), \code{\linkS4class{EquityIS}}
 #'   (\code{book = 'income statement'}), \code{\linkS4class{EquityBS}} (\code{book = 'balance sheet'}),
@@ -1411,28 +1452,38 @@ storethat_equity_books <- function(file = NULL,
                                    tickers = "NEM US Equity",
                                    start = "2018-01-01",
                                    end = "2018-06-30",
-                                   verbose = TRUE){
+                                   verbose = TRUE,
+                                   ...){
 
   data(list = c("fields"), package = "bbgsymbols", envir = environment())
 
   if (! rlang::is_scalar_character(book) & book %in% c("key stats", "income statement", "balance sheet", "cash flow statement", "ratios"))
-    stop("The parameter 'book' must be supplied as a scalar character vector, one of 'key stats', 'income statement', 'balance sheet', 'cash flow statement' or 'ratios'.")
-  if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg equity tickers.")
-  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector (TRUE or FALSE).")
+    stop("The parameter 'book' must be supplied as a scalar character vector, one of 'key stats', 'income statement', 'balance sheet',
+         'cash flow statement' or 'ratios'")
+  if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg equity tickers")
+  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector (TRUE or FALSE)")
+  if (is.null(file)) file <- "~/storethat.sqlite"
   else
-    if (! all(rlang::is_scalar_character(file) & stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
+    if (! all(rlang::is_scalar_character(file), stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
       stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite database file (ie. ~/storethat.sqlite)")
 
-  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
+  if ( any(c("type", "exchange", "country", "currency", "sector", "industry_group", "industry", "subindustry") %in% names(list(...)))){
+    data <- equity_groups(file, ...)
+    if ( all(!is.null(data), NROW(data) == 0L)) stop("No ticker found for the specified grouping")
+    if (! any(tickers %in% data))
+      warning("'", paste(tickers[! tickers %in% data], collapse = "', '"), "' not in specified grouping.")
+    tickers <- data
+  }
 
   symbols <- dplyr::filter(fields, instrument == "equity", type == book)
+  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
 
   data <- lapply(tickers, function(x) {
     query <- paste0("SELECT DISTINCT id, symbol FROM tickers_equity WHERE symbol ",
                     paste0("= '", x, "';")
     )
     tickers <- RSQLite::dbGetQuery(con, query)
-    if (nrow(tickers) == 0L) stop(paste0("No data found for '", x, "'."))
+    if (nrow(tickers) == 0L) stop(paste0("No data found for '", x, "'"))
     query <- paste0("SELECT id, date FROM support_dates WHERE date >= '", start, "' AND date <= '", end, "';")
     dates <- RSQLite::dbGetQuery(con, query)
 
@@ -1457,59 +1508,47 @@ storethat_equity_books <- function(file = NULL,
       dplyr::filter(stats::complete.cases(.))
     if (verbose) message(x); data
   }) %>%
-    data.table::rbindlist(use.names = TRUE)
+    data.table::rbindlist(use.names = TRUE) %>%
+    dplyr::arrange(ticker, field, date) %>%
+    dplyr::select(ticker, field, date, value)
 
-  data <- switch(book,
-                 `key stats` = dplyr::left_join(data, symbols %>%
-                                      dplyr::select(name, symbol) %>%
-                                      dplyr::mutate(name = forcats::as_factor(name)),
-                                    by = c("field" = "symbol")) %>%
-                   dplyr::arrange(ticker, name, date) %>%
-                   dplyr::select(ticker, field, name, date, value),
-                 `income statement` = dplyr::left_join(data, symbols %>%
-                                      dplyr::select(name, symbol) %>%
-                                      dplyr::mutate(name = forcats::as_factor(name)),
-                                    by = c("field" = "symbol")) %>%
-                   dplyr::arrange(ticker, name, date) %>%
-                   dplyr::select(ticker, field, name, date, value),
-                 `balance sheet` = dplyr::left_join(data, symbols %>%
-                                      dplyr::select(section, subsection, name, symbol) %>%
-                                      dplyr::mutate_at(dplyr::vars(section, name), dplyr::funs(forcats::as_factor(.))),
-                                    by = c("field" = "symbol")) %>%
-                   dplyr::arrange(ticker, section, subsection, name, date) %>%
-                   dplyr::select(ticker, field, section, subsection, name, date, value),
-                 `cash flow statement` = dplyr::left_join(data, symbols %>%
-                                      dplyr::select(section, name, symbol) %>%
-                                      dplyr::mutate_at(dplyr::vars(section, name), dplyr::funs(forcats::as_factor(.))),
-                                    by = c("field" = "symbol")) %>%
-                   dplyr::arrange(ticker, section, name, date) %>%
-                   dplyr::select(ticker, field, section, name, date, value),
-                 `ratios` = dplyr::left_join(data, symbols %>%
-                                      dplyr::select(section, subsection, name, symbol) %>%
-                                      dplyr::mutate_at(dplyr::vars(section, subsection, name), dplyr::funs(forcats::as_factor(.))),
-                                    by = c("field" = "symbol")) %>%
-                   dplyr::arrange(ticker, section, subsection, name, date) %>%
-                   dplyr::select(ticker, field, section, subsection, name, date, value)
-  )
-
-  if (nrow(data) == 0L) warning(paste("No", book, "data found.", sep = " "))
+  if (nrow(data) == 0L) warning(paste("No", book, "historical data found.", sep = " "))
 
   tickers <- dplyr::distinct(data, ticker)$ticker
-  query <- paste0("SELECT * FROM tickers_equity WHERE symbol ",
+  query <- paste0("(SELECT symbol AS ticker, name, type, MIC_id, country_id, currency_id, GICS_id, FIGI, description
+                  FROM tickers_equity WHERE symbol ",
                   ifelse(NROW(tickers) == 1L,
-                         paste0("= ", tickers),
-                         paste0("IN (", paste0(tickers, collapse = ", "), ")")),
-                  ";"
+                         paste0("= '", tickers, "'"),
+                         paste0("IN ('", paste0(tickers, collapse = "', '"), "')")),
+                  ")"
   )
-  tickers <- dplyr::select(RSQLite::dbGetQuery(con, query), -id)
+  query <- paste0("(SELECT ticker, name, type, symbol AS exchange, country_id, currency_id, GICS_id, FIGI, description FROM ",
+                  query,
+                  " A LEFT JOIN (SELECT id, symbol FROM support_exchanges) B ON A.MIC_id = B.id)")
+  query <- paste0("(SELECT ticker, name, type, exchange, symbol AS country, currency_id, GICS_id, FIGI, description FROM ",
+                  query,
+                  " C LEFT JOIN (SELECT id, symbol FROM support_countries) D ON C.country_id = D.id)")
+  query <- paste0("(SELECT ticker, name, type, exchange, country, symbol AS currency, GICS_id, FIGI, description FROM ",
+                  query,
+                  " E LEFT JOIN (SELECT id, symbol FROM support_currencies) F ON E.currency_id = F.id)")
+  query <- paste0("SELECT ticker, name, type AS 'security type', exchange, country AS 'country of incorporation',
+                  currency, sector_name AS sector, industry_group_name AS 'industry group', industry_name AS 'industry',
+                  subindustry_name AS subindustry, FIGI, description FROM ",
+                  query,
+                  " G LEFT JOIN (SELECT sector_name, industry_group_name, industry_name, subindustry_name, id FROM
+                  support_GICS) H ON G.GICS_id = H.id;")
+
+  tickers <- RSQLite::dbGetQuery(con, query)
   RSQLite::dbDisconnect(con)
 
+  fields <- dplyr::left_join(dplyr::distinct(data, ticker, field), symbols, by = c("field" = "symbol"))
+
   fields <-   switch(book,
-                     `key stats` = data.table::as.data.table(dplyr::distinct(data, ticker, name)),
-                     `income statement` = data.table::as.data.table(dplyr::distinct(data, ticker, name)),
-                     `balance sheet` = data.table::as.data.table(dplyr::distinct(data, ticker, section, subsection, name)),
-                     `cash flow statement` = data.table::as.data.table(dplyr::distinct(data, ticker, section, name)),
-                     `ratios` = data.table::as.data.table(dplyr::distinct(data, ticker, section, subsection, name))
+                     `key stats` = data.table::as.data.table(dplyr::select(fields, ticker, field = name)),
+                     `income statement` = data.table::as.data.table(dplyr::select(fields, ticker, field = name)),
+                     `balance sheet` = data.table::as.data.table(dplyr::select(fields, ticker, section, subsection, field = name)),
+                     `cash flow statement` = data.table::as.data.table(dplyr::select(fields, ticker, section, field = name)),
+                     `ratios` = data.table::as.data.table(dplyr::select(data, ticker, section, subsection, field = name))
 
   )
 

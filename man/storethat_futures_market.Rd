@@ -4,13 +4,15 @@
 \alias{storethat_futures_market}
 \title{Futures historical market data from a \code{storethat} SQLite database}
 \usage{
-storethat_futures_market(type = "term structure",
+storethat_futures_market(file = NULL, type = "term structure",
   active_contract_tickers = "C A Comdty", start = "2018-01-01",
   end = "2018-06-30", TS_positions = 1L, roll_type = "A",
   roll_days = 0L, roll_months = 0L, roll_adjustment = "N",
-  verbose = TRUE, file = NULL)
+  verbose = TRUE, ...)
 }
 \arguments{
+\item{file}{A scalar chatacter vector. Specifies the target \code{storethat} SQLite database file.}
+
 \item{type}{A scalar character vector, 'term sructure' or 'aggregate'. 'term structure' returns individual futures chain data for a selected
 portion of the term structure (specify desired positions in \code{TS_positions}) while 'aggregate' returns aggregated data over the whole
 term structure for the corresponding names (specify desired names via corresponding tickers in \code{active_contract_tickers}).
@@ -48,7 +50,14 @@ Must be one of 'D', 'N', 'R', or 'W'. Defaults to 'N' or 'None'.}
 
 \item{verbose}{A logical scalar vector. Should progression messages be printed? Defaults to TRUE.}
 
-\item{file}{A scalar chatacter vector. Specifies the target \code{storethat} SQLite database file.}
+\item{...}{optional extra parameters for grouping:
+\itemize{
+  \item{\code{asset_class}: a character vector. See column 'asset class' in \code{\link[bbgsymbols]{tickers_futures}}.}
+  \item{\code{sector}: a character vector. See column 'sector' in \code{\link[bbgsymbols]{tickers_futures}}.}
+  \item{\code{subsector}: a character vector. See column 'subsector' in \code{\link[bbgsymbols]{tickers_futures}}.}
+  \item{\code{exchange}: a character vector. See column 'symbol' in \code{\link[fewISOs]{exchanges}}.}
+  \item{\code{currency}: a character vector. See column 'symbol' in \code{\link[fewISOs]{currencies}}.}
+}}
 }
 \value{
 An S4 object of class \code{\linkS4class{FuturesTS}} (\code{type = 'term structure'}) or \code{\linkS4class{FuturesAggregate}}

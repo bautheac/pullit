@@ -5,7 +5,7 @@ Authors@R: person("Olivier", "Bauthéac", email = "o.bautheac@gmail.com", role =
 Description: Provides a set of function for conveniently pulling financial data from Bloomberg.
 Depends: R (>= 3.4.0)
 Imports:
-  bbgsymbols (>= 0.0.0.9000),
+  bbgsymbols,
   forcats (>= 0.3.0),
   data.table (>= 1.11.4),
   dplyr (>= 0.7.6),

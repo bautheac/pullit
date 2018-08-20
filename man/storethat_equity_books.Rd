@@ -4,11 +4,13 @@
 \alias{storethat_equity_books}
 \title{Equity historical book data from Bloomberg}
 \usage{
-storethat_equity_books(book = "key stats", tickers = "NEM US Equity",
-  start = "2018-01-01", end = "2018-06-30", verbose = TRUE,
-  file = NULL)
+storethat_equity_books(file = NULL, book = "key stats",
+  tickers = "NEM US Equity", start = "2018-01-01",
+  end = "2018-06-30", verbose = TRUE, ...)
 }
 \arguments{
+\item{file}{A scalar chatacter vector. Specifies the target \code{storethat} SQLite database file.}
+
 \item{book}{A scalar chatacter vector, 'key stats', 'income statement', 'balance sheet', 'cash flow statement' or 'ratios'.
 Defaults to 'key stats' which returns historical data for a set of key financial indicators; a quick dynamic financial
 snapshot of the selected names.}
@@ -24,7 +26,17 @@ Defaults to '2018-06-30'.}
 
 \item{verbose}{A logical scalar vector. Should progression messages be printed? Defaults to TRUE.}
 
-\item{file}{A scalar chatacter vector. Specifies the target \code{storethat} SQLite database file.}
+\item{...}{optional extra parameters for grouping:
+\itemize{
+  \item{\code{type}: a character vector. See 'SECURITY_TYP' data field on Bloomberg.}
+  \item{\code{exchange}: a character vector. See column 'symbol' in \code{\link[fewISOs]{exchanges}}.}
+  \item{\code{country}: a character vector. See column 'symbol' in \code{\link[fewISOs]{countries}}.}
+  \item{\code{currency}: a character vector. See column 'symbol' in \code{\link[fewISOs]{currencies}}.}
+  \item{\code{sector}: a character vector. See column 'sector name' in \code{\link{GICS}}.}
+  \item{\code{industry_group}: a character vector. See column 'industry group name' in \code{\link{GICS}}.}
+  \item{\code{industry}: a character vector. See column 'industry name' in \code{\link{GICS}}.}
+  \item{\code{subindustry}: a character vector. See column 'subindustry name' in \code{\link{GICS}}.}
+}}
 }
 \value{
 An S4 object of class \code{\linkS4class{EquityKS}} (\code{book = 'key stats'}), \code{\linkS4class{EquityIS}}

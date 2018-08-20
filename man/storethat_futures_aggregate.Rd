@@ -4,11 +4,13 @@
 \alias{storethat_futures_aggregate}
 \title{Futures aggregate historical data from Bloomberg}
 \usage{
-storethat_futures_aggregate(active_contract_tickers = "C A Comdty",
-  start = "2018-01-01", end = "2018-06-30", verbose = TRUE,
-  file = NULL)
+storethat_futures_aggregate(file = NULL,
+  active_contract_tickers = "C A Comdty", start = "2018-01-01",
+  end = "2018-06-30", verbose = TRUE, ...)
 }
 \arguments{
+\item{file}{A scalar chatacter vector. Specifies the target \code{storethat} SQLite database file.}
+
 \item{active_contract_tickers}{A chatacter vector. Specifies the Bloomberg futures active contract tickers to query data for.
 Defaults to 'C A Comdty', the Bloomberg active contract ticker for the XCBT corn futures series.}
 
@@ -20,7 +22,14 @@ Defaults to '2018-06-30'.}
 
 \item{verbose}{A logical scalar vector. Should progression messages be printed? Defaults to TRUE.}
 
-\item{file}{A scalar chatacter vector. Specifies the target \code{storethat} SQLite database file.}
+\item{...}{optional extra parameters for grouping:
+\itemize{
+  \item{\code{asset_class}: a character vector. See column 'asset class' in \code{\link[bbgsymbols]{tickers_futures}}.}
+  \item{\code{sector}: a character vector. See column 'sector' in \code{\link[bbgsymbols]{tickers_futures}}.}
+  \item{\code{subsector}: a character vector. See column 'subsector' in \code{\link[bbgsymbols]{tickers_futures}}.}
+  \item{\code{exchange}: a character vector. See column 'symbol' in \code{\link[fewISOs]{exchanges}}.}
+  \item{\code{currency}: a character vector. See column 'symbol' in \code{\link[fewISOs]{currencies}}.}
+}}
 }
 \value{
 An S4 object of class \code{\linkS4class{FuturesAggregate}} with slots:
