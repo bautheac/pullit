@@ -14,6 +14,7 @@ setMethod("show", "BBGHistorical", function(object) {
       "  tickers: access with get_tickers()\n",
       "  fields: access with get_fields()\n",
       "  data: access with get_data()\n",
+      "  call: access with get_call()\n",
       "\nSee also: get_periods()")
 })
 
