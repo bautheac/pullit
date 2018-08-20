@@ -32,10 +32,10 @@ Defaults to '2018-06-30'.}
   \item{\code{exchange}: a character vector. See column 'symbol' in \code{\link[fewISOs]{exchanges}}.}
   \item{\code{country}: a character vector. See column 'symbol' in \code{\link[fewISOs]{countries}}.}
   \item{\code{currency}: a character vector. See column 'symbol' in \code{\link[fewISOs]{currencies}}.}
-  \item{\code{sector}: a character vector. See column 'sector name' in \code{\link{GICS}}.}
-  \item{\code{industry_group}: a character vector. See column 'industry group name' in \code{\link{GICS}}.}
-  \item{\code{industry}: a character vector. See column 'industry name' in \code{\link{GICS}}.}
-  \item{\code{subindustry}: a character vector. See column 'subindustry name' in \code{\link{GICS}}.}
+  \item{\code{sector}: a character vector. See column 'sector name' of the 'GICS' dataset in this package.}
+  \item{\code{industry_group}: a character vector. See column 'industry group name' of the 'GICS' dataset in this package.}
+  \item{\code{industry}: a character vector. See column 'industry name' of the 'GICS' dataset in this package.}
+  \item{\code{subindustry}: a character vector. See column 'subindustry name' of the 'GICS' dataset in this package.}
 }}
 }
 \value{
