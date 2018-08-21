@@ -7,7 +7,6 @@ Depends: R (>= 3.4.0)
 Imports:
   bbgsymbols,
   forcats (>= 0.3.0),
-  fewISOs,
   data.table (>= 1.11.4),
   dplyr (>= 0.7.6),
   magrittr (>= 1.5),
@@ -19,9 +18,13 @@ Imports:
   stringr (>= 1.3.1),
   tibble (>= 1.4.2),
   tidyr  (>= 0.8.1)
+Suggests: 
+  fewISOs,
+  storethat
 Remotes: 
   bautheac/bbgsymbols,
-  bautheac/fewISOs
+  bautheac/fewISOs,
+  bautheac/storethat
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
