@@ -29,13 +29,13 @@ Defaults to '2018-06-30'.}
 \item{...}{optional extra parameters for grouping:
 \itemize{
   \item{\code{type}: a character vector. See 'SECURITY_TYP' data field on Bloomberg.}
-  \item{\code{exchange}: a character vector. See column 'symbol' in \code{\link[fewISOs]{exchanges}}.}
-  \item{\code{country}: a character vector. See column 'symbol' in \code{\link[fewISOs]{countries}}.}
-  \item{\code{currency}: a character vector. See column 'symbol' in \code{\link[fewISOs]{currencies}}.}
-  \item{\code{sector}: a character vector. See column 'sector name' of the 'GICS' dataset in this package.}
-  \item{\code{industry_group}: a character vector. See column 'industry group name' of the 'GICS' dataset in this package.}
-  \item{\code{industry}: a character vector. See column 'industry name' of the 'GICS' dataset in this package.}
-  \item{\code{subindustry}: a character vector. See column 'subindustry name' of the 'GICS' dataset in this package.}
+  \item{\code{exchange}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{exchanges}} dataset in the \code{fewISOs} package.}
+  \item{\code{country}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{countries}} dataset in the \code{fewISOs} package.}
+  \item{\code{currency}: a character vector. See column 'symbol' in \code{\link[fewISOs]{currencies}} dataset in the \code{fewISOs} package.}
+  \item{\code{sector}: a character vector. See column 'sector name' of the \code{\link[storethat]{GICS}} dataset in the \code{storethat} package.}
+  \item{\code{industry_group}: a character vector. See column 'industry group name' of the \code{\link[storethat]{GICS}} dataset in the \code{storethat} package.}
+  \item{\code{industry}: a character vector. See column 'industry name' of the \code{\link[storethat]{GICS}} dataset in the \code{storethat} package.}
+  \item{\code{subindustry}: a character vector. See column 'subindustry name' of the \code{\link[storethat]{GICS}} dataset in the \code{storethat} package.}
 }}
 }
 \value{

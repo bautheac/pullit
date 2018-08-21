@@ -59,5 +59,5 @@ Provided with a set of Bloomberg equity tickers and a time period,
 
 }
 \seealso{
-The \code{fields} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
+The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
 }

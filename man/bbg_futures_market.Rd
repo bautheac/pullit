@@ -35,12 +35,12 @@ Defaults to 'A' or 'With active future': rolls to the most actively traded contr
 \item{roll_days}{A scalar integer vector. Specifies the day the roll should be done.
 Refers to the day of the month (\code{roll_type} = 'F') or the number of days before a reference date
 (\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O', \code{roll_type} = 'R').
-Works in tandem with `roll_months` below.
+Works in tandem with \code{roll_months} below.
 Defaults to 0.}
 
 \item{roll_months}{A scalar integer vector. Specifies the month the roll should be done.
 Refers to the number of months before a reference date (\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O',
-\code{roll_type} = 'R'). Works in tandem with `roll_days` above.
+\code{roll_type} = 'R'). Works in tandem with \code{roll_days} above.
 Defaults to 0.}
 
 \item{roll_adjustment}{A scalar chatacter vector. Specifies roll adjustment method to use for term structure ticker construction.
@@ -73,5 +73,5 @@ Provided with a set of Bloomberg futures active contract tickers, term structure
 
 }
 \seealso{
-The \code{fields} dataset in the \code{bbgsymbols} package for details on the Bloomnerg data fields used here.
+The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg data fields used here.
 }
