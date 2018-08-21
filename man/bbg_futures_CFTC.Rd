@@ -88,5 +88,5 @@ Provided with a set of Bloomberg futures active contract tickers and a time peri
 
 }
 \seealso{
-The \code{\link[bbgsymbols]{tickers_cftc}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
+The \code{tickers_cftc} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
 }

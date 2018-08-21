@@ -29,9 +29,9 @@ Defaults to '2018-06-30'.}
 \item{...}{optional extra parameters for grouping:
 \itemize{
   \item{\code{type}: a character vector. See 'SECURITY_TYP' data field on Bloomberg.}
-  \item{\code{exchange}: a character vector. See column 'symbol' in \code{\link[fewISOs]{exchanges}}.}
-  \item{\code{country}: a character vector. See column 'symbol' in \code{\link[fewISOs]{countries}}.}
-  \item{\code{currency}: a character vector. See column 'symbol' in \code{\link[fewISOs]{currencies}}.}
+  \item{\code{exchange}: a character vector. See column 'symbol' of the \code{exchanges} dataset in the \code{fewISOs}.}
+  \item{\code{country}: a character vector. See column 'symbol' of the \code{countries} dataset in the \code{fewISOs}.}
+  \item{\code{currency}: a character vector. See column 'symbol' of the \code{currencies} dataset in the \code{fewISOs}.}
   \item{\code{sector}: a character vector. See column 'sector name' of the 'GICS' dataset in this package.}
   \item{\code{industry_group}: a character vector. See column 'industry group name' of the 'GICS' dataset in this package.}
   \item{\code{industry}: a character vector. See column 'industry name' of the 'GICS' dataset in this package.}
