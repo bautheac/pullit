@@ -24,11 +24,11 @@ Defaults to '2018-06-30'.}
 
 \item{...}{optional extra parameters for grouping:
 \itemize{
-  \item{\code{asset_class}: a character vector. See column 'asset class' in \code{\link[bbgsymbols]{tickers_futures}}.}
-  \item{\code{sector}: a character vector. See column 'sector' in \code{\link[bbgsymbols]{tickers_futures}}.}
-  \item{\code{subsector}: a character vector. See column 'subsector' in \code{\link[bbgsymbols]{tickers_futures}}.}
-  \item{\code{exchange}: a character vector. See column 'symbol' in \code{\link[fewISOs]{exchanges}}.}
-  \item{\code{currency}: a character vector. See column 'symbol' in \code{\link[fewISOs]{currencies}}.}
+  \item{\code{asset_class}: a character vector. See column 'asset class' of the \code{tickers_futures} dataset in the  \code{bbgsymbols}.}
+  \item{\code{sector}: a character vector. See column 'sector' of the \code{tickers_futures} dataset in the  \code{bbgsymbols}.}
+  \item{\code{subsector}: a character vector. See column 'subsector' of the \code{tickers_futures} dataset in the  \code{bbgsymbols}.}
+  \item{\code{exchange}: a character vector. See column 'symbol' of the \code{exchange} dataset in the \code{fewISOs}.}
+  \item{\code{currency}: a character vector. See column 'symbol' of the \code{currencies} dataset in the \code{fewISOs}.}
 }}
 }
 \value{

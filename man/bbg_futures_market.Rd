@@ -73,5 +73,5 @@ Provided with a set of Bloomberg futures active contract tickers, term structure
 
 }
 \seealso{
-The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg data fields used here.
+The \code{fields} dataset in the \code{bbgsymbols} package for details on the Bloomnerg data fields used here.
 }
