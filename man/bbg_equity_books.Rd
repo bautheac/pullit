@@ -54,5 +54,5 @@ Retrieve equity historical book data from Bloomberg. Books include 'key stats', 
 
 }
 \seealso{
-The \code{fields} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
+The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
 }

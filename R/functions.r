@@ -21,11 +21,11 @@
 #' @param roll_days A scalar integer vector. Specifies the day the roll should be done.
 #'   Refers to the day of the month (\code{roll_type} = 'F') or the number of days before a reference date
 #'   (\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O', \code{roll_type} = 'R').
-#'   Works in tandem with `roll_months` below.
+#'   Works in tandem with \code{roll_months} below.
 #'   Defaults to 0.
 #' @param roll_months A scalar integer vector. Specifies the month the roll should be done.
 #'   Refers to the number of months before a reference date (\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O',
-#'   \code{roll_type} = 'R'). Works in tandem with `roll_days` above.
+#'   \code{roll_type} = 'R'). Works in tandem with \code{roll_days} above.
 #'   Defaults to 0.
 #' @param roll_adjustment A scalar chatacter vector. Specifies roll adjustment method to use for term structure ticker construction.
 #'   Must be one of 'D', 'N', 'R', or 'W'. Defaults to 'N' or 'None'.
@@ -42,7 +42,7 @@
 #'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
 #'   }
 #'
-#' @seealso The \code{fields} dataset in the \code{bbgsymbols} package for details on the Bloomnerg data fields used here.
+#' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg data fields used here.
 #'
 #' @examples
 #' \dontrun{
@@ -97,11 +97,11 @@ bbg_futures_market <- function(type = "term structure",
 #' @param roll_days A scalar integer vector. Specifies the day the roll should be done.
 #'   Refers to the day of the month (\code{roll_type} = 'F') or the number of days before a reference date
 #'   (\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O', \code{roll_type} = 'R').
-#'   Works in tandem with `roll_months` below.
+#'   Works in tandem with \code{roll_months} below.
 #'   Defaults to 0.
 #' @param roll_months A scalar integer vector. Specifies the month the roll should be done.
 #'   Refers to the number of months before a reference date (\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O',
-#'   \code{roll_type} = 'R'). Works in tandem with `roll_days` above.
+#'   \code{roll_type} = 'R'). Works in tandem with \code{roll_days} above.
 #'   Defaults to 0.
 #' @param roll_adjustment A scalar chatacter vector. Specifies roll adjustment method to use for term structure ticker construction.
 #'   Must be one of 'D', 'N', 'R', or 'W'. Defaults to 'N' or 'None'.
@@ -141,7 +141,7 @@ bbg_futures_market <- function(type = "term structure",
 #'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
 #'   }
 #'
-#' @seealso The \code{fields} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
+#' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
 #'
 #' @examples
 #' \dontrun{bbg_futures_TS()}
@@ -262,7 +262,7 @@ bbg_futures_TS <- function(active_contract_tickers = "C A Comdty",
 #'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
 #'   }
 #'
-#' @seealso The \code{fields} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
+#' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
 #'
 #' @examples
 #' \dontrun{bbg_futures_aggregate()}
@@ -385,7 +385,7 @@ bbg_futures_aggregate <- function(active_contract_tickers = "C A Comdty",
 #'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
 #'  }
 #'
-#' @seealso The \code{tickers_cftc} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
+#' @seealso The \code{\link[bbgsymbols]{tickers_cftc}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
 #'
 #' @examples
 #' \dontrun{bbg_futures_CFTC()}
@@ -482,7 +482,7 @@ bbg_futures_CFTC <- function(active_contract_tickers = "C A Comdty",
 #'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
 #'   }
 #'
-#' @seealso The \code{fields} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
+#' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
 #'
 #' @examples
 #' \dontrun{bbg_equity_market()}
@@ -572,7 +572,7 @@ bbg_equity_market <- function(tickers = "NEM US Equity",
 #'     \item{\code{call}: a scalar character vector. The original call to the constructor.}
 #'   }
 #'
-#' @seealso The \code{fields} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
+#' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
 #'
 #' @examples
 #' \dontrun{
@@ -694,10 +694,10 @@ bbg_equity_books <- function(book = "key stats",
 #'   \itemize{
 #'     \item{\code{asset_class}: a character vector. See column 'asset class' of the \code{tickers_futures}
 #'       dataset in the  \code{bbgsymbols}.}
-#'     \item{\code{sector}: a character vector. See column 'sector' of the \code{tickers_futures} dataset in the  \code{bbgsymbols}.}
-#'     \item{\code{subsector}: a character vector. See column 'subsector' of the \code{tickers_futures} dataset in the  \code{bbgsymbols}.}
-#'     \item{\code{exchange}: a character vector. See column 'symbol' of the \code{exchange} dataset in the \code{fewISOs}.}
-#'     \item{\code{currency}: a character vector. See column 'symbol' of the \code{currencies} dataset in the \code{fewISOs}.}
+#'     \item{\code{sector}: a character vector. See column 'sector' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
+#'     \item{\code{subsector}: a character vector. See column 'subsector' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
+#'     \item{\code{exchange}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{exchanges}} dataset in the \code{fewISOs}.}
+#'     \item{\code{currency}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{currencies}} dataset in the \code{fewISOs}.}
 #'   }
 #'
 #' @return An S4 object of class \code{\linkS4class{FuturesTS}} (\code{type = 'term structure'}) or \code{\linkS4class{FuturesAggregate}}
@@ -779,11 +779,11 @@ storethat_futures_market <- function(file = NULL,
 #' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
 #' @param ... optional extra parameters for grouping:
 #'   \itemize{
-#'     \item{\code{asset_class}: a character vector. See column 'asset class' of the \code{tickers_futures} dataset in the  \code{bbgsymbols}.}
-#'     \item{\code{sector}: a character vector. See column 'sector' of the \code{tickers_futures} dataset in the  \code{bbgsymbols}.}
-#'     \item{\code{subsector}: a character vector. See column 'subsector' of the \code{tickers_futures} dataset in the  \code{bbgsymbols}.}
-#'     \item{\code{exchange}: a character vector. See column 'symbol' of the \code{exchange} dataset in the \code{fewISOs}.}
-#'     \item{\code{currency}: a character vector. See column 'symbol' of the \code{currencies} dataset in the \code{fewISOs}.}
+#'     \item{\code{asset_class}: a character vector. See column 'asset class' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
+#'     \item{\code{sector}: a character vector. See column 'sector' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
+#'     \item{\code{subsector}: a character vector. See column 'subsector' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
+#'     \item{\code{exchange}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{exchanges}} dataset in the \code{fewISOs}.}
+#'     \item{\code{currency}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{currencies}} dataset in the \code{fewISOs}.}
 #'   }
 #'
 #'
@@ -949,11 +949,11 @@ storethat_futures_TS <- function(file = NULL,
 #' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
 #' @param ... optional extra parameters for grouping:
 #'   \itemize{
-#'     \item{\code{asset_class}: a character vector. See column 'asset class' of the \code{tickers_futures} dataset in the  \code{bbgsymbols}.}
-#'     \item{\code{sector}: a character vector. See column 'sector' of the \code{tickers_futures} dataset in the  \code{bbgsymbols}.}
-#'     \item{\code{subsector}: a character vector. See column 'subsector' of the \code{tickers_futures} dataset in the  \code{bbgsymbols}.}
-#'     \item{\code{exchange}: a character vector. See column 'symbol' of the \code{exchange} dataset in the \code{fewISOs}.}
-#'     \item{\code{currency}: a character vector. See column 'symbol' of the \code{currencies} dataset in the \code{fewISOs}.}
+#'     \item{\code{asset_class}: a character vector. See column 'asset class' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
+#'     \item{\code{sector}: a character vector. See column 'sector' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
+#'     \item{\code{subsector}: a character vector. See column 'subsector' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
+#'     \item{\code{exchange}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{exchanges}} dataset in the \code{fewISOs}.}
+#'     \item{\code{currency}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{currencies}} dataset in the \code{fewISOs}.}
 #'   }
 #'
 #' @return An S4 object of class \code{\linkS4class{FuturesAggregate}} with slots:
@@ -1076,11 +1076,11 @@ storethat_futures_aggregate <- function(file = NULL,
 #' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
 #' @param ... optional extra parameters for grouping:
 #'   \itemize{
-#'     \item{\code{asset_class}: a character vector. See column 'asset class' of the \code{tickers_futures} dataset in the  \code{bbgsymbols}.}
-#'     \item{\code{sector}: a character vector. See column 'sector' of the \code{tickers_futures} dataset in the  \code{bbgsymbols}.}
-#'     \item{\code{subsector}: a character vector. See column 'subsector' of the \code{tickers_futures} dataset in the  \code{bbgsymbols}.}
-#'     \item{\code{exchange}: a character vector. See column 'symbol' of the \code{exchanges} dataset in the \code{fewISOs}.}
-#'     \item{\code{currency}: a character vector. See column 'symbol' of the \code{currencies} dataset in the \code{fewISOs}.}
+#'     \item{\code{asset_class}: a character vector. See column 'asset class' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
+#'     \item{\code{sector}: a character vector. See column 'sector' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
+#'     \item{\code{subsector}: a character vector. See column 'subsector' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
+#'     \item{\code{exchange}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{exchanges}} dataset in the \code{fewISOs}.}
+#'     \item{\code{currency}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{currencies}} dataset in the \code{fewISOs}.}
 #'   }
 #'
 #' @return An S4 object of class \code{\linkS4class{FuturesCFTC}} with slots:
@@ -1255,13 +1255,13 @@ storethat_futures_cftc <- function(file = NULL,
 #' @param ... optional extra parameters for grouping:
 #'   \itemize{
 #'     \item{\code{type}: a character vector. See 'SECURITY_TYP' data field on Bloomberg.}
-#'     \item{\code{exchange}: a character vector. See column 'symbol' in \code{\link[fewISOs]{exchanges}}.}
-#'     \item{\code{country}: a character vector. See column 'symbol' in \code{\link[fewISOs]{countries}}.}
-#'     \item{\code{currency}: a character vector. See column 'symbol' in \code{\link[fewISOs]{currencies}}.}
-#'     \item{\code{sector}: a character vector. See column 'sector name' of the 'GICS' dataset in this package.}
-#'     \item{\code{industry_group}: a character vector. See column 'industry group name' of the 'GICS' dataset in this package.}
-#'     \item{\code{industry}: a character vector. See column 'industry name' of the 'GICS' dataset in this package.}
-#'     \item{\code{subindustry}: a character vector. See column 'subindustry name' of the 'GICS' dataset in this package.}
+#'     \item{\code{exchange}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{exchanges}} dataset in the \code{fewISOs} package.}
+#'     \item{\code{country}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{countries}} dataset in the \code{fewISOs} package.}
+#'     \item{\code{currency}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{currencies}} dataset in the \code{fewISOs} package.}
+#'     \item{\code{sector}: a character vector. See column 'sector name' of the \code{GICS} dataset in this package.}
+#'     \item{\code{industry_group}: a character vector. See column 'industry group name' of the \code{GICS} dataset in this package.}
+#'     \item{\code{industry}: a character vector. See column 'industry name' of the \code{GICS} dataset in this package.}
+#'     \item{\code{subindustry}: a character vector. See column 'subindustry name' of the \code{GICS} dataset in this package.}
 #'   }
 #'
 #' @return An S4 object of class \code{\linkS4class{EquityMarket}} with slots:
@@ -1413,13 +1413,13 @@ storethat_equity_market <- function(file = NULL,
 #' @param ... optional extra parameters for grouping:
 #'   \itemize{
 #'     \item{\code{type}: a character vector. See 'SECURITY_TYP' data field on Bloomberg.}
-#'     \item{\code{exchange}: a character vector. See column 'symbol' in \code{\link[fewISOs]{exchanges}}.}
-#'     \item{\code{country}: a character vector. See column 'symbol' in \code{\link[fewISOs]{countries}}.}
-#'     \item{\code{currency}: a character vector. See column 'symbol' in \code{\link[fewISOs]{currencies}}.}
-#'     \item{\code{sector}: a character vector. See column 'sector name' of the 'GICS' dataset in this package.}
-#'     \item{\code{industry_group}: a character vector. See column 'industry group name' of the 'GICS' dataset in this package.}
-#'     \item{\code{industry}: a character vector. See column 'industry name' of the 'GICS' dataset in this package.}
-#'     \item{\code{subindustry}: a character vector. See column 'subindustry name' of the 'GICS' dataset in this package.}
+#'     \item{\code{exchange}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{exchanges}} dataset in the \code{fewISOs} package.}
+#'     \item{\code{country}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{countries}} dataset in the \code{fewISOs} package.}
+#'     \item{\code{currency}: a character vector. See column 'symbol' in \code{\link[fewISOs]{currencies}} dataset in the \code{fewISOs} package.}
+#'     \item{\code{sector}: a character vector. See column 'sector name' of the \code{GICS} dataset in this package.}
+#'     \item{\code{industry_group}: a character vector. See column 'industry group name' of the \code{GICS} dataset in this package.}
+#'     \item{\code{industry}: a character vector. See column 'industry name' of the \code{GICS} dataset in this package.}
+#'     \item{\code{subindustry}: a character vector. See column 'subindustry name' of the \code{GICS} dataset in this package.}
 #'   }
 #'
 #' @return An S4 object of class \code{\linkS4class{EquityKS}} (\code{book = 'key stats'}), \code{\linkS4class{EquityIS}}
