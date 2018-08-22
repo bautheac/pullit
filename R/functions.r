@@ -1046,8 +1046,11 @@ storethat_futures_aggregate <- function(file = NULL,
     dplyr::mutate(date = as.Date(date, origin = "1970-01-01")) %>%
     dplyr::select(`active contract ticker`, field, date, value)
 
+  tickers <- dplyr::left_join(dplyr::distinct(data, `active contract ticker`), tickers_futures, by = c("active contract ticker" = "ticker")) %>%
+    tibble::as.tibble()
+
   methods::new("FuturesAggregate",
-               tickers = dplyr::left_join(dplyr::distinct(data, `active contract ticker`), tickers_futures, by = c("active contract ticker", "ticker")),
+               tickers = tickers,
                fields = data.table::as.data.table(dplyr::distinct(data, `active contract ticker`, field)),
                data = data.table::as.data.table(data),
                call = match.call()
