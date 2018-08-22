@@ -826,7 +826,6 @@ storethat_futures_market <- function(file = NULL,
 #'
 #' @import bbgsymbols
 #' @importFrom magrittr "%>%" "%<>%"
-#'
 storethat_futures_TS <- function(file = NULL,
                                  active_contract_tickers = "C A Comdty",
                                  start = "2018-01-01",
@@ -983,8 +982,6 @@ storethat_futures_TS <- function(file = NULL,
 #'
 #' @import bbgsymbols
 #' @importFrom magrittr "%>%" "%<>%"
-#'
-#' @export
 storethat_futures_aggregate <- function(file = NULL,
                                         active_contract_tickers = "C A Comdty",
                                         start = "2018-01-01",
