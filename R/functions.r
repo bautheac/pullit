@@ -1047,7 +1047,7 @@ storethat_futures_aggregate <- function(file = NULL,
     dplyr::select(`active contract ticker`, field, date, value)
 
   methods::new("FuturesAggregate",
-               tickers = dplyr::left_join(dplyr::distinct(data, `active contract ticker`), tickers_futures, by = c("active contract ticker", "ticker")),
+               tickers = dplyr::left_join(dplyr::distinct(data, `active contract ticker`), tickers_futures, by = c("active contract ticker" = "ticker")),
                fields = data.table::as.data.table(dplyr::distinct(data, `active contract ticker`, field)),
                data = data.table::as.data.table(data),
                call = match.call()
