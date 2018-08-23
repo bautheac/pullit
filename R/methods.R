@@ -18,11 +18,9 @@ setMethod("show", "BBGHistorical", function(object) {
       "\nSee also: get_periods()")
 })
 
-#' 'tickers' slot accessor method for S4 objects of class \linkS4class{BBGHistorical}.
-#'
-#' @param object an S4 object of class \linkS4class{BBGHistorical}.
-#'
-#' @export
+
+#' @rdname get_tickers-methods
+#' @aliases get_tickers,BBGHistorical,ANY-method
 setMethod("get_tickers", "BBGHistorical", function(object) object@tickers)
 
 #' 'fields' slot accessor method for S4 objects of class \linkS4class{BBGHistorical}.
@@ -57,7 +55,7 @@ setMethod("get_call", "BBGHistorical", function(object) object@call)
 #'
 #' @param object an S4 object of class \linkS4class{FuturesTS}.
 #'
-#' @return A tibble. Columns include:
+#' @return For S4 objects of class \linkS4class{FuturesTS} columns include:
 #'    \itemize{
 #'      \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
 #'      \item{\code{TS position}: futures term structure positions for which data has been found.}
@@ -68,7 +66,8 @@ setMethod("get_call", "BBGHistorical", function(object) object@call)
 #'
 #' @importFrom magrittr "%>%"
 #'
-#' @export
+#' @rdname get_periods-methods
+#' @aliases get_periods,BBGHistorical,FuturesTS
 setMethod("get_periods", "FuturesTS", function(object) {
   object@data %>%
     dplyr::group_by(`active contract ticker`, `TS position`, field) %>%
@@ -84,7 +83,7 @@ setMethod("get_periods", "FuturesTS", function(object) {
 #'
 #' @param object an S4 object of class \linkS4class{FuturesAggregate}.
 #'
-#' @return A tibble. Columns include:
+#' @return For S4 objects of class \linkS4class{FuturesAggregate} columns include:
 #'    \itemize{
 #'      \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
 #'      \item{\code{field}: futures Bloomberg aggregate data fields for which data has been found.}
@@ -94,7 +93,8 @@ setMethod("get_periods", "FuturesTS", function(object) {
 #'
 #' @importFrom magrittr "%>%"
 #'
-#' @export
+#' @rdname get_periods-methods
+#' @aliases get_periods,BBGHistorical,FuturesAggregate
 setMethod("get_periods", "FuturesAggregate", function(object) {
   object@data %>%
     dplyr::group_by(`active contract ticker`, field) %>%
@@ -110,7 +110,7 @@ setMethod("get_periods", "FuturesAggregate", function(object) {
 #'
 #' @param object an S4 object of class \linkS4class{FuturesCFTC}.
 #'
-#' @return A tibble. Columns include:
+#' @return For S4 objects of class \linkS4class{FuturesCFTC} columns include:
 #'   \itemize{
 #'     \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
 #'     \item{\code{format}: report formats for which data has been found.}
@@ -124,7 +124,8 @@ setMethod("get_periods", "FuturesAggregate", function(object) {
 #'
 #' @importFrom magrittr "%>%"
 #'
-#' @export
+#' @rdname get_periods-methods
+#' @aliases get_periods,BBGHistorical,FuturesCFTC
 setMethod("get_periods", "FuturesCFTC", function(object) {
   object@data %>%
     dplyr::group_by(`active contract ticker`, format, underlying, unit, participant, position) %>%
@@ -140,7 +141,7 @@ setMethod("get_periods", "FuturesCFTC", function(object) {
 #'
 #' @param object an S4 object of class \linkS4class{EquityMarket}.
 #'
-#' @return A tibble. Columns include:
+#' @return For S4 objects of class \linkS4class{EquityMarket} columns include:
 #'   \itemize{
 #'     \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
 #'     \item{\code{field}: equity Bloomberg market data fields for which data has been found.}
@@ -150,7 +151,8 @@ setMethod("get_periods", "FuturesCFTC", function(object) {
 #'
 #' @importFrom magrittr "%>%"
 #'
-#' @export
+#' @rdname get_periods-methods
+#' @aliases get_periods,BBGHistorical,EquityMarket
 setMethod("get_periods", "EquityMarket", function(object) {
   object@data %>%
     dplyr::group_by(ticker, field) %>%
@@ -166,7 +168,7 @@ setMethod("get_periods", "EquityMarket", function(object) {
 #'
 #' @param object an S4 object of class \linkS4class{EquityKS}.
 #'
-#' @return A tibble. Columns include:
+#' @return For S4 objects of class \linkS4class{EquityKS} columns include:
 #'   \itemize{
 #'     \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
 #'     \item{\code{section}: balance sheet sections for which data has been found.}
@@ -178,7 +180,8 @@ setMethod("get_periods", "EquityMarket", function(object) {
 #'
 #' @importFrom magrittr "%>%"
 #'
-#' @export
+#' @rdname get_periods-methods
+#' @aliases get_periods,BBGHistorical,EquityKS
 setMethod("get_periods", "EquityKS", function(object) {
   object@data %>%
     dplyr::group_by(ticker, name) %>%
@@ -194,7 +197,7 @@ setMethod("get_periods", "EquityKS", function(object) {
 #'
 #' @param object an S4 object of class \linkS4class{EquityBS}.
 #'
-#' @return A tibble. Columns include:
+#' @return For S4 objects of class \linkS4class{EquityBS} columns include:
 #'   \itemize{
 #'     \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
 #'     \item{\code{section}: balance sheet sections for which data has been found.}
@@ -206,7 +209,8 @@ setMethod("get_periods", "EquityKS", function(object) {
 #'
 #' @importFrom magrittr "%>%"
 #'
-#' @export
+#' @rdname get_periods-methods
+#' @aliases get_periods,BBGHistorical,EquityBS
 setMethod("get_periods", "EquityBS", function(object) {
   object@data %>%
     dplyr::group_by(ticker, section, subsection, name) %>%
@@ -222,7 +226,7 @@ setMethod("get_periods", "EquityBS", function(object) {
 #'
 #' @param object an S4 object of class \linkS4class{EquityIS}.
 #'
-#' @return A tibble. Columns include:
+#' @return For S4 objects of class \linkS4class{EquityIS} columns include:
 #'   \itemize{
 #'     \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
 #'     \item{\code{name}: income statement Bloomberg field names for which data has been found.}
@@ -232,7 +236,8 @@ setMethod("get_periods", "EquityBS", function(object) {
 #'
 #' @importFrom magrittr "%>%"
 #'
-#' @export
+#' @rdname get_periods-methods
+#' @aliases get_periods,BBGHistorical,EquityIS
 setMethod("get_periods", "EquityIS", function(object) {
   object@data %>%
     dplyr::group_by(ticker, name) %>%
@@ -248,7 +253,7 @@ setMethod("get_periods", "EquityIS", function(object) {
 #'
 #' @param object an S4 object of class \linkS4class{EquityCF}.
 #'
-#' @return A tibble. Columns include:
+#' @return For S4 objects of class \linkS4class{EquityCF} columns include:
 #'   \itemize{
 #'     \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
 #'     \item{\code{section}: cash flow statement sections for which data has been found.}
@@ -259,7 +264,8 @@ setMethod("get_periods", "EquityIS", function(object) {
 #'
 #' @importFrom magrittr "%>%"
 #'
-#' @export
+#' @rdname get_periods-methods
+#' @aliases get_periods,BBGHistorical,EquityCF
 setMethod("get_periods", "EquityCF", function(object) {
   object@data %>%
     dplyr::group_by(ticker, section, name) %>%
@@ -275,7 +281,7 @@ setMethod("get_periods", "EquityCF", function(object) {
 #'
 #' @param object an S4 object of class \linkS4class{EquityRatios}.
 #'
-#' @return A tibble. Columns include:
+#' @return For S4 objects of class \linkS4class{EquityRatios} columns include:
 #'   \itemize{
 #'     \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
 #'     \item{\code{type}: financial ratio types for which data has been found.}
@@ -286,7 +292,8 @@ setMethod("get_periods", "EquityCF", function(object) {
 #'
 #' @importFrom magrittr "%>%"
 #'
-#' @export
+#' @rdname get_periods-methods
+#' @aliases get_periods,BBGHistorical,EquityRatios
 setMethod("get_periods", "EquityRatios", function(object) {
   object@data %>%
     dplyr::group_by(ticker, section, subsection, name) %>%

@@ -1181,25 +1181,31 @@ storethat_futures_cftc <- function(file = NULL,
                     "LEFT JOIN (SELECT id AS position_ticker_id, symbol AS position_ticker, active_contract_ticker_id FROM tickers_support_futures_cftc) B
                     ON A.id = B.active_contract_ticker_id;")
     tickers <- RSQLite::dbGetQuery(con, query)
-    query <- paste0("SELECT id, date FROM support_dates WHERE date >= '", start, "' AND date <= '", end, "';")
-    dates <- RSQLite::dbGetQuery(con, query)
 
-    query <- paste0("SELECT * FROM data_futures_cftc WHERE ticker_id IN (",
-                    paste0(tickers$ position_ticker_id, collapse = ", "),
-                    ") AND date_id ",
-                    ifelse(NROW(dates$id) == 1L,
-                           paste0("= ", dates$id),
-                           paste0("IN (", paste0(dates$id, collapse = ", "), ")")),
-                    ";"
-    )
+    if (all(is.na(tickers$active_contract_ticker_id))) {
+      warning(paste0("No CFTC data found for ", x, "."))
+      NULL
+    } else {
+      query <- paste0("SELECT id, date FROM support_dates WHERE date >= '", start, "' AND date <= '", end, "';")
+      dates <- RSQLite::dbGetQuery(con, query)
 
-    data <- RSQLite::dbGetQuery(con, query) %>%
-      dplyr::left_join(tickers, by = c("ticker_id" = "position_ticker_id")) %>%
-      dplyr::left_join(dates, by = c("date_id" = "id")) %>%
-      dplyr::select(-c(ticker_id, date_id)) %>%
-      dplyr::select(`active contract ticker` = active_contract_ticker, `position ticker` = position_ticker, date, value) %>%
-      dplyr::filter(stats::complete.cases(.))
-    if (verbose) message(x); data
+      query <- paste0("SELECT * FROM data_futures_cftc WHERE ticker_id IN (",
+                      paste0(tickers$ position_ticker_id, collapse = ", "),
+                      ") AND date_id ",
+                      ifelse(NROW(dates$id) == 1L,
+                             paste0("= ", dates$id),
+                             paste0("IN (", paste0(dates$id, collapse = ", "), ")")),
+                      ";"
+      )
+
+      data <- RSQLite::dbGetQuery(con, query) %>%
+        dplyr::left_join(tickers, by = c("ticker_id" = "position_ticker_id")) %>%
+        dplyr::left_join(dates, by = c("date_id" = "id")) %>%
+        dplyr::select(-c(ticker_id, date_id)) %>%
+        dplyr::select(`active contract ticker` = active_contract_ticker, `position ticker` = position_ticker, date, value) %>%
+        dplyr::filter(stats::complete.cases(.))
+      if (verbose) message(x); data
+    }
   }) %>%
     data.table::rbindlist(use.names = TRUE)
 

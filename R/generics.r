@@ -1,15 +1,27 @@
 #' Generic method for accessing the 'tickers' slot of various S4 objects from the \code{pullit} package.
 #'
-#' @param object an S4 object with a 'tickers' slot.
+#' @param object an S4 object of class \linkS4class{BBGHistorical} or childs.
+#'
+#' @return A tibble.
 #'
 #' @export
+#'
+#' @docType methods
+#'
+#' @rdname get_tickers-methods
 setGeneric("get_tickers", function(object) standardGeneric("get_tickers"))
 
 #' Generic method for accessing the 'periods' for which various S4 objects from the \code{pullit} package contain data.
 #'
-#' @param object an S4 object with a 'periods' slot.
+#' @param object an S4 object of class \linkS4class{BBGHistorical} or childs.
+#'
+#' @return A tibble.
 #'
 #' @export
+#'
+#' @docType methods
+#'
+#' @rdname get_periods-methods
 setGeneric("get_periods", function(object) standardGeneric("get_periods"))
 
 #' Generic method for accessing the 'fields' slot of various S4 objects from the \code{pullit} package.
