@@ -53,8 +53,6 @@ setMethod("get_call", "BBGHistorical", function(object) object@call)
 
 #' 'periods' method for S4 objects of class \linkS4class{FuturesTS}.
 #'
-#' @param object an S4 object of class \linkS4class{FuturesTS}.
-#'
 #' @return For S4 objects of class \linkS4class{FuturesTS} columns include:
 #'    \itemize{
 #'      \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
@@ -81,8 +79,6 @@ setMethod("get_periods", "FuturesTS", function(object) {
 
 #' 'periods' method for S4 objects of class \linkS4class{FuturesAggregate}.
 #'
-#' @param object an S4 object of class \linkS4class{FuturesAggregate}.
-#'
 #' @return For S4 objects of class \linkS4class{FuturesAggregate} columns include:
 #'    \itemize{
 #'      \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
@@ -107,8 +103,6 @@ setMethod("get_periods", "FuturesAggregate", function(object) {
 ## FuturesCFTC ####
 
 #' 'periods' method for S4 objects of class \linkS4class{FuturesCFTC}.
-#'
-#' @param object an S4 object of class \linkS4class{FuturesCFTC}.
 #'
 #' @return For S4 objects of class \linkS4class{FuturesCFTC} columns include:
 #'   \itemize{
@@ -139,8 +133,6 @@ setMethod("get_periods", "FuturesCFTC", function(object) {
 
 #' 'periods' method for S4 objects of class \linkS4class{EquityMarket}.
 #'
-#' @param object an S4 object of class \linkS4class{EquityMarket}.
-#'
 #' @return For S4 objects of class \linkS4class{EquityMarket} columns include:
 #'   \itemize{
 #'     \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
@@ -165,8 +157,6 @@ setMethod("get_periods", "EquityMarket", function(object) {
 ## EquityKS ####
 
 #' 'periods' method for S4 objects of class \linkS4class{EquityKS}.
-#'
-#' @param object an S4 object of class \linkS4class{EquityKS}.
 #'
 #' @return For S4 objects of class \linkS4class{EquityKS} columns include:
 #'   \itemize{
@@ -195,8 +185,6 @@ setMethod("get_periods", "EquityKS", function(object) {
 
 #' 'periods' method for S4 objects of class \linkS4class{EquityBS}.
 #'
-#' @param object an S4 object of class \linkS4class{EquityBS}.
-#'
 #' @return For S4 objects of class \linkS4class{EquityBS} columns include:
 #'   \itemize{
 #'     \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
@@ -224,8 +212,6 @@ setMethod("get_periods", "EquityBS", function(object) {
 
 #' 'periods' method for S4 objects of class \linkS4class{EquityIS}.
 #'
-#' @param object an S4 object of class \linkS4class{EquityIS}.
-#'
 #' @return For S4 objects of class \linkS4class{EquityIS} columns include:
 #'   \itemize{
 #'     \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
@@ -250,8 +236,6 @@ setMethod("get_periods", "EquityIS", function(object) {
 ## EquityCF ####
 
 #' 'periods' method for S4 objects of class \linkS4class{EquityCF}.
-#'
-#' @param object an S4 object of class \linkS4class{EquityCF}.
 #'
 #' @return For S4 objects of class \linkS4class{EquityCF} columns include:
 #'   \itemize{
@@ -278,8 +262,6 @@ setMethod("get_periods", "EquityCF", function(object) {
 ## EquityRatios ####
 
 #' 'periods' method for S4 objects of class \linkS4class{EquityRatios}.
-#'
-#' @param object an S4 object of class \linkS4class{EquityRatios}.
 #'
 #' @return For S4 objects of class \linkS4class{EquityRatios} columns include:
 #'   \itemize{

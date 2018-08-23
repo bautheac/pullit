@@ -45,24 +45,6 @@ get_periods(object)
 }
 \arguments{
 \item{object}{an S4 object of class \linkS4class{BBGHistorical} or childs.}
-
-\item{object}{an S4 object of class \linkS4class{FuturesTS}.}
-
-\item{object}{an S4 object of class \linkS4class{FuturesAggregate}.}
-
-\item{object}{an S4 object of class \linkS4class{FuturesCFTC}.}
-
-\item{object}{an S4 object of class \linkS4class{EquityMarket}.}
-
-\item{object}{an S4 object of class \linkS4class{EquityKS}.}
-
-\item{object}{an S4 object of class \linkS4class{EquityBS}.}
-
-\item{object}{an S4 object of class \linkS4class{EquityIS}.}
-
-\item{object}{an S4 object of class \linkS4class{EquityCF}.}
-
-\item{object}{an S4 object of class \linkS4class{EquityRatios}.}
 }
 \value{
 A tibble.
