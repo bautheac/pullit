@@ -78,6 +78,7 @@ bbg_pull_historical_market <- function(tickers, fields, start, end, ...){
                            fields = fields,
                            start.date = as.Date(start),
                            end.date = as.Date(end),
+                           int.as.double = TRUE,
                            options = ...,
                            con = con)
   Rblpapi::blpDisconnect(con); bbg_pull
@@ -111,6 +112,7 @@ bbg_pull_historical_books <- function(tickers, field, start, end, ...){
                            field = field,
                            start.date = as.Date(start),
                            end.date = as.Date(end),
+                           int.as.double = TRUE,
                            options = unlist(list(...)),
                            con = con)
   bbg_pull <- if (! is.data.frame(bbg_pull))

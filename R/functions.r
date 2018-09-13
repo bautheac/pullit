@@ -160,7 +160,7 @@ bbg_futures_TS <- function(active_contract_tickers = "C A Comdty",
                            verbose = TRUE,
                            ...){
 
-  data(list = c("tickers_futures", "fields", "rolls"), package = "bbgsymbols", envir = environment())
+  data(list = c("fields", "rolls"), package = "bbgsymbols", envir = environment())
 
   if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers")
   if (! is.integer(TS_positions)) stop("The parameter 'TS_positions' must be supplied as a vector of integers")
@@ -212,13 +212,25 @@ bbg_futures_TS <- function(active_contract_tickers = "C A Comdty",
     dplyr::left_join(dplyr::filter(rolls, roll == "type") %>% dplyr::select(symbol, name), by = c("roll type" = "symbol")) %>%
     dplyr::select(`active contract ticker`, ticker, `TS position`, `roll type` = name, `roll days`, `roll months`, `roll adjustment`) %>%
     dplyr::left_join(dplyr::filter(rolls, roll == "adjustment") %>% dplyr::select(symbol, name), by = c("roll adjustment" = "symbol")) %>%
-    dplyr::select(`active contract ticker`, `TS position`, `roll type`, `roll days`, `roll months`, `roll adjustment` = name) %>%
-    dplyr::left_join(tickers_futures, by = c("active contract ticker" = "ticker"))
+    dplyr::select(`active contract ticker`, ticker, `TS position`, `roll type`, `roll days`, `roll months`, `roll adjustment` = name) %>%
+    dplyr::left_join(Rblpapi::bdp(dplyr::distinct(data, `active contract ticker`) %>% purrr::flatten_chr(),
+                                  dplyr::filter(fields, instrument == "futures", type == "info") %>%
+                                    dplyr::select(symbol) %>%
+                                    purrr::flatten_chr()) %>%
+                       dplyr::mutate(`active contract ticker` = row.names(.)) %>%
+                       tidyr::gather(field, value, -`active contract ticker`) %>%
+                       dplyr::left_join(dplyr::filter(fields, instrument == "futures", type == "info") %>% dplyr::select(symbol, name), by = c("field" = "symbol"))  %>%
+                       dplyr::mutate(name = forcats::as_factor(name)) %>%
+                       dplyr::select(`active contract ticker`, field = name, value) %>%
+                       tidyr::spread(field, value)
+                     , by = "active contract ticker"
+                     ) %>%
+    dplyr::mutate(name = stringr::str_to_lower(stringr::str_extract(name, "^.+(?= FUTURE)")))
 
   methods::new("FuturesTS",
                tickers = tibble::as.tibble(tickers),
-               fields = data.table::as.data.table(dplyr::distinct(data, `active contract ticker`, ticker, field)),
-               data = data.table::as.data.table(data),
+               fields = tibble::as.tibble(dplyr::distinct(data, `active contract ticker`, ticker, field)),
+               data = data.table::as.data.table(dplyr::select(data, ticker, field, date, value)),
                call = match.call()
   )
 }
@@ -270,15 +282,13 @@ bbg_futures_TS <- function(active_contract_tickers = "C A Comdty",
 #' @import bbgsymbols
 #' @importFrom magrittr "%>%" "%<>%"
 #'
-#' @export
 bbg_futures_aggregate <- function(active_contract_tickers = "C A Comdty",
                                   start = "2018-01-01",
                                   end = "2018-06-30",
                                   verbose = TRUE,
                                   ...){
 
-  call <- deparse(match.call())
-  data(list = c("tickers_futures", "fields"), package = "bbgsymbols", envir = environment())
+  data(list = c("fields"), package = "bbgsymbols", envir = environment())
 
   if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers")
   if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector")
@@ -296,13 +306,25 @@ bbg_futures_aggregate <- function(active_contract_tickers = "C A Comdty",
     dplyr::filter(stats::complete.cases(.)) %>%
     dplyr::arrange(`active contract ticker`, field, date) %>%
     dplyr::mutate(date = as.Date(date, origin = "1970-01-01")) %>%
-    dplyr::select(`active contract ticker`, field, date, value)
+    dplyr::select(ticker = `active contract ticker`, field, date, value)
+
+  tickers <- Rblpapi::bdp(dplyr::distinct(data, ticker) %>% purrr::flatten_chr(),
+                          dplyr::filter(fields, instrument == "futures", type == "info") %>%
+                            dplyr::select(symbol) %>%
+                            purrr::flatten_chr()) %>%
+    dplyr::mutate(ticker = row.names(.)) %>%
+    tidyr::gather(field, value, -ticker) %>%
+    dplyr::left_join(dplyr::filter(fields, instrument == "futures", type == "info") %>% dplyr::select(symbol, name), by = c("field" = "symbol"))  %>%
+    dplyr::mutate(name = forcats::as_factor(name)) %>%
+    dplyr::select(ticker, field = name, value) %>%
+    tidyr::spread(field, value) %>%
+    dplyr::mutate(name = stringr::str_to_lower(stringr::str_extract(name, "^.+(?= FUTURE)")))
 
   if (nrow(data) == 0L) warning("No aggregate data found.")
 
   methods::new("FuturesAggregate",
-               tickers = dplyr::left_join(dplyr::distinct(data, `active contract ticker`), tickers_futures, by = c("active contract ticker", "ticker")),
-               fields = data.table::as.data.table(dplyr::distinct(data, `active contract ticker`, field)),
+               tickers = tibble::as.tibble(tickers),
+               fields = tibble::as.tibble(dplyr::distinct(data, ticker, field)),
                data = data.table::as.data.table(data),
                call = match.call()
   )
@@ -400,7 +422,7 @@ bbg_futures_CFTC <- function(active_contract_tickers = "C A Comdty",
                              verbose = TRUE,
                              ...){
 
-  data(list = c("tickers_cftc", "tickers_futures"), package = "bbgsymbols", envir = environment())
+  data(list = c("fields", "tickers_cftc"), package = "bbgsymbols", envir = environment())
 
   if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers")
   if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector")
@@ -424,17 +446,29 @@ bbg_futures_CFTC <- function(active_contract_tickers = "C A Comdty",
     data.table::rbindlist(use.names = TRUE) %>%
     dplyr::select(`active contract ticker`, ticker, format, underlying, `unit`, participant, position, date, value = PX_LAST) %>%
     dplyr::filter(stats::complete.cases(.)) %>%
-    dplyr::mutate(date = as.Date(date, origin = "1970-01-01"))
+    dplyr::mutate(field = "CFTC",
+                  date = as.Date(date, origin = "1970-01-01"))
 
   if (nrow(data) == 0L) warning("No CFTC data found.")
 
   tickers <- dplyr::distinct(data, `active contract ticker`) %>%
-    dplyr::left_join(tickers_futures, by = c("active contract ticker" = "ticker"))
+    dplyr::left_join(Rblpapi::bdp(dplyr::distinct(data, `active contract ticker`) %>% purrr::flatten_chr(),
+                                  dplyr::filter(fields, instrument == "futures", type == "info") %>%
+                                    dplyr::select(symbol) %>%
+                                    purrr::flatten_chr()) %>%
+                       dplyr::mutate(`active contract ticker` = row.names(.)) %>%
+                       tidyr::gather(field, value, -`active contract ticker`) %>%
+                       dplyr::left_join(dplyr::filter(fields, instrument == "futures", type == "info") %>% dplyr::select(symbol, name), by = c("field" = "symbol"))  %>%
+                       dplyr::mutate(name = forcats::as_factor(name)) %>%
+                       dplyr::select(`active contract ticker`, field = name, value) %>%
+                       tidyr::spread(field, value),
+                     by = "active contract ticker") %>%
+    dplyr::mutate(name = stringr::str_to_lower(stringr::str_extract(name, "^.+(?= FUTURE)")))
 
   methods::new("FuturesCFTC",
                tickers = tibble::as.tibble(tickers),
-               fields = data.table::as.data.table(dplyr::distinct(data, `active contract ticker`, format, underlying, `unit`, participant, position)),
-               data = data.table::as.data.table(dplyr::select(data, `active contract ticker`, `position ticker` = ticker, date, value)),
+               fields = tibble::as.tibble(dplyr::distinct(data, `active contract ticker`, ticker, format, underlying, `unit`, participant, position)),
+               data = data.table::as.data.table(dplyr::select(data, ticker, field, date, value)),
                call = match.call()
   )
 }
@@ -533,7 +567,7 @@ bbg_equity_market <- function(tickers = "NEM US Equity",
 
   methods::new("EquityMarket",
       tickers = tibble::as.tibble(tickers),
-      fields = data.table::as.data.table(dplyr::distinct(data, ticker, field)),
+      fields = tibble::as.tibble(dplyr::distinct(data, ticker, field)),
       data = data.table::as.data.table(data),
       call = match.call()
   )
@@ -629,11 +663,11 @@ bbg_equity_books <- function(book = "key stats",
   fields <- dplyr::left_join(dplyr::distinct(data, ticker, field), symbols, by = c("field" = "symbol"))
 
   fields <- switch(book,
-                   `key stats` = data.table::as.data.table(dplyr::select(fields, ticker, field = name)),
-                   `income statement` = data.table::as.data.table(dplyr::select(fields, ticker, field = name)),
-                   `balance sheet` = data.table::as.data.table(dplyr::select(fields, ticker, section, subsection, field = name)),
-                   `cash flow statement` = data.table::as.data.table(dplyr::select(fields, ticker, section, field = name)),
-                   `ratios` = data.table::as.data.table(dplyr::select(data, ticker, section, subsection, field = name))
+                   `key stats` = dplyr::select(fields, ticker, field = name),
+                   `income statement` = dplyr::select(fields, ticker, field = name),
+                   `balance sheet` = dplyr::select(fields, ticker, section, subsection, field = name),
+                   `cash flow statement` = dplyr::select(fields, ticker, section, field = name),
+                   `ratios` = dplyr::select(data, ticker, section, subsection, field = name)
 
   )
 
@@ -641,7 +675,7 @@ bbg_equity_books <- function(book = "key stats",
                                 book == "cash flow statement" ~ "EquityCF", book == "income statement" ~ "EquityIS",
                                 book == "ratios" ~ "EquityRatios"),
                tickers = tibble::as.tibble(tickers),
-               fields = fields,
+               fields = tibble::as.tibble(fields),
                data = data.table::as.data.table(data),
                call = match.call()
   )
@@ -918,13 +952,13 @@ storethat_futures_TS <- function(file = NULL,
     dplyr::left_join(dplyr::filter(rolls, roll == "type") %>% dplyr::select(symbol, name), by = c("roll type" = "symbol")) %>%
     dplyr::select(`active contract ticker`, ticker, `TS position`, `roll type` = name, `roll days`, `roll months`, `roll adjustment`) %>%
     dplyr::left_join(dplyr::filter(rolls, roll == "adjustment") %>% dplyr::select(symbol, name), by = c("roll adjustment" = "symbol")) %>%
-    dplyr::select(`active contract ticker`, `TS position`, `roll type`, `roll days`, `roll months`, `roll adjustment` = name) %>%
+    dplyr::select(`active contract ticker`, ticker, `TS position`, `roll type`, `roll days`, `roll months`, `roll adjustment` = name) %>%
     dplyr::left_join(tickers_futures, by = c("active contract ticker" = "ticker"))
 
   methods::new("FuturesTS",
                tickers = tibble::as.tibble(tickers),
-               fields = data.table::as.data.table(dplyr::distinct(data, `active contract ticker`, ticker, field)),
-               data = data.table::as.data.table(data),
+               fields = tibble::as.tibble(dplyr::distinct(data, `active contract ticker`, ticker, field)),
+               data = data.table::as.data.table(dplyr::select(ticker, field, date, value)),
                call = match.call()
   )
 }
@@ -1044,14 +1078,14 @@ storethat_futures_aggregate <- function(file = NULL,
   data %<>%
     dplyr::arrange(`active contract ticker`, field, date) %>%
     dplyr::mutate(date = as.Date(date, origin = "1970-01-01")) %>%
-    dplyr::select(`active contract ticker`, field, date, value)
+    dplyr::select(ticker = `active contract ticker`, field, date, value)
 
-  tickers <- dplyr::left_join(dplyr::distinct(data, `active contract ticker`), tickers_futures, by = c("active contract ticker" = "ticker")) %>%
+  tickers <- dplyr::left_join(dplyr::distinct(data, ticker), tickers_futures, by = "ticker") %>%
     tibble::as.tibble()
 
   methods::new("FuturesAggregate",
                tickers = tickers,
-               fields = data.table::as.data.table(dplyr::distinct(data, `active contract ticker`, field)),
+               fields = tibble::as.tibble(dplyr::distinct(data, ticker, field)),
                data = data.table::as.data.table(data),
                call = match.call()
   )
@@ -1213,8 +1247,9 @@ storethat_futures_cftc <- function(file = NULL,
 
   data %<>%
     dplyr::arrange(`active contract ticker`, `position ticker`, date) %>%
-    dplyr::mutate(date = as.Date(date, origin = "1970-01-01")) %>%
-    dplyr::select(`active contract ticker`, `position ticker`, date, value)
+    dplyr::mutate(field = "CFTC",
+                  date = as.Date(date, origin = "1970-01-01")) %>%
+    dplyr::select(`active contract ticker`, `position ticker`, field, date, value)
 
   query <- paste0("SELECT symbol, name, asset_class, sector, subsector, TS_length,
                   MIC, currency_id, FIGI FROM (SELECT * FROM tickers_futures WHERE symbol IN ('",
@@ -1234,8 +1269,8 @@ storethat_futures_cftc <- function(file = NULL,
 
   methods::new("FuturesCFTC",
                tickers = tickers,
-               fields = data.table::as.data.table(fields),
-               data = data.table::as.data.table(data),
+               fields = tibble::as.tibble(fields),
+               data = data.table::as.data.table(dplyr::select(data, ticker = `position ticker`, field, date, value)),
                call = match.call()
   )
 }
@@ -1390,7 +1425,7 @@ storethat_equity_market <- function(file = NULL,
 
   methods::new("EquityMarket",
                tickers = tibble::as.tibble(tickers),
-               fields = data.table::as.data.table(dplyr::distinct(data, ticker, field)),
+               fields = tibble::as.tibble(dplyr::distinct(data, ticker, field)),
                data = data.table::as.data.table(data),
                call = match.call()
   )
@@ -1551,11 +1586,11 @@ storethat_equity_books <- function(file = NULL,
   fields <- dplyr::left_join(dplyr::distinct(data, ticker, field), symbols, by = c("field" = "symbol"))
 
   fields <-   switch(book,
-                     `key stats` = data.table::as.data.table(dplyr::select(fields, ticker, field = name)),
-                     `income statement` = data.table::as.data.table(dplyr::select(fields, ticker, field = name)),
-                     `balance sheet` = data.table::as.data.table(dplyr::select(fields, ticker, section, subsection, field = name)),
-                     `cash flow statement` = data.table::as.data.table(dplyr::select(fields, ticker, section, field = name)),
-                     `ratios` = data.table::as.data.table(dplyr::select(data, ticker, section, subsection, field = name))
+                     `key stats` = dplyr::select(fields, ticker, field = name),
+                     `income statement` = dplyr::select(fields, ticker, field = name),
+                     `balance sheet` = dplyr::select(fields, ticker, section, subsection, field = name),
+                     `cash flow statement` = dplyr::select(fields, ticker, section, field = name),
+                     `ratios` = dplyr::select(data, ticker, section, subsection, field = name)
 
   )
 
@@ -1563,9 +1598,155 @@ storethat_equity_books <- function(file = NULL,
                                 book == "cash flow statement" ~ "EquityCF", book == "income statement" ~ "EquityIS",
                                 book == "ratios" ~ "EquityRatios"),
                tickers = tibble::as.tibble(tickers),
-               fields = fields,
+               fields = tibble::as.tibble(fields),
                data = data.table::as.data.table(data),
                call = match.call()
   )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#' Fund historical market data from Bloomberg
+#'
+#' @description Provided with a set of Bloomberg fund tickers and a time period,
+#'   queries Bloomberg for the corresponding fund historical market data.
+#'
+#' @param tickers A chatacter vector. Specifies the Bloomberg fund tickers to query data for.
+#'   Defaults to 'GLD US Equity', the Bloomberg fund ticker for the 'SPRD gold shares' ETF, the commodiy ETF
+#'   with the highest market capitalization at the time of writing (August, 2018).
+#' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
+#'   Defaults to '2018-01-01'.
+#' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
+#'   Defaults to '2018-06-30'.
+#' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
+#' @param ... Optional parameters to pass to the \code{\link[Rblpapi]{bdh}} function from the \code{Rblpapi} package used
+#'   for the query (\code{options} parameter).
+#'
+#' @return An S4 object of class \code{\linkS4class{FundMarket}} with slots:
+#'   \itemize{
+#'     \item{\code{tickers}: a tibble. Columns include:
+#'       \itemize{
+#'         \item{\code{ticker}: fund Bloomberg tickers for which data has been found.}
+#'         \item{\code{field}: fund Bloomberg information data fields. Descriptive elements on the fund identified.}
+#'         \item{\code{name}: corresponding information data field names.}
+#'         \item{\code{value}: corresponding information data field value.}#'
+#'       }
+#'     }
+#'     \item{\code{fields}: a tibble. Columns include:
+#'       \itemize{
+#'         \item{\code{ticker}: fund Bloomberg tickers for which data has been found.}
+#'         \item{\code{field}: fund Bloomberg market data fields for which data has been found.}
+#'       }
+#'     }
+#'     \item{\code{data}: a tibble. Columns include:
+#'       \itemize{
+#'         \item{\code{ticker}: fund Bloomberg tickers for which data has been found.}
+#'         \item{\code{field}: fund Bloomberg market data fields for which data has been found.}
+#'         \item{\code{date}: observation date.}
+#'         \item{\code{value}: corresponding value.}
+#'       }
+#'     }
+#'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
+#'   }
+#'
+#' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
+#'
+#' @examples
+#' \dontrun{bbg_fund_market()}
+#'
+#' @import bbgsymbols
+#' @importFrom magrittr "%>%" "%<>%"
+#'
+#' @export
+
+bbg_fund_market <- function(tickers = "GLD US Equity",
+                              start = "2018-01-01",
+                              end = "2018-06-30",
+                              verbose = TRUE,
+                              ...){
+
+  data(list = c("fields"), package = "bbgsymbols", envir = environment())
+
+  if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg tickers")
+  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector")
+
+  data <- lapply(tickers, function(x) {
+    data <- bbg_pull_historical_market(x, fields = dplyr::filter(fields, instrument == "fund", type == "market") %>% dplyr::select(symbol) %>% purrr::flatten_chr(),
+                                       start, end, ...) %>%
+      dplyr::mutate(ticker = x)
+    if (verbose) message(x); data
+  }) %>%
+    data.table::rbindlist(use.names = TRUE)
+
+  data %<>%
+    tidyr::gather(field, value, -c(ticker, date)) %>%
+    dplyr::filter(stats::complete.cases(.)) %>%
+    dplyr::select(ticker, field, date, value) %>%
+    dplyr::mutate(date = as.Date(date, origin = "1970-01-01")) %>%
+    dplyr::arrange(ticker, field, date)
+
+  if (nrow(data) == 0L) warning("No market data found.")
+
+  tickers <- Rblpapi::bdp(dplyr::distinct(data, ticker) %>% purrr::flatten_chr(),
+                          dplyr::filter(fields, instrument == "fund", type == "info") %>%
+                            dplyr::select(symbol) %>%
+                            purrr::flatten_chr()) %>%
+    dplyr::mutate(ticker = row.names(.)) %>%
+    dplyr::mutate_all(dplyr::funs(as.character)) %>%
+    tidyr::gather(field, value, -ticker) %>%
+    dplyr::left_join(dplyr::filter(fields, instrument == "fund", type == "info") %>% dplyr::select(symbol, name), by = c("field" = "symbol"))  %>%
+    dplyr::mutate(name = forcats::as_factor(name)) %>%
+    dplyr::select(ticker, field = name, value) %>%
+    tidyr::spread(field, value)
+
+  methods::new("FundMarket",
+               tickers = tibble::as.tibble(tickers),
+               fields = tibble::as.tibble(dplyr::distinct(data, ticker, field)),
+               data = data.table::as.data.table(data),
+               call = match.call()
+  )
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -44,3 +44,13 @@ setGeneric("get_data", function(object) standardGeneric("get_data"))
 #'
 #' @export
 setGeneric("get_call", function(object) standardGeneric("get_call"))
+
+#' Generic method for plotting historical futures term structure data contained in an S4 object
+#'   of class \linkS4class{FuturesTS} from the \code{pullit} package.
+#'
+#' @param object an S4 object of class \linkS4class{FuturesTS}.
+#' @param ticker a scalar character vector. Active contract Bloomberg ticker to plot the
+#'   term structure for.
+#'
+#' @export
+setGeneric("plot_TS", function(object, ticker) standardGeneric("plot_TS"))

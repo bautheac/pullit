@@ -287,4 +287,56 @@ setMethod("get_periods", "EquityRatios", function(object) {
 
 
 
+# plots ####
+
+## FuturesTS ####
+
+#' Plot futures term structure
+#'
+#' @importFrom magrittr "%>%"
+#'
+#' @rdname plot_TS-methods
+#' @aliases plot_TS,BBGHistorical,FuturesTS
+setMethod("plot_TS", "FuturesTS", function(object, ticker) {
+
+  data <- dplyr::left_join(object@data, dplyr::select(object@tickers, `active contract ticker`, ticker, `TS position`), by = "ticker") %>%
+    dplyr::select(name = `active contract ticker`, position = `TS position`, field, date, value) %>%
+    dplyr::filter(name == ticker) %>%
+    tidyr::spread(field, value) %>%
+    dplyr::select(date, position, close = PX_LAST, `open interest` = OPEN_INT, volume = PX_VOLUME)
+
+  data %<>% dplyr::filter(date >= as.Date("2018-01-01"))
+
+  ticker <- dplyr::filter(dplyr::select(object@tickers, `active contract ticker`, name, MIC), `active contract ticker` == ticker) %>%
+    dplyr::mutate(name = paste0(`active contract ticker` , " (", name, " - ", MIC, ")")) %>%
+    dplyr::distinct(name) %>%
+    purrr::flatten_chr()
+  suppressWarnings(plotly::plot_ly(data, x = ~position, y = ~close, color = ~`open interest`, colors = "Set2", size = ~volume, frame = ~date,
+                                   text = ~paste0("close price:\t", close, "\nopen interest:\t", `open interest`, "\nvolume:\t", volume),
+                                   hoverinfo = "text", type = "scatter", mode = "lines+markers", line = list(color = "black", width = 1L)) %>%
+                     plotly::layout(title = ticker, xaxis = list(title = ""), yaxis = list(title = "close price")) %>%
+                     plotly::animation_opts(frame = 100L, transition = 0L, redraw = FALSE) %>%
+                     plotly::animation_button(x = 1L, xanchor = "right", y = 0L, yanchor = "bottom") %>%
+                     plotly::animation_slider(currentvalue = list(prefix = "Date: ", font = list(color = "black")))
+  )
+
+
+
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
