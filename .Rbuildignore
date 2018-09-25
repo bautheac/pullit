@@ -1,7 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^development/
-^data-raw$
+^data-raw/
 ^LICENSE\.md$
 ^README\.Rmd$
 ^\.travis\.yml$

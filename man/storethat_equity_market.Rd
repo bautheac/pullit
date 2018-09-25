@@ -2,67 +2,43 @@
 % Please edit documentation in R/functions.r
 \name{storethat_equity_market}
 \alias{storethat_equity_market}
-\title{Equity historical market data from a \code{storethat} SQLite database.}
+\title{Equity historical market data from a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database}
 \usage{
-storethat_equity_market(file = NULL, tickers = "NEM US Equity",
-  start = "2018-01-01", end = "2018-06-30", verbose = TRUE, ...)
+storethat_equity_market(file = NULL, tickers, start, end,
+  verbose = TRUE)
 }
 \arguments{
-\item{file}{A scalar chatacter vector. Specifies the target \code{storethat} SQLite database file.}
+\item{file}{A scalar chatacter vector. Specifies the target \pkg{storethat} SQLite database file.}
 
-\item{tickers}{A chatacter vector. Specifies the Bloomberg equity tickers to query data for.
-Defaults to 'NEM US Equity', the Bloomberg equity ticker for the Newmont Minning Corporation.}
+\item{tickers}{A chatacter vector. Specifies the equity Bloomberg tickers to query data for.}
 
-\item{start}{A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
-Defaults to '2018-01-01'.}
+\item{start}{A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.}
 
-\item{end}{A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
-Defaults to '2018-06-30'.}
+\item{end}{A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.}
 
 \item{verbose}{A logical scalar vector. Should progression messages be printed? Defaults to TRUE.}
-
-\item{...}{optional extra parameters for grouping:
-\itemize{
-  \item{\code{type}: a character vector. See 'SECURITY_TYP' data field on Bloomberg.}
-  \item{\code{exchange}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{exchanges}} dataset in the \code{fewISOs} package.}
-  \item{\code{country}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{countries}} dataset in the \code{fewISOs} package.}
-  \item{\code{currency}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{currencies}} dataset in the \code{fewISOs} package.}
-  \item{\code{sector}: a character vector. See column 'sector name' of the \code{GICS} dataset in the \code{storethat} package.}
-  \item{\code{industry_group}: a character vector. See column 'industry group name' of the \code{GICS} dataset in the \code{storethat} package.}
-  \item{\code{industry}: a character vector. See column 'industry name' of the \code{GICS} dataset in the \code{storethat} package.}
-  \item{\code{subindustry}: a character vector. See column 'subindustry name' of the \code{GICS} dataset in the \code{storethat} package.}
-}}
 }
 \value{
-An S4 object of class \code{\linkS4class{EquityMarket}} with slots:
-  \itemize{
-    \item{\code{tickers}: a character vector. Equity Bloomberg tickers for which data has been found.}
-    \item{\code{fields}: a tibble. Columns include:
-      \itemize{
-        \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
-        \item{\code{field}: equity Bloomberg market data fields for which data has been found.}
-      }
-    }
-    \item{\code{data}: a tibble. Columns include:
-      \itemize{
-        \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
-        \item{\code{field}: equity Bloomberg market data fields for which data has been found.}
-        \item{\code{date}: observation date.}
-        \item{\code{value}: corresponding value.}
-      }
-    }
-    \item{\code{call}: a scalar character vector showing the original call to the constructor.}
-  }
+An S4 object of class \linkS4class{EquityMarket}.
 }
 \description{
-Provided with a set of Bloomberg equity tickers and a time period,
-  retrieves the corresponding equity historical market data previously stored in a \code{storethat}
+Provided with a set of Bloomberg equity tickers and a time period, retrieves the corresponding equity
+  historical market data previously stored in \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database
   SQLite database.
 }
 \examples{
-\dontrun{bbg_equity_market()}
+\dontrun{
+    storethat_equity_market(tickers = c("BP/ LN Equity", "WEIR LN Equity"),
+      start = "2000-01-01", end = as.character(Sys.Date()))
+  }
 
 }
 \seealso{
-The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
+\itemize{
+    \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the Bloomnerg fields used here.}
+    \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
+    \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
+    (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+  }
 }

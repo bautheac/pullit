@@ -2,66 +2,49 @@
 % Please edit documentation in R/functions.r
 \name{storethat_futures_aggregate}
 \alias{storethat_futures_aggregate}
-\title{Futures aggregate historical data from Bloomberg}
+\title{Futures aggregate historical data from from a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database}
 \usage{
-storethat_futures_aggregate(file = NULL,
-  active_contract_tickers = "C A Comdty", start = "2018-01-01",
-  end = "2018-06-30", verbose = TRUE, ...)
+storethat_futures_aggregate(file, active_contract_tickers, start, end,
+  verbose)
 }
 \arguments{
-\item{file}{A scalar chatacter vector. Specifies the target \code{storethat} SQLite database file.}
+\item{file}{A scalar chatacter vector. Specifies the target \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
+SQLite database file.}
 
-\item{active_contract_tickers}{A chatacter vector. Specifies the Bloomberg futures active contract tickers to query data for.
-Defaults to 'C A Comdty', the Bloomberg active contract ticker for the XCBT corn futures series.}
+\item{active_contract_tickers}{A chatacter vector. Specifies the futures active contract Bloomberg tickers to query data for.}
 
-\item{start}{A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
-Defaults to '2018-01-01'.}
+\item{start}{A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.}
 
-\item{end}{A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
-Defaults to '2018-06-30'.}
+\item{end}{A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.}
 
 \item{verbose}{A logical scalar vector. Should progression messages be printed? Defaults to TRUE.}
-
-\item{...}{optional extra parameters for grouping:
-\itemize{
-  \item{\code{asset_class}: a character vector. See column 'asset class' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
-  \item{\code{sector}: a character vector. See column 'sector' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
-  \item{\code{subsector}: a character vector. See column 'subsector' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
-  \item{\code{exchange}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{exchanges}} dataset in the \code{fewISOs}.}
-  \item{\code{currency}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{currencies}} dataset in the \code{fewISOs}.}
-}}
 }
 \value{
-An S4 object of class \code{\linkS4class{FuturesAggregate}} with slots:
-  \itemize{
-    \item{\code{tickers}: a character vector. Active contract Bloomberg tickers for which data has been found.}
-    \item{\code{fields}: a tibble. Columns include:
-      \itemize{
-        \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
-        \item{\code{field}: futures Bloomberg aggregate data fields for which data has been found.}
-      }
-    }
-    \item{\code{data}: a tibble. Columns inlude:
-      \itemize{
-        \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
-        \item{\code{field}: Bloomberg aggregate data fields for which data has been found.}
-        \item{\code{date}: observation date.}
-        \item{\code{value}: corresponding value.}
-      }
-    }
-    \item{\code{call}: a scalar character vector showing the original call to the constructor.}
-  }
+An S4 object of class \linkS4class{FuturesAggregate}.
 }
 \description{
 Provided with a set of Bloomberg futures active contract tickers and a time period,
-  retrieves the corresponding futures historical aggregate data previously stored in a \code{storethat}
-  SQLite database. For each individual field, futures aggregate data represents the aggregation of the
-  corresponding field values over all the corresponding term structure contracts.
+  retrieves the corresponding futures historical aggregate data previously stored in a
+  \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database. For each
+  individual field, futures aggregate data represents the aggregation of the corresponding field
+  values over all the corresponding term structure contracts.
 }
 \examples{
-\dontrun{bbg_futures_aggregate()}
+\dontrun{
+    storethat_futures_market(type = "aggregate",
+      active_contract_tickers = c("W A Comdty", "KWA Comdty"),
+      start = "2000-01-01", end = as.character(Sys.Date()))
+  }
 
 }
 \seealso{
-The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
+\itemize{
+    \item{"GFUT <GO>" on a Bloomberg terminal.}
+    \item{The \link[BBGsymbols]{rolls} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+    (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details regarding the \code{roll_type} & \code{roll_adjustment} parameters.}
+    \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+    for details on the Bloomnerg fields used here.}
+    \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
+    (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+  }
 }

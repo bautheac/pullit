@@ -2,99 +2,67 @@
 % Please edit documentation in R/functions.r
 \name{storethat_futures_TS}
 \alias{storethat_futures_TS}
-\title{Futures term structure historical data from a \code{storethat} SQLite database}
+\title{Futures term structure historical data from a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database}
 \usage{
-storethat_futures_TS(file = NULL,
-  active_contract_tickers = "C A Comdty", start = "2018-01-01",
-  end = "2018-06-30", TS_positions = 1L, roll_type = "A",
-  roll_days = 0L, roll_months = 0L, roll_adjustment = "N",
-  verbose = TRUE, ...)
+storethat_futures_TS(file, active_contract_tickers, start, end,
+  TS_positions, roll_type, roll_days, roll_months, roll_adjustment,
+  verbose)
 }
 \arguments{
-\item{file}{A scalar chatacter vector. Specifies the target \code{storethat} SQLite database file.}
+\item{file}{A scalar chatacter vector. Specifies the target \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
+SQLite database file.}
 
-\item{active_contract_tickers}{A chatacter vector. Specifies the Bloomberg futures active contract tickers to query data for.
-Defaults to 'C A Comdty', the Bloomberg active contract ticker for the XCBT corn futures series.}
+\item{active_contract_tickers}{A chatacter vector. Specifies the futures active contract Bloomberg tickers to query data for.}
 
-\item{start}{A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
-Defaults to '2018-01-01'.}
+\item{start}{A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.}
 
-\item{end}{A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
-Defaults to '2018-06-30'.}
+\item{end}{A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.}
 
-\item{TS_positions}{An integer vector. Specifies the term structure positions to query data for.
-Defaults to 1: front nearby contract for the corresponding futures series.}
+\item{TS_positions}{An integer vector. Specifies the term structure positions to query data for.}
 
 \item{roll_type}{A scalar chatacter vector. Specifies roll type to use for term structure ticker construction.
-Must be one of 'A', 'B', 'D', 'F', 'N', 'O' or 'R'.
-Defaults to 'A' or 'With active future': rolls to the most actively traded contract in the futures series.}
+Must be one of 'A', 'B', 'D', 'F', 'N', 'O' or 'R'.}
 
 \item{roll_days}{A scalar integer vector. Specifies the day the roll should be done.
 Refers to the day of the month (\code{roll_type} = 'F') or the number of days before a reference date
 (\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O', \code{roll_type} = 'R').
-Works in tandem with `roll_months` below.
-Defaults to 0.}
+Works in tandem with \code{roll_months} below.}
 
 \item{roll_months}{A scalar integer vector. Specifies the month the roll should be done.
 Refers to the number of months before a reference date (\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O',
-\code{roll_type} = 'R'). Works in tandem with `roll_days` above.
-Defaults to 0.}
+\code{roll_type} = 'R'). Works in tandem with \code{roll_days} above.}
 
 \item{roll_adjustment}{A scalar chatacter vector. Specifies roll adjustment method to use for term structure ticker construction.
-Must be one of 'D', 'N', 'R', or 'W'. Defaults to 'N' or 'None'.}
+Must be one of 'D', 'N', 'R', or 'W'.}
 
 \item{verbose}{A logical scalar vector. Should progression messages be printed? Defaults to TRUE.}
-
-\item{...}{optional extra parameters for grouping:
-\itemize{
-  \item{\code{asset_class}: a character vector. See column 'asset class' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
-  \item{\code{sector}: a character vector. See column 'sector' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
-  \item{\code{subsector}: a character vector. See column 'subsector' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
-  \item{\code{exchange}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{exchanges}} dataset in the \code{fewISOs}.}
-  \item{\code{currency}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{currencies}} dataset in the \code{fewISOs}.}
-}}
 }
 \value{
-An S4 object of class \code{\linkS4class{FuturesTS}} with slots:
-  \itemize{
-    \item{\code{tickers}: a tibble. Columns include:
-      \itemize{
-        \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
-        \item{\code{ticker}: futures term structure Bloomberg tickers for which data has been found.}
-        \item{\code{TS position}: corresponding futures term structure position.}
-        \item{\code{roll type}: corresponding roll type (by name).}
-        \item{\code{roll days}: corresponding day(s) offset.}
-        \item{\code{roll months}: corresponding month(s) offset.}
-        \item{\code{roll adjustment}: corresponding roll adjustment (by name).}
-      }
-    }
-    \item{\code{fields}: a tibble. Columns include:
-      \itemize{
-        \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
-        \item{\code{TS position}: corresponding futures chain term structure positions for which data has been found.}
-        \item{\code{field}: futures Bloomberg market data fields for which data has been found.}
-      }
-    }
-    \item{\code{data}: a tibble. Columns include:
-      \itemize{
-        \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
-        \item{\code{TS position}: futures chain term structure positions for which data has been found.}
-        \item{\code{field}: futures Bloomberg market data fields for which data has been found.}
-        \item{\code{date}: observation date.}
-        \item{\code{value}: corresponding value.}
-      }
-    }
-    \item{\code{call}: a scalar character vector showing the original call to the constructor.}
-  }
+An S4 object of class \linkS4class{FuturesTS}.
 }
 \description{
 Provided with a set of Bloomberg futures active contract tickers, term structure positions, roll parameters and a time period,
-  retrieves the corresponding term structure historical data previously stored in a \code{storethat} SQLite database.
+  retrieves the corresponding term structure historical data previously stored in a
+  \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database.
 }
 \examples{
-\dontrun{bbg_futures_TS()}
+\dontrun{
+    storethat_futures_market(type = 'term structure',
+      active_contract_tickers = c("W A Comdty", "KWA Comdty"),
+      start = "2000-01-01", end = as.character(Sys.Date()),
+      TS_positions = 1L:5L, roll_type = "A", roll_days = 0L,
+      roll_months = 0L, roll_adjustment = "N")
+  }
 
 }
 \seealso{
-The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
+\itemize{
+    \item{"GFUT <GO>" on a Bloomberg terminal.}
+    \item{The \link[BBGsymbols]{rolls} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+    (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details regarding the \code{roll_type} & \code{roll_adjustment} parameters.}
+    \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+    for details on the Bloomnerg fields used here.}
+    \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
+    (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+  }
 }

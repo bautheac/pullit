@@ -9,34 +9,33 @@ futures_ticker(active_contract_ticker = "C A Comdty", TS_position = 1L,
   roll_adjustment = "N")
 }
 \arguments{
-\item{active_contract_ticker}{A scalar chatacter vector. Specifies the Bloomberg futures active contract ticker to use for term structure ticker construction.
-Defaults to 'C A Comdty', the Bloomberg active contract ticker for the XCBT corn futures series.}
+\item{active_contract_ticker}{A scalar chatacter vector. Specifies the futures active contract Bloomberg ticker to use
+for term structure ticker construction.}
 
-\item{TS_position}{A scalar integer vector. Specifies the term structure position desired. Defaults to 1: front nearby contract for the corresponding futures series.}
+\item{TS_position}{A scalar integer vector. Specifies the term structure position desired.}
 
-\item{roll_type}{A scalar chatacter vector. Specifies roll type to use for term structure ticker construction. Must be one of 'A', 'B', 'D', 'F', 'N', 'O' or 'R'.
-Defaults to 'A' or 'With active future': rolls to the most actively traded contract in the futures series.}
+\item{roll_type}{A scalar chatacter vector. Specifies roll type to use for term structure ticker construction.
+Must be one of 'A', 'B', 'D', 'F', 'N', 'O' or 'R'.}
 
-\item{roll_days}{A scalar integer vector. Specifies the day the roll should be done. Refers to the day of the month (\code{roll_type} = 'F') or
-the number of days before a reference date (\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O', \code{roll_type} = 'R'). Works in tandem with `roll_months` below.
-Defaults to 0.}
+\item{roll_days}{A scalar integer vector. Specifies the day the roll should be done.
+Refers to the day of the month (\code{roll_type} = 'F') or the number of days before a reference date
+(\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O', \code{roll_type} = 'R').
+Works in tandem with `roll_months` below.}
 
-\item{roll_months}{A scalar integer vector. Specifies the month the roll should be done. Refers to the number of months before a
-reference date (\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O', \code{roll_type} = 'R'). Works in tandem with `roll_days` above.
-Defaults to 0.}
+\item{roll_months}{A scalar integer vector. Specifies the month the roll should be done.
+Refers to the number of months before a reference date (\code{roll_type} = 'D', \code{roll_type} = 'N',
+\code{roll_type} = 'O', \code{roll_type} = 'R'). Works in tandem with `roll_days` above.}
 
 \item{roll_adjustment}{A scalar chatacter vector. Specifies roll adjustment method to use for term structure ticker construction.
-Must be one of 'D', 'N', 'R', or 'W'. Defaults to 'N' or 'None'.}
+Must be one of 'D', 'N', 'R', or 'W'.}
 }
 \value{
 A scalar character vector containing the corresponding term structure ticker.
 }
 \description{
-Provided with a futures active contract ticker, a term structure position and a set of roll parameters, constructs the
-  corresponding futures term structure Bloomberg ticker according Bloomberg futures term structure ticker construction method.
-}
-\details{
-See 'DOCS #2072138 <GO>' on a Bloomberg terminal to learn more about the Bloomberg rolling conventions.
+Provided with a futures active contract Bloomberg ticker, a term structure position and a set of roll parameters,
+  constructs the corresponding futures term structure Bloomberg ticker according Bloomberg futures term structure
+  ticker construction method.
 }
 \examples{
 futures_ticker(active_contract_ticker = "C A Comdty", TS_position = 5L,
@@ -44,5 +43,9 @@ futures_ticker(active_contract_ticker = "C A Comdty", TS_position = 5L,
 
 }
 \seealso{
-\code{\link{bbg_futures_TS}}
+\itemize{
+    \item{"GFUT <GO>" &/or "DOCS #2072138 <GO>" on a Bloomberg terminal to learn more about the Bloomberg rolling conventions.}
+    \item{The \link[BBGsymbols]{rolls} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}}.}
+  }
 }

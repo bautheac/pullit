@@ -5,66 +5,95 @@
 
 setOldClass(c("tbl_df", "tbl", "data.frame"))
 
+
+# info ####
+
+## parent ####
+#' S4 class for Bloomberg info data objects
+#'
+#' @export
+setClass("DataInfo", slots = c(info = "tbl_df", fields = "data.table", call = "call"))
+
+## childs ####
+
+### futures ####
+#' S4 class for futures info objects
+#' @export
+setClass("FuturesInfo", contains = "DataInfo")
+
+### equity ####
+#' S4 class for futures info objects
+#' @export
+setClass("EquityInfo", contains = "DataInfo")
+
+### fund ####
+#' S4 class for futures info objects
+#' @export
+setClass("FundInfo", contains = "DataInfo")
+
+
+# historical ####
+## parent ####
 #' S4 class for Bloomberg historical data objects
 #'
 #' @importClassesFrom data.table data.table
 #'
 #' @export
-setClass("DataHistorical", representation(tickers = "tbl_df", fields = "tbl_df", data = "data.table", call = "call"))
+setClass("DataHistorical", slots = c(data = "data.table", call = "call"))
 
+## childs ####
+### futures ####
 #' S4 class for Bloomberg futures historical data objects
 #'
 #' @export
-setClass("FuturesHistorical", contains = "DataHistorical")
-
-#' S4 class for Bloomberg futures historical data objects
-#'
-#' @export
-setClass("EquityHistorical", contains = "DataHistorical")
-
-#' S4 class for Bloomberg futures historical data objects
-#'
-#' @export
-setClass("FundHistorical", contains = "DataHistorical")
-
-
+setClass("FuturesHistorical", contains = "DataHistorical", slots = c(active_contract_tickers = "data.table"))
 #' S4 class for futures term structure objects
 #'
 #' @export
-setClass("FuturesTS", contains = "FuturesHistorical")
-
+setClass("FuturesMarket", contains = "FuturesHistorical", slots = c(fields = "data.table"))
+#' S4 class for futures term structure objects
+#'
+#' @export
+setClass("FuturesTS", contains = "FuturesMarket", slots = c(term_structure_tickers = "data.table"))
 #' S4 class for futures aggregate objects
 #' @export
-setClass("FuturesAggregate", contains = "FuturesHistorical")
-
+setClass("FuturesAggregate", contains = "FuturesMarket")
 #' S4 class for futures CFTC objects
 #' @export
-setClass("FuturesCFTC", contains = "FuturesHistorical")
+setClass("FuturesCFTC", contains = "FuturesHistorical", slots = c(cftc_tickers = "data.table"))
 
+### equity ####
+#' S4 class for Bloomberg futures historical data objects
+#'
+#' @export
+setClass("EquityHistorical", contains = "DataHistorical", slots = c(fields = "data.table", tickers = "data.table"))
 #' S4 class for equity market objects
 #' @export
 setClass("EquityMarket", contains = "EquityHistorical")
-
+#' S4 class for equity book objects
+#' @export
+setClass("EquityBook", contains = "EquityHistorical")
 #' S4 class for equity key stats objects
 #' @export
-setClass("EquityKS", contains = "EquityHistorical")
-
+setClass("EquityKS", contains = "EquityBook")
 #' S4 class for equity balance sheet objects
 #' @export
-setClass("EquityBS", contains = "EquityHistorical")
-
+setClass("EquityBS", contains = "EquityBook")
 #' S4 class for equity cash flow statement objects
 #' @export
-setClass("EquityCF", contains = "EquityHistorical")
-
+setClass("EquityCF", contains = "EquityBook")
 #' S4 class for equity income statement objects
 #' @export
-setClass("EquityIS", contains = "EquityHistorical")
-
+setClass("EquityIS", contains = "EquityBook")
 #' S4 class for equity ratios objects
 #' @export
-setClass("EquityRatios", contains = "EquityHistorical")
+setClass("EquityRatios", contains = "EquityBook")
 
+### fund ####
+#' S4 class for Bloomberg futures historical data objects
+#'
+#' @export
+setClass("FundHistorical", contains = "DataHistorical", slots = c(fields = "data.table", tickers = "data.table"))
 #' S4 class for equity market objects
 #' @export
 setClass("FundMarket", contains = "FundHistorical")

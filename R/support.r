@@ -1,33 +1,37 @@
 #' Bloomberg futures term structure ticker
 #'
-#' @description Provided with a futures active contract ticker, a term structure position and a set of roll parameters, constructs the
-#'   corresponding futures term structure Bloomberg ticker according Bloomberg futures term structure ticker construction method.
+#' @description Provided with a futures active contract Bloomberg ticker, a term structure position and a set of roll parameters,
+#'   constructs the corresponding futures term structure Bloomberg ticker according Bloomberg futures term structure
+#'   ticker construction method.
 #'
-#' @param active_contract_ticker A scalar chatacter vector. Specifies the Bloomberg futures active contract ticker to use for term structure ticker construction.
-#'   Defaults to 'C A Comdty', the Bloomberg active contract ticker for the XCBT corn futures series.
-#' @param TS_position A scalar integer vector. Specifies the term structure position desired. Defaults to 1: front nearby contract for the corresponding futures series.
-#' @param roll_type A scalar chatacter vector. Specifies roll type to use for term structure ticker construction. Must be one of 'A', 'B', 'D', 'F', 'N', 'O' or 'R'.
-#'   Defaults to 'A' or 'With active future': rolls to the most actively traded contract in the futures series.
-#' @param roll_days A scalar integer vector. Specifies the day the roll should be done. Refers to the day of the month (\code{roll_type} = 'F') or
-#'   the number of days before a reference date (\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O', \code{roll_type} = 'R'). Works in tandem with `roll_months` below.
-#'   Defaults to 0.
-#' @param roll_months A scalar integer vector. Specifies the month the roll should be done. Refers to the number of months before a
-#'   reference date (\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O', \code{roll_type} = 'R'). Works in tandem with `roll_days` above.
-#'   Defaults to 0.
+#' @param active_contract_ticker A scalar chatacter vector. Specifies the futures active contract Bloomberg ticker to use
+#'   for term structure ticker construction.
+#' @param TS_position A scalar integer vector. Specifies the term structure position desired.
+#' @param roll_type A scalar chatacter vector. Specifies roll type to use for term structure ticker construction.
+#'   Must be one of 'A', 'B', 'D', 'F', 'N', 'O' or 'R'.
+#' @param roll_days A scalar integer vector. Specifies the day the roll should be done.
+#'   Refers to the day of the month (\code{roll_type} = 'F') or the number of days before a reference date
+#'   (\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O', \code{roll_type} = 'R').
+#'   Works in tandem with `roll_months` below.
+#' @param roll_months A scalar integer vector. Specifies the month the roll should be done.
+#'   Refers to the number of months before a reference date (\code{roll_type} = 'D', \code{roll_type} = 'N',
+#'   \code{roll_type} = 'O', \code{roll_type} = 'R'). Works in tandem with `roll_days` above.
 #' @param roll_adjustment A scalar chatacter vector. Specifies roll adjustment method to use for term structure ticker construction.
-#'   Must be one of 'D', 'N', 'R', or 'W'. Defaults to 'N' or 'None'.
+#'   Must be one of 'D', 'N', 'R', or 'W'.
 #'
 #' @return A scalar character vector containing the corresponding term structure ticker.
 #'
-#' @seealso \code{\link{bbg_futures_TS}}
+#' @seealso
+#'   \itemize{
+#'     \item{"GFUT <GO>" &/or "DOCS #2072138 <GO>" on a Bloomberg terminal to learn more about the Bloomberg rolling conventions.}
+#'     \item{The \link[BBGsymbols]{rolls} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}}.}
+#'   }
 #'
 #' @examples futures_ticker(active_contract_ticker = "C A Comdty", TS_position = 5L,
 #'   roll_type = "A", roll_days = 0L, roll_months = 0L, roll_adjustment = "N")
 #'
-#' @details See 'DOCS #2072138 <GO>' on a Bloomberg terminal to learn more about the Bloomberg rolling conventions.
-#'
 #' @export
-
 futures_ticker <- function(active_contract_ticker = "C A Comdty",
                            TS_position = 1L,
                            roll_type = "A",
@@ -61,29 +65,21 @@ futures_ticker <- function(active_contract_ticker = "C A Comdty",
 #'   in the following format: 'yyyy-mm-dd'.
 #' @param end A scalar character vector. Specifies the end date for the query in the
 #'   following format: 'yyyy-mm-dd'.
-#' @param ... Optional parameters to pass to \code{\link[Rblpapi]{bdh}} function from the \code{Rblpapi} package used
+#' @param ... Optional parameters to pass to the \link[Rblpapi]{bdp} function from the
+#' \href{http://dirk.eddelbuettel.com/code/rblpapi.html}{\pkg{Rblpapi}} package used
 #'   for the query (\code{options} parameter).
-bbg_pull_historical_market <- function(tickers, fields, start, end, ...){
-
-  if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg tickers")
-  if (! is.character(fields)) stop("The parameter 'fields' must be supplied as a character vector of Bloomberg fields")
-  if (! all(rlang::is_scalar_character(start), rlang::is_scalar_character(end), grepl(pattern = "^\\d{4}-\\d{2}-\\d{2}$", x = c(start, end))))
-    stop("The parameters 'start' and 'end' must be supplied as scalar character vectors of dates in the following format: 'yyyy-mm-dd'")
+BBG_pull_historical_market <- function(tickers, fields, start, end, ...){
 
   con <- tryCatch({
     Rblpapi::blpConnect()
   }, error = function(e) stop("Unable to connect Bloomberg. Please open a Bloomberg session on this terminal", call. = FALSE))
 
-  bbg_pull <- Rblpapi::bdh(securities = tickers,
-                           fields = fields,
-                           start.date = as.Date(start),
-                           end.date = as.Date(end),
-                           int.as.double = TRUE,
-                           options = ...,
-                           con = con)
-  Rblpapi::blpDisconnect(con); bbg_pull
+  query <- Rblpapi::bdh(securities = tickers, fields = fields, start.date = as.Date(start), end.date = as.Date(end), int.as.double = TRUE,
+                        options = ..., con = con)
+  Rblpapi::blpDisconnect(con); query
 
 }
+
 
 
 
@@ -95,32 +91,28 @@ bbg_pull_historical_market <- function(tickers, fields, start, end, ...){
 #'   in the following format: 'yyyy-mm-dd'.
 #' @param end A scalar character vector. Specifies the end date for the query in the
 #'   following format: 'yyyy-mm-dd'.
-#' @param ... Optional parameters to pass to \code{\link[Rblpapi]{bdh}} function from the \code{Rblpapi} package used
+#' @param ... Optional parameters to pass to the \link[Rblpapi]{bdp} function from the
+#' \href{http://dirk.eddelbuettel.com/code/rblpapi.html}{\pkg{Rblpapi}} package used
 #'   for the query (\code{options} parameter).
-bbg_pull_historical_books <- function(tickers, field, start, end, ...){
-
-  if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg tickers")
-  if (! is.character(field)) stop("The parameter 'fields' must be supplied as a character vector of Bloomberg fields")
-  if (! all(rlang::is_scalar_character(start), rlang::is_scalar_character(end), grepl(pattern = "^\\d{4}-\\d{2}-\\d{2}$", x = c(start, end))))
-    stop("The parameters 'start' and 'end' must be supplied as scalar character vectors of dates in the following format: 'yyyy-mm-dd'")
+BBG_pull_historical_books <- function(tickers, field, start, end, ...){
 
   con <- tryCatch({
     Rblpapi::blpConnect()
   }, error = function(e) stop("Unable to connect Bloomberg. Please open a Bloomberg session on this terminal", call. = FALSE))
 
-  bbg_pull <- Rblpapi::bdh(securities = tickers,
+  query <- Rblpapi::bdh(securities = tickers,
                            field = field,
                            start.date = as.Date(start),
                            end.date = as.Date(end),
                            int.as.double = TRUE,
                            options = unlist(list(...)),
                            con = con)
-  bbg_pull <- if (! is.data.frame(bbg_pull))
-    lapply(names(bbg_pull), function(x) dplyr::mutate(bbg_pull[[x]], ticker = x)) %>%
+  query <- if (! is.data.frame(query))
+    lapply(names(query), function(x) dplyr::mutate(query[[x]], ticker = x)) %>%
     data.table::rbindlist(use.names = TRUE)
-  else dplyr::mutate(bbg_pull, ticker = tickers)
+  else dplyr::mutate(query, ticker = tickers)
 
-  Rblpapi::blpDisconnect(con); bbg_pull %>% tidyr::gather(field, value, -c(date, ticker))
+  Rblpapi::blpDisconnect(con); tidyr::gather(query, field, value, -c(date, ticker))
 
 }
 
@@ -323,4 +315,14 @@ equity_groups <- function(file, ...){
   RSQLite::dbDisconnect(con)
   tickers
 }
+
+
+bulletize <- function(line, bullet = "*") paste0(bullet, " ", line)
+
+done <- function(..., .envir = parent.frame()) {
+  out <- glue::glue(..., .envir = .envir)
+  cat(bulletize(out, bullet = done_bullet()), "\n", sep = "")
+}
+
+done_bullet <- function() crayon::green(clisymbols::symbol$tick)
 

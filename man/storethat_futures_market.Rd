@@ -2,85 +2,76 @@
 % Please edit documentation in R/functions.r
 \name{storethat_futures_market}
 \alias{storethat_futures_market}
-\title{Futures historical market data from a \code{storethat} SQLite database}
+\title{Futures historical market data from a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database}
 \usage{
-storethat_futures_market(file = NULL, type = "term structure",
-  active_contract_tickers = "C A Comdty", start = "2018-01-01",
-  end = "2018-06-30", TS_positions = 1L, roll_type = "A",
-  roll_days = 0L, roll_months = 0L, roll_adjustment = "N",
-  verbose = TRUE, ...)
+storethat_futures_market(file = NULL, type, active_contract_tickers,
+  start, end, TS_positions = NULL, roll_type = NULL,
+  roll_days = NULL, roll_months = NULL, roll_adjustment = NULL,
+  verbose = TRUE)
 }
 \arguments{
-\item{file}{A scalar chatacter vector. Specifies the target \code{storethat} SQLite database file.}
+\item{file}{A scalar chatacter vector. Specifies the target \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
+SQLite database file.}
 
 \item{type}{A scalar character vector, 'term sructure' or 'aggregate'. 'term structure' returns individual futures chain data for a selected
 portion of the term structure (specify desired positions in \code{TS_positions}) while 'aggregate' returns aggregated data over the whole
-term structure for the corresponding names (specify desired names via corresponding tickers in \code{active_contract_tickers}).
-Defaults to 'term structure'.}
+term structure for the corresponding names (\code{active_contract_tickers}).}
 
-\item{active_contract_tickers}{A chatacter vector. Specifies the Bloomberg futures active contract tickers to query data for.
-Defaults to 'C A Comdty', the Bloomberg active contract ticker for the XCBT corn futures series.}
+\item{active_contract_tickers}{A chatacter vector. Specifies the futures active contract Bloomberg tickers to query data for.}
 
-\item{start}{A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
-Defaults to '2018-01-01'.}
+\item{start}{A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.}
 
-\item{end}{A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
-Defaults to '2018-06-30'.}
+\item{end}{A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.}
 
-\item{TS_positions}{An integer vector. Specifies the term structure positions to query data for.
-Defaults to 1: front nearby contract for the corresponding futures series.}
+\item{TS_positions}{An integer vector. Specifies the term structure positions to query data for.}
 
 \item{roll_type}{A scalar chatacter vector. Specifies roll type to use for term structure ticker construction.
-Must be one of 'A', 'B', 'D', 'F', 'N', 'O' or 'R'.
-Defaults to 'A' or 'With active future': rolls to the most actively traded contract in the futures series.}
+Must be one of 'A', 'B', 'D', 'F', 'N', 'O' or 'R'.}
 
 \item{roll_days}{A scalar integer vector. Specifies the day the roll should be done.
 Refers to the day of the month (\code{roll_type} = 'F') or the number of days before a reference date
 (\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O', \code{roll_type} = 'R').
-Works in tandem with `roll_months` below.
-Defaults to 0.}
+Works in tandem with \code{roll_months} below.}
 
 \item{roll_months}{A scalar integer vector. Specifies the month the roll should be done.
 Refers to the number of months before a reference date (\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O',
-\code{roll_type} = 'R'). Works in tandem with `roll_days` above.
-Defaults to 0.}
+\code{roll_type} = 'R'). Works in tandem with \code{roll_days} above.}
 
 \item{roll_adjustment}{A scalar chatacter vector. Specifies roll adjustment method to use for term structure ticker construction.
-Must be one of 'D', 'N', 'R', or 'W'. Defaults to 'N' or 'None'.}
+Must be one of 'D', 'N', 'R', or 'W'.}
 
 \item{verbose}{A logical scalar vector. Should progression messages be printed? Defaults to TRUE.}
-
-\item{...}{optional extra parameters for grouping:
-\itemize{
-  \item{\code{asset_class}: a character vector. See column 'asset class' of the \code{tickers_futures}
-    dataset in the  \code{bbgsymbols}.}
-  \item{\code{sector}: a character vector. See column 'sector' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
-  \item{\code{subsector}: a character vector. See column 'subsector' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
-  \item{\code{exchange}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{exchanges}} dataset in the \code{fewISOs}.}
-  \item{\code{currency}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{currencies}} dataset in the \code{fewISOs}.}
-}}
 }
 \value{
-An S4 object of class \code{\linkS4class{FuturesTS}} (\code{type = 'term structure'}) or \code{\linkS4class{FuturesAggregate}}
-  \code{type = 'aggregate'}). Slots include:
-  \itemize{
-    \item{\code{tickers}: a data.table showing the tickers for which data has been found.}
-    \item{\code{fields}: a data.table showing the data fields for which data has been found.}
-    \item{\code{data}: a data.table containing the data retrieved.}
-    \item{\code{call}: a scalar character vector showing the original call to the constructor.}
-  }
+An S4 object of class \linkS4class{FuturesTS} (\code{type = 'term structure'}) or \linkS4class{FuturesAggregate}
+  (\code{type = 'aggregate'}).
 }
 \description{
 Provided with a set of Bloomberg futures active contract tickers, term structure positions, roll parameters and a time period,
-  retrieves the corresponding futures market historical data previously stored in a \code{storethat} SQLite database.
+  retrieves the corresponding futures market historical data previously stored in a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
+  SQLite database.
 }
 \examples{
 \dontrun{
-  bbg_futures_market(type = 'term structure')
-  bbg_futures_market(type = 'aggregate')
-}
+    storethat_futures_market(type = 'term structure',
+      active_contract_tickers = c("W A Comdty", "KWA Comdty"),
+      start = "2000-01-01", end = as.character(Sys.Date()),
+      TS_positions = 1L:5L, roll_type = "A", roll_days = 0L,
+      roll_months = 0L, roll_adjustment = "N")
+    storethat_futures_market(type = "aggregate",
+      active_contract_tickers = c("W A Comdty", "KWA Comdty"),
+      start = "2000-01-01", end = as.character(Sys.Date()))
+  }
 
 }
 \seealso{
-The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg data fields used here.
+\itemize{
+    \item{"GFUT <GO>" on a Bloomberg terminal.}
+    \item{The \link[BBGsymbols]{rolls} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+    (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details regarding the \code{roll_type} & \code{roll_adjustment} parameters.}
+    \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+    for details on the Bloomnerg fields used here.}
+    \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
+    (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+  }
 }

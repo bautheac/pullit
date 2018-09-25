@@ -3,20 +3,26 @@
 \docType{methods}
 \name{get_tickers}
 \alias{get_tickers}
-\alias{get_tickers,BBGHistorical-method}
-\alias{get_tickers,BBGHistorical,ANY-method}
-\title{Generic method for accessing the 'tickers' slot of various S4 objects from the \code{pullit} package.}
+\alias{get_tickers,EquityHistorical-method}
+\alias{get_tickers,EquityHistorical}
+\alias{get_tickers,FundHistorical-method}
+\alias{get_tickers,FundHistorical}
+\title{Accesses 'tickers' slot of various S4 objects output of \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}.}
 \usage{
 get_tickers(object)
 
-\S4method{get_tickers}{BBGHistorical}(object)
+\S4method{get_tickers}{EquityHistorical}(object)
+
+\S4method{get_tickers}{FundHistorical}(object)
 }
 \arguments{
-\item{object}{an S4 object of class \linkS4class{BBGHistorical} or childs.}
+\item{object}{an S4 object of class \linkS4class{DataHistorical} or childs.}
 }
 \value{
-A tibble.
+A \link[data.table]{data.table} showing the Bloomberg tickers for which the
+  \code{object} provided contains data.
 }
 \description{
-Generic method for accessing the 'tickers' slot of various S4 objects from the \code{pullit} package.
+Generic method for accessing the 'tickers' slot of various S4 objects from the
+  \href{https://github.com/bautheac/pullit/}{\pkg{pullit}} package.
 }

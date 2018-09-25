@@ -1,775 +1,867 @@
+# Bloomberg ####
+
+## futures ####
+
+### market ####
+
+#### global ####
+
 #' Futures market historical data from Bloomberg
 #'
-#' @description Provided with a set of Bloomberg futures active contract tickers, term structure positions, roll parameters and a time period,
+#' @description Provided with a set of futures active contract Bloomberg tickers, term structure positions, roll parameters and a time period,
 #'   queries Bloomberg for the corresponding futures historical market data.
 #'
 #' @param type A scalar character vector, 'term sructure' or 'aggregate'. 'term structure' returns individual futures chain data for a selected
 #'   portion of the term structure (specify desired positions in \code{TS_positions}) while 'aggregate' returns aggregated data over the whole
-#'   term structure for the corresponding names (specify desired names via corresponding tickers in \code{active_contract_tickers}).
-#'   Defaults to 'term structure'.
-#' @param active_contract_tickers A chatacter vector. Specifies the Bloomberg futures active contract tickers to query data for.
-#'   Defaults to 'C A Comdty', the Bloomberg active contract ticker for the XCBT corn futures series.
+#'   term structure for the corresponding names (\code{active_contract_tickers}).
+#' @param active_contract_tickers A chatacter vector. Specifies the futures active contract Bloomberg tickers to query data for.
 #' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-01-01'.
 #' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-06-30'.
 #' @param TS_positions An integer vector. Specifies the term structure positions to query data for.
-#' Defaults to 1: front nearby contract for the corresponding futures series.
 #' @param roll_type A scalar chatacter vector. Specifies roll type to use for term structure ticker construction.
 #'   Must be one of 'A', 'B', 'D', 'F', 'N', 'O' or 'R'.
-#'   Defaults to 'A' or 'With active future': rolls to the most actively traded contract in the futures series.
 #' @param roll_days A scalar integer vector. Specifies the day the roll should be done.
 #'   Refers to the day of the month (\code{roll_type} = 'F') or the number of days before a reference date
 #'   (\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O', \code{roll_type} = 'R').
 #'   Works in tandem with \code{roll_months} below.
-#'   Defaults to 0.
 #' @param roll_months A scalar integer vector. Specifies the month the roll should be done.
 #'   Refers to the number of months before a reference date (\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O',
 #'   \code{roll_type} = 'R'). Works in tandem with \code{roll_days} above.
-#'   Defaults to 0.
 #' @param roll_adjustment A scalar chatacter vector. Specifies roll adjustment method to use for term structure ticker construction.
-#'   Must be one of 'D', 'N', 'R', or 'W'. Defaults to 'N' or 'None'.
+#'   Must be one of 'D', 'N', 'R', or 'W'.
 #' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
-#' @param ... Optional parameters to pass to the \code{\link[Rblpapi]{bdh}} function from the \code{Rblpapi} package used
+#' @param ... Optional parameters to pass to the \link[Rblpapi]{bdh} function from the
+#' \href{http://dirk.eddelbuettel.com/code/rblpapi.html}{\pkg{Rblpapi}} package used
 #'   for the query (\code{options} parameter).
 #'
-#' @return An S4 object of class \code{\linkS4class{FuturesTS}} (\code{type = 'term structure'}) or \code{\linkS4class{FuturesAggregate}}
-#'   \code{type = 'aggregate'}). Slots include:
+#' @return An S4 object of class \linkS4class{FuturesTS} (\code{type = 'term structure'}) or \linkS4class{FuturesAggregate}
+#'   (\code{type = 'aggregate'}).
+#'
+#' @seealso
 #'   \itemize{
-#'     \item{\code{tickers}: a data.table showing the tickers for which data has been found.}
-#'     \item{\code{fields}: a data.table showing the data fields for which data has been found.}
-#'     \item{\code{data}: a data.table containing the data retrieved.}
-#'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
+#'     \item{"GFUT <GO>" on a Bloomberg terminal.}
+#'     \item{The \link[BBGsymbols]{rolls} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details regarding the \code{roll_type} & \code{roll_adjustment} parameters.}
+#'     \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+#'     for details on the Bloomnerg fields used here.}
+#'     \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
 #'   }
 #'
-#' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg data fields used here.
+#' @examples \dontrun{
+#'     BBG_futures_market(type = 'term structure',
+#'       active_contract_tickers = c("W A Comdty", "KWA Comdty"),
+#'       start = "2000-01-01", end = as.character(Sys.Date()),
+#'       TS_positions = 1L:5L, roll_type = "A", roll_days = 0L,
+#'       roll_months = 0L, roll_adjustment = "N")
+#'     BBG_futures_market(type = "aggregate",
+#'       active_contract_tickers = c("W A Comdty", "KWA Comdty"),
+#'       start = "2000-01-01", end = as.character(Sys.Date()))
+#'   }
 #'
-#' @examples
-#' \dontrun{
-#'   bbg_futures_market(type = 'term structure')
-#'   bbg_futures_market(type = 'aggregate')
-#' }
+#' @import BBGsymbols
+#' @importFrom magrittr "%<>%"
 #'
 #' @export
-bbg_futures_market <- function(type = "term structure",
-                               active_contract_tickers = "C A Comdty",
-                               start = "2018-01-01",
-                               end = "2018-06-30",
-                               TS_positions = 1L,
-                               roll_type = "A",
-                               roll_days = 0L,
-                               roll_months = 0L,
-                               roll_adjustment = "N",
-                               verbose = TRUE,
-                               ...){
+BBG_futures_market <- function(type, active_contract_tickers, start, end, TS_positions = NULL, roll_type = NULL,
+                               roll_days = NULL, roll_months = NULL, roll_adjustment = NULL, verbose = TRUE, ...){
 
-  if (! rlang::is_scalar_character(type) & type %in% c("term structure", "aggregate"))
-    stop("The parameter 'type' must be supplied as a scalar character vector; one of 'term structure' or 'aggregate'")
-  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers")
-  if (! is.integer(TS_positions)) stop("The parameter 'TS_positions' must be supplied as a vector of integers")
+  utils::data(list = c("fields", "rolls"), package = "BBGsymbols", envir = environment())
+
+  if (! is.character(active_contract_tickers))
+    stop("The parameter 'active_contract_tickers' must be supplied as a character vector of futures active contract Bloomberg tickers")
+
+  if (! all(rlang::is_scalar_character(type),
+            type %in% (dplyr::distinct(dplyr::filter(fields, instrument == "futures", book == "market"), type) %>% purrr::flatten_chr())))
+    stop("The parameter 'type' must be supplied as a scalar character vector; one of '",
+         paste((dplyr::distinct(dplyr::filter(fields, instrument == "futures", book == "market"), type) %>% purrr::flatten_chr()), collapse = "', '"), "'")
+
+  if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
+    stop("The parameters 'start' and 'end' must be supplied as scalar character vectors of dates (yyyy-mm-dd)")
+
+  if (! is.null(TS_positions))
+    if (! all(is.integer(TS_positions))) stop("The parameters 'TS_positions' must be supplied as a vector of integers")
+
+  if (! all(is.null(roll_days), is.null(roll_months)))
+    if (! all(rlang::is_scalar_integer(roll_days), rlang::is_scalar_integer(roll_months)))
+      stop("The parameters 'roll_days' and 'roll_months' must be supplied as scalar integer vectors")
+
+  if (! all(is.null(roll_type), is.null(roll_adjustment)))
+    if (! all(rlang::is_scalar_character(roll_type), rlang::is_scalar_character(roll_adjustment),
+            roll_type %in% dplyr::filter(rolls, roll == "type")$symbol, roll_adjustment %in% dplyr::filter(rolls, roll == "adjustment")$symbol))
+      stop("The parameters 'roll_type' and 'roll_adjustment' must be supplied as scalar character vectors; one of '",
+         paste(dplyr::filter(rolls, roll == "type")$symbol, collapse = "', '"), "' ('roll_type') or '",
+         paste(dplyr::filter(rolls, roll == "adjustment")$symbol, collapse = "', '"), "' ('roll_adjustment')")
+
   if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector")
 
   switch(type,
-         `term structure` = bbg_futures_TS(active_contract_tickers = active_contract_tickers, start = start, end = end, TS_positions = TS_positions,
+         `term structure` = BBG_futures_TS(active_contract_tickers = active_contract_tickers, start = start, end = end, TS_positions = TS_positions,
                                            roll_type = roll_type, roll_days = roll_days, roll_months = roll_months, roll_adjustment = roll_adjustment,
                                            verbose = verbose, ...),
-         `aggregate` = bbg_futures_aggregate(active_contract_tickers = active_contract_tickers, start = start, end = end, verbose = verbose, ...)
+         `aggregate` = BBG_futures_aggregate(active_contract_tickers = active_contract_tickers, start = start, end = end, verbose = verbose, ...)
   )
 }
 
 
+#### term structure ####
+
 #' Futures term structure historical data from Bloomberg
 #'
-#' @description Provided with a set of Bloomberg futures active contract tickers, term structure positions, roll parameters and a time period,
+#' @description Provided with a set of futures active contract Bloomberg tickers, term structure positions, roll parameters and a time period,
 #'   queries Bloomberg for the corresponding term structure historical data.
 #'
-#' @param active_contract_tickers A chatacter vector. Specifies the Bloomberg futures active contract tickers to query data for.
-#'   Defaults to 'C A Comdty', the Bloomberg active contract ticker for the XCBT corn futures series.
+#' @param active_contract_tickers A chatacter vector. Specifies the futures active contract Bloomberg tickers to query data for.
 #' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-01-01'.
 #' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-06-30'.
 #' @param TS_positions An integer vector. Specifies the term structure positions to query data for.
-#' Defaults to 1: front nearby contract for the corresponding futures series.
 #' @param roll_type A scalar chatacter vector. Specifies roll type to use for term structure ticker construction.
 #'   Must be one of 'A', 'B', 'D', 'F', 'N', 'O' or 'R'.
-#'   Defaults to 'A' or 'With active future': rolls to the most actively traded contract in the futures series.
 #' @param roll_days A scalar integer vector. Specifies the day the roll should be done.
 #'   Refers to the day of the month (\code{roll_type} = 'F') or the number of days before a reference date
 #'   (\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O', \code{roll_type} = 'R').
 #'   Works in tandem with \code{roll_months} below.
-#'   Defaults to 0.
 #' @param roll_months A scalar integer vector. Specifies the month the roll should be done.
 #'   Refers to the number of months before a reference date (\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O',
 #'   \code{roll_type} = 'R'). Works in tandem with \code{roll_days} above.
-#'   Defaults to 0.
 #' @param roll_adjustment A scalar chatacter vector. Specifies roll adjustment method to use for term structure ticker construction.
-#'   Must be one of 'D', 'N', 'R', or 'W'. Defaults to 'N' or 'None'.
+#'   Must be one of 'D', 'N', 'R', or 'W'.
 #' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
-#' @param ... Optional parameters to pass to the \code{\link[Rblpapi]{bdh}} function from the \code{Rblpapi} package used
+#' @param ... Optional parameters to pass to the \link[Rblpapi]{bdh} function from the
+#' \href{http://dirk.eddelbuettel.com/code/rblpapi.html}{\pkg{Rblpapi}} package used
 #'   for the query (\code{options} parameter).
 #'
-#' @return An S4 object of class \code{\linkS4class{FuturesTS}} with slots:
+#' @return An S4 object of class \linkS4class{FuturesTS}.
+#'
+#' @seealso
 #'   \itemize{
-#'     \item{\code{tickers}: a tibble. Columns include:
-#'       \itemize{
-#'         \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
-#'         \item{\code{ticker}: futures term structure Bloomberg tickers for which data has been found.}
-#'         \item{\code{TS position}: corresponding futures term structure position.}
-#'         \item{\code{roll type}: corresponding roll type (by name).}
-#'         \item{\code{roll days}: corresponding day(s) offset.}
-#'         \item{\code{roll months}: corresponding month(s) offset.}
-#'         \item{\code{roll adjustment}: corresponding roll adjustment (by name).}
-#'       }
-#'     }
-#'     \item{\code{fields}: a tibble. Columns include:
-#'       \itemize{
-#'         \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
-#'         \item{\code{TS position}: corresponding futures chain term structure positions for which data has been found.}
-#'         \item{\code{field}: futures Bloomberg market data fields for which data has been found.}
-#'       }
-#'     }
-#'     \item{\code{data}: a tibble. Columns include:
-#'       \itemize{
-#'         \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
-#'         \item{\code{ticker}: futures term structure Bloomberg tickers for which data has been found.}
-#'         \item{\code{field}: futures Bloomberg market data fields for which data has been found.}
-#'         \item{\code{date}: observation date.}
-#'         \item{\code{value}: corresponding value.}
-#'       }
-#'     }
-#'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
+#'     \item{"GFUT <GO>" on a Bloomberg terminal.}
+#'     \item{The \link[BBGsymbols]{rolls} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details regarding the \code{roll_type} & \code{roll_adjustment} parameters.}
+#'     \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+#'     for details on the Bloomnerg fields used here.}
+#'     \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
 #'   }
 #'
-#' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
+#' @examples \dontrun{
+#'     BBG_futures_market(type = 'term structure',
+#'       active_contract_tickers = c("W A Comdty", "KWA Comdty"),
+#'       start = "2000-01-01", end = as.character(Sys.Date()),
+#'       TS_positions = 1L:5L, roll_type = "A", roll_days = 0L,
+#'       roll_months = 0L, roll_adjustment = "N")
+#'   }
 #'
-#' @examples
-#' \dontrun{bbg_futures_TS()}
-#'
-#' @import bbgsymbols
-#' @importFrom magrittr "%>%" "%<>%"
-#'
-bbg_futures_TS <- function(active_contract_tickers = "C A Comdty",
-                           start = "2018-01-01",
-                           end = "2018-06-30",
-                           TS_positions = 1L,
-                           roll_type = "A",
-                           roll_days = 0L,
-                           roll_months = 0L,
-                           roll_adjustment = "N",
-                           verbose = TRUE,
-                           ...){
+#' @import BBGsymbols
+#' @importFrom magrittr "%<>%"
+BBG_futures_TS <- function(active_contract_tickers, start, end, TS_positions, roll_type, roll_days, roll_months, roll_adjustment, verbose = TRUE, ...){
 
-  data(list = c("fields", "rolls"), package = "bbgsymbols", envir = environment())
-
-  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers")
-  if (! is.integer(TS_positions)) stop("The parameter 'TS_positions' must be supplied as a vector of integers")
-  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector")
+  utils::data(list = c("fields", "rolls"), package = "BBGsymbols", envir = environment())
 
   data <- lapply(active_contract_tickers, function(y){
     tickers <- sapply(TS_positions, function(x) futures_ticker(y, TS_position = x, roll_type, roll_days, roll_months, roll_adjustment))
-    data <- bbg_pull_historical_market(tickers, fields = dplyr::filter(fields, instrument == "futures", type == "market") %>% dplyr::select(symbol) %>% purrr::flatten_chr(),
-                                start, end, ...)
+    data <- BBG_pull_historical_market(tickers,
+                                       fields = dplyr::filter(fields, instrument == "futures", book == "market", type == "term structure") %>% dplyr::select(symbol) %>% purrr::flatten_chr(),
+                                       start, end, ...)
 
     data <- if (! is.data.frame(data)) {
-      lapply(names(data), function(x) {
-      if (nrow(data[[x]]) > 0L) {
-        data[[x]]$ticker <- x
-        data[[x]]
-      } else {
-        NULL
-      }
-    }) %>%
-      data.table::rbindlist(use.names = TRUE)
-      }
-    else {
-      if(nrow(data) < 1L) NULL
-      else {
-        data$ticker <- tickers
-        data
-        }
-    }
+      lapply(names(data), function(x) { if (nrow(data[[x]]) > 0L) { data[[x]]$ticker <- x; data[[x]] } else NULL }) %>%
+        data.table::rbindlist(use.names = TRUE)
+    } else { if(nrow(data) < 1L) NULL else { data$ticker <- tickers; data } }
     data$`active contract ticker` <- y
-    if (verbose) message(y); data
+    if (verbose) done(y); data
   }) %>%
     data.table::rbindlist(use.names = TRUE)
 
   data %<>%
-    tidyr::gather(field, value, -c(`active contract ticker`, ticker, date)) %>%
-    dplyr::select(`active contract ticker`, ticker, field, date, value) %>%
-    dplyr::arrange(`active contract ticker`, ticker, field, date) %>%
-    dplyr::filter(stats::complete.cases(.)) %>%
+    tidyr::gather(field, value, -c(`active contract ticker`, ticker, date)) %>% dplyr::select(`active contract ticker`, ticker, field, date, value) %>%
+    dplyr::arrange(`active contract ticker`, ticker, field, date) %>% dplyr::filter(stats::complete.cases(.)) %>%
     dplyr::mutate(date = as.Date(date, origin = "1970-01-01"))
 
   if (nrow(data) == 0L) warning("No term structure data found.")
 
-  tickers <- dplyr::distinct(data, `active contract ticker`, ticker) %>%
+  active_contract_tickers <- dplyr::distinct(data, ticker = `active contract ticker`)
+
+  term_structure_tickers <- dplyr::distinct(data, `active contract ticker`, ticker) %>%
     dplyr::mutate(`TS position` = stringr::str_extract(ticker, pattern = "(?<=^.{0,10})\\d(?=\\s[A-Z]:)"),
-                  `roll type` = stringr::str_extract(ticker, pattern = "(?<= )[A-Z](?=:)"),
+                  `roll type symbol` = stringr::str_extract(ticker, pattern = "(?<= )[A-Z](?=:)"),
                   `roll days` = stringr::str_extract(ticker, pattern = "(?<=:)\\d{2}(?=_)") %>% as.numeric(),
                   `roll months` = stringr::str_extract(ticker, pattern = "(?<=_)\\d(?=_)") %>% as.numeric(),
-                  `roll adjustment` = stringr::str_extract(ticker, pattern = "(?<=_)[A-Z](?= )")) %>%
-    dplyr::left_join(dplyr::filter(rolls, roll == "type") %>% dplyr::select(symbol, name), by = c("roll type" = "symbol")) %>%
-    dplyr::select(`active contract ticker`, ticker, `TS position`, `roll type` = name, `roll days`, `roll months`, `roll adjustment`) %>%
-    dplyr::left_join(dplyr::filter(rolls, roll == "adjustment") %>% dplyr::select(symbol, name), by = c("roll adjustment" = "symbol")) %>%
-    dplyr::select(`active contract ticker`, ticker, `TS position`, `roll type`, `roll days`, `roll months`, `roll adjustment` = name) %>%
-    dplyr::left_join(Rblpapi::bdp(dplyr::distinct(data, `active contract ticker`) %>% purrr::flatten_chr(),
-                                  dplyr::filter(fields, instrument == "futures", type == "info") %>%
-                                    dplyr::select(symbol) %>%
-                                    purrr::flatten_chr()) %>%
-                       dplyr::mutate(`active contract ticker` = row.names(.)) %>%
-                       tidyr::gather(field, value, -`active contract ticker`) %>%
-                       dplyr::left_join(dplyr::filter(fields, instrument == "futures", type == "info") %>% dplyr::select(symbol, name), by = c("field" = "symbol"))  %>%
-                       dplyr::mutate(name = forcats::as_factor(name)) %>%
-                       dplyr::select(`active contract ticker`, field = name, value) %>%
-                       tidyr::spread(field, value)
-                     , by = "active contract ticker"
-                     ) %>%
-    dplyr::mutate(name = stringr::str_to_lower(stringr::str_extract(name, "^.+(?= FUTURE)")))
+                  `roll adjustment symbol` = stringr::str_extract(ticker, pattern = "(?<=_)[A-Z](?= )"))
 
-  methods::new("FuturesTS",
-               tickers = tibble::as.tibble(tickers),
-               fields = tibble::as.tibble(dplyr::distinct(data, `active contract ticker`, ticker, field)),
-               data = data.table::as.data.table(dplyr::select(data, ticker, field, date, value)),
-               call = match.call()
-  )
+  fields <- dplyr::filter(fields, instrument == "futures", book == "market", type == "term structure")
+
+  fields <- dplyr::distinct(data, `active contract ticker`, ticker, field) %>%
+    dplyr::left_join(dplyr::select(fields, instrument, book, type, symbol), by = c("field" = "symbol")) %>%
+    dplyr::select(`active contract ticker`, ticker, instrument, book, type, symbol = field) %>%
+    dplyr::arrange(`active contract ticker`, ticker, instrument, book, type)
+
+  methods::new("FuturesTS", active_contract_tickers = data.table::as.data.table(dplyr::arrange(active_contract_tickers)),
+               term_structure_tickers = data.table::as.data.table(term_structure_tickers), fields = data.table::as.data.table(fields),
+               data = data.table::as.data.table(dplyr::select(data, ticker, field, date, value)), call = match.call())
 }
 
 
+#### aggregate ####
 
 #' Futures aggregate historical data from Bloomberg
 #'
-#' @description Provided with a set of Bloomberg futures active contract tickers and a time period,
+#' @description Provided with a set of futures active contract Bloomberg tickers and a time period,
 #'   queries Bloomberg for the corresponding futures historical aggregate data. For each individual field,
 #'   futures aggregate data represents the aggregation of the corresponding field values over all the
 #'   corresponding term structure contracts.
 #'
-#' @param active_contract_tickers A chatacter vector. Specifies the Bloomberg futures active contract tickers to query data for.
-#'   Defaults to 'C A Comdty', the Bloomberg active contract ticker for the XCBT corn futures series.
+#' @param active_contract_tickers A chatacter vector. Specifies the futures active contract Bloomberg tickers to query data for.
 #' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-01-01'.
 #' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-06-30'.
 #' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
-#' @param ... Optional parameters to pass to the \code{\link[Rblpapi]{bdh}} function from the \code{Rblpapi} package used
+#' @param ... Optional parameters to pass to the \link[Rblpapi]{bdh} function from the
+#' \href{http://dirk.eddelbuettel.com/code/rblpapi.html}{\pkg{Rblpapi}} package used
 #'   for the query (\code{options} parameter).
 #'
-#' @return An S4 object of class \code{\linkS4class{FuturesAggregate}} with slots:
+#' @return An S4 object of class \linkS4class{FuturesAggregate}.
+#'
+#' @seealso
 #'   \itemize{
-#'     \item{\code{tickers}: a character vector. Active contract Bloomberg tickers for which data has been found.}
-#'     \item{\code{fields}: a tibble. Columns include:
-#'       \itemize{
-#'         \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
-#'         \item{\code{field}: futures Bloomberg aggregate data fields for which data has been found.}
-#'       }
-#'     }
-#'     \item{\code{data}: a tibble. Columns inlude:
-#'       \itemize{
-#'         \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
-#'         \item{\code{field}: Bloomberg aggregate data fields for which data has been found.}
-#'         \item{\code{date}: observation date.}
-#'         \item{\code{value}: corresponding value.}
-#'       }
-#'     }
-#'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
+#'     \item{"GFUT <GO>" on a Bloomberg terminal.}
+#'     \item{The \link[BBGsymbols]{rolls} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details regarding the \code{roll_type} & \code{roll_adjustment} parameters.}
+#'     \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+#'     for details on the Bloomnerg fields used here.}
+#'     \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
 #'   }
 #'
-#' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
+#' @examples \dontrun{
+#'     BBG_futures_market(type = "aggregate",
+#'       active_contract_tickers = c("W A Comdty", "KWA Comdty"),
+#'       start = "2000-01-01", end = as.character(Sys.Date()))
+#'   }
 #'
-#' @examples
-#' \dontrun{bbg_futures_aggregate()}
-#'
-#' @import bbgsymbols
-#' @importFrom magrittr "%>%" "%<>%"
-#'
-bbg_futures_aggregate <- function(active_contract_tickers = "C A Comdty",
-                                  start = "2018-01-01",
-                                  end = "2018-06-30",
-                                  verbose = TRUE,
-                                  ...){
+#' @import BBGsymbols
+#' @importFrom magrittr "%<>%"
+BBG_futures_aggregate <- function(active_contract_tickers, start, end, verbose, ...){
 
-  data(list = c("fields"), package = "bbgsymbols", envir = environment())
-
-  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers")
-  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector")
+  utils::data(list = c("fields"), package = "BBGsymbols", envir = environment())
 
   data <- lapply(active_contract_tickers, function(x) {
-    data <- bbg_pull_historical_market(x, fields = dplyr::filter(fields, instrument == "futures", type == "aggregate") %>%
+    data <- BBG_pull_historical_market(x, fields = dplyr::filter(fields, instrument == "futures", book == "market", type == "aggregate") %>%
                                          dplyr::select(symbol) %>% purrr::flatten_chr(), start, end, ...) %>%
                    dplyr::mutate(`active contract ticker` = x)
-    if (verbose) message(x); data
+    if (verbose) done(x); data
     }) %>%
     data.table::rbindlist(use.names = TRUE)
 
   data %<>%
-    tidyr::gather(field, value, -c(`active contract ticker`, date)) %>%
-    dplyr::filter(stats::complete.cases(.)) %>%
-    dplyr::arrange(`active contract ticker`, field, date) %>%
-    dplyr::mutate(date = as.Date(date, origin = "1970-01-01")) %>%
+    tidyr::gather(field, value, -c(`active contract ticker`, date)) %>% dplyr::filter(stats::complete.cases(.)) %>%
+    dplyr::arrange(`active contract ticker`, field, date) %>% dplyr::mutate(date = as.Date(date, origin = "1970-01-01")) %>%
     dplyr::select(ticker = `active contract ticker`, field, date, value)
 
-  tickers <- Rblpapi::bdp(dplyr::distinct(data, ticker) %>% purrr::flatten_chr(),
-                          dplyr::filter(fields, instrument == "futures", type == "info") %>%
-                            dplyr::select(symbol) %>%
-                            purrr::flatten_chr()) %>%
-    dplyr::mutate(ticker = row.names(.)) %>%
-    tidyr::gather(field, value, -ticker) %>%
-    dplyr::left_join(dplyr::filter(fields, instrument == "futures", type == "info") %>% dplyr::select(symbol, name), by = c("field" = "symbol"))  %>%
-    dplyr::mutate(name = forcats::as_factor(name)) %>%
-    dplyr::select(ticker, field = name, value) %>%
-    tidyr::spread(field, value) %>%
-    dplyr::mutate(name = stringr::str_to_lower(stringr::str_extract(name, "^.+(?= FUTURE)")))
+  active_contract_tickers <- dplyr::distinct(data, ticker)
+
+  fields <- dplyr::filter(fields, instrument == "futures", book == "market", type == "aggregate")
+
+  fields <- dplyr::distinct(data, ticker, field) %>% dplyr::left_join(dplyr::select(fields, instrument, book, type, symbol), by = c("field" = "symbol")) %>%
+    dplyr::select(ticker, instrument, book, type, symbol = field) %>% dplyr::arrange(ticker, instrument, book, type)
 
   if (nrow(data) == 0L) warning("No aggregate data found.")
 
-  methods::new("FuturesAggregate",
-               tickers = tibble::as.tibble(tickers),
-               fields = tibble::as.tibble(dplyr::distinct(data, ticker, field)),
-               data = data.table::as.data.table(data),
-               call = match.call()
-  )
+  methods::new("FuturesAggregate", active_contract_tickers = data.table::as.data.table(dplyr::arrange(active_contract_tickers)),
+               fields = data.table::as.data.table(fields), data = data.table::as.data.table(data), call = match.call())
 }
 
 
-
-
-
-
+### CFTC ####
 
 #' Futures CFTC reports historical data from Bloomberg
 #'
-#' @description Provided with a set of Bloomberg futures active contract tickers and a time period,
-#'   queries Bloomberg for the corresponding futures CFTC reports data.
+#' @description Provided with a set of futures active contract Bloomberg tickers and a time period,
+#'   queries Bloomberg for the corresponding futures CFTC reports historical data.
 #'
-#' @param active_contract_tickers A chatacter vector. Specifies the Bloomberg futures active contract tickers to query data for.
-#'   Defaults to 'C A Comdty', the Bloomberg active contract ticker for the XCBT corn futures series.
+#' @param active_contract_tickers A chatacter vector. Specifies the futures active contract Bloomberg tickers to query data for.
 #' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-01-01'.
 #' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-06-30'.
 #' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
-#' @param ... Optional parameters to pass to the \code{\link[Rblpapi]{bdh}} function from the \code{Rblpapi} package used
+#' @param ... Optional parameters to pass to the \link[Rblpapi]{bdh} function from the
+#' \href{http://dirk.eddelbuettel.com/code/rblpapi.html}{\pkg{Rblpapi}} package used
 #'   for the query (\code{options} parameter).
 #'
-#' @return An S4 object of class \code{\linkS4class{FuturesCFTC}} with slots:
+#' @return An S4 object of class \linkS4class{FuturesCFTC}.
+#'
+#' @seealso
 #'   \itemize{
-#'     \item{\code{tickers}: a data.table. Active contract and corresponding position Bloomberg tickers for which data has been found. Columns include:
-#'       \itemize{
-#'         \item{active contract ticker: futures series active contract Bloomberg ticker.}
-#'         \item{position ticker: CFTC position Bloomberg ticker.}
-#'       }
-#'     }
-#'     \item{\code{fields}: a data.table. Columns include:
-#'       \itemize{
-#'         \item{\code{format}: report formats ('legacy', 'disaggregated', 'supplemental' or 'traders in financial futures')
-#'           for which data has been found.}
-#'         \item{\code{underlying}: underlying instruments ('futures only' or 'futures & options') for which data has been found..}
-#'         \item{\code{unit}: counting units (number of 'contracts', 'traders' or 'total') for which data has been found.}
-#'         \item{\code{participant}: trader classifications for which data has been found. Report specific:
-#'           \itemize{
-#'             \item{legacy: 'commercial', 'non-commercial', 'non-reportable', 'total'.}
-#'             \item{disaggregated: 'managed money', 'producer/merchant/processor/user', 'swap dealers', 'other reportables'.}
-#'             \item{supplemental: 'commercial - non-CIT', 'non-commercial - non-CIT', 'index traders - non-CIT', 'index traders'.}
-#'             \item{traders in financial futures: 'asset manager/institutional', 'dealer/intermediary', 'leveraged funds', 'other reportables'.}
-#'           }
-#'         }
-#'         \item{\code{position}: trader positions for which data has been found. Participant specific.
-#'           \itemize{
-#'             \item{commercial: 'long', 'short', 'net'.}
-#'             \item{non-commercial: 'long', 'short', 'net', 'spreading'.}
-#'             \item{non-reportable: 'long', 'short', 'net'.}
-#'             \item{total: 'long', 'short', 'net', 'open interest', 'total'.}
-#'             \item{managed money: 'long', 'short', 'net', 'spreading'.}
-#'             \item{producer/merchant/processor/user: 'long', 'short', 'net'.}
-#'             \item{swap dealers: 'long', 'short', 'net', 'spreading'.}
-#'             \item{other reportables: 'long', 'short', 'net', 'spreading'.}
-#'             \item{commercial - non-CIT: 'long', 'short', 'net'.}
-#'             \item{non-commercial - non-CIT: 'long', 'short', 'net', 'spreading'.}
-#'             \item{index traders - non-CIT: 'long', 'short'.}
-#'             \item{index traders: 'long', 'short', 'net'.}
-#'             \item{asset manager/institutional: 'long', 'short', 'net', 'spreading'.}
-#'             \item{dealer/intermediary: 'long', 'short', 'net', 'spreading'.}
-#'             \item{leveraged funds: 'long', 'short', 'net', 'spreading'.}
-#'             \item{other reportables: 'long', 'short', 'net', 'spreading'.}
-#'          }
-#'        }
-#'        \item{\code{position ticker}: corresponding CFTC position Bloomberg ticker.}
-#'      }
-#'    }
-#'     \item{\code{data}: a tibble. Columns inlude:
-#'       \itemize{
-#'         \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
-#'         \item{\code{position ticker}: CFTC position Bloomberg tickers for which data has been found.}
-#'         \item{\code{date}: observation date.}
-#'         \item{\code{value}: observed value}
-#'       }
-#'     }
-#'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
-#'  }
+#'     \item{"GFUT <GO>" on a Bloomberg terminal.}
+#'     \item{The \link[BBGsymbols]{tickers_CFTC} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the Bloomnerg position tickers used here.}
+#'     \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'   }
 #'
-#' @seealso The \code{\link[bbgsymbols]{tickers_cftc}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
+#' @examples \dontrun{
+#'     BBG_futures_CFTC(active_contract_tickers = c("W A Comdty", "KWA Comdty"),
+#'       start = "2000-01-01", end = as.character(Sys.Date()))
+#'   }
 #'
-#' @examples
-#' \dontrun{bbg_futures_CFTC()}
-#'
-#' @import bbgsymbols
-#' @importFrom magrittr "%>%" "%<>%"
+#' @import BBGsymbols
+#' @importFrom magrittr "%<>%"
 #'
 #' @export
-bbg_futures_CFTC <- function(active_contract_tickers = "C A Comdty",
-                             start = "2018-01-01",
-                             end = "2018-06-30",
-                             verbose = TRUE,
-                             ...){
+BBG_futures_CFTC <- function(active_contract_tickers, start, end, verbose = TRUE, ...){
 
-  data(list = c("fields", "tickers_cftc"), package = "bbgsymbols", envir = environment())
+  utils::data(list = c("fields", "tickers_cftc"), package = "BBGsymbols", envir = environment())
 
-  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers")
+  if (! is.character(active_contract_tickers))
+    stop("The parameter 'active_contract_tickers' must be supplied as a character vector of futures active contract Bloomberg tickers")
+
+  if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
+    stop("The parameters 'start' and 'end' must be supplied as scalar character vectors of dates (yyyy-mm-dd)")
+
   if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector")
 
   data <- lapply(active_contract_tickers, function(x) {
     tickers <- dplyr::filter(tickers_cftc, `active contract ticker` == x) %>% dplyr::select(ticker) %>% purrr::flatten_chr()
     if (NROW(tickers) == 0L) stop(paste0("No CFTC data for ", x, "."))
-    data <- bbg_pull_historical_market(tickers, fields = "PX_LAST", start, end, ...)
+    data <- BBG_pull_historical_market(tickers, fields = "PX_LAST", start, end, ...)
 
-    data <- lapply(names(data), function(y) {
-      if(nrow(data[[y]]) == 0L) NULL
-      else dplyr::mutate(data[[y]], ticker = y)
-    }) %>%
+    data <- lapply(names(data), function(y) { if(nrow(data[[y]]) == 0L) NULL else dplyr::mutate(data[[y]], ticker = y) }) %>%
       data.table::rbindlist(use.names = TRUE)
 
     data %<>%
       dplyr::mutate(`active contract ticker` = x) %>%
       dplyr::left_join(dplyr::select(tickers_cftc, format, underlying, `unit` = unit, participant, position, ticker), by = "ticker")
-    if (verbose) message(x); data
+    if (verbose) done(x); data
   }) %>%
-    data.table::rbindlist(use.names = TRUE) %>%
-    dplyr::select(`active contract ticker`, ticker, format, underlying, `unit`, participant, position, date, value = PX_LAST) %>%
-    dplyr::filter(stats::complete.cases(.)) %>%
-    dplyr::mutate(field = "CFTC",
-                  date = as.Date(date, origin = "1970-01-01"))
+    data.table::rbindlist(use.names = TRUE) %>% dplyr::select(`active contract ticker`, ticker, format, underlying, `unit`, participant, position, date, value = PX_LAST) %>%
+    dplyr::filter(stats::complete.cases(.)) %>% dplyr::mutate(field = "PX_LAST", date = as.Date(date, origin = "1970-01-01"))
 
   if (nrow(data) == 0L) warning("No CFTC data found.")
 
-  tickers <- dplyr::distinct(data, `active contract ticker`) %>%
-    dplyr::left_join(Rblpapi::bdp(dplyr::distinct(data, `active contract ticker`) %>% purrr::flatten_chr(),
-                                  dplyr::filter(fields, instrument == "futures", type == "info") %>%
-                                    dplyr::select(symbol) %>%
-                                    purrr::flatten_chr()) %>%
-                       dplyr::mutate(`active contract ticker` = row.names(.)) %>%
-                       tidyr::gather(field, value, -`active contract ticker`) %>%
-                       dplyr::left_join(dplyr::filter(fields, instrument == "futures", type == "info") %>% dplyr::select(symbol, name), by = c("field" = "symbol"))  %>%
-                       dplyr::mutate(name = forcats::as_factor(name)) %>%
-                       dplyr::select(`active contract ticker`, field = name, value) %>%
-                       tidyr::spread(field, value),
-                     by = "active contract ticker") %>%
-    dplyr::mutate(name = stringr::str_to_lower(stringr::str_extract(name, "^.+(?= FUTURE)")))
+  active_contract_tickers <- dplyr::distinct(data, `active contract ticker`)
+
+  tickers <- dplyr::distinct(data, `active contract ticker`, ticker)
 
   methods::new("FuturesCFTC",
-               tickers = tibble::as.tibble(tickers),
-               fields = tibble::as.tibble(dplyr::distinct(data, `active contract ticker`, ticker, format, underlying, `unit`, participant, position)),
-               data = data.table::as.data.table(dplyr::select(data, ticker, field, date, value)),
-               call = match.call()
-  )
+               active_contract_tickers = data.table::as.data.table(dplyr::arrange(active_contract_tickers)),
+               cftc_tickers = data.table::as.data.table(tickers),
+               data = data.table::as.data.table(dplyr::select(data, ticker, field, date, value)), call = match.call())
 }
 
 
-#' Equity historical market data from Bloomberg
+
+### info ####
+
+#' Futures series qualitative information from Bloomberg.
 #'
-#' @description Provided with a set of Bloomberg equity tickers and a time period,
-#'   queries Bloomberg for the corresponding equity historical market data.
+#' @description Provided with a set of futures active contract Bloomberg tickers retrieves qualitative information
+#'   on the corresponding futures series.
 #'
-#' @param tickers A chatacter vector. Specifies the Bloomberg equity tickers to query data for.
-#'   Defaults to 'NEM US Equity', the Bloomberg equity ticker for the Newmont Minning Corporation.
-#' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-01-01'.
-#' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-06-30'.
-#' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
-#' @param ... Optional parameters to pass to the \code{\link[Rblpapi]{bdh}} function from the \code{Rblpapi} package used
+#' @param active_contract_tickers A chatacter vector. Specifies the futures active contract Bloomberg tickers to query data for.
+#' @param ... Optional parameters to pass to the \link[Rblpapi]{bdp} function from the
+#' \href{http://dirk.eddelbuettel.com/code/rblpapi.html}{\pkg{Rblpapi}} package used
 #'   for the query (\code{options} parameter).
 #'
-#' @return An S4 object of class \code{\linkS4class{EquityMarket}} with slots:
+#' @return An S4 object of class \linkS4class{FuturesInfo}.
+#'
+#' @seealso
 #'   \itemize{
-#'     \item{\code{tickers}: a tibble. Columns include:
-#'       \itemize{
-#'         \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
-#'         \item{\code{field}: equity Bloomberg company information data fields. Descriptive elements on the corporation identified.}
-#'         \item{\code{name}: corresponding information data field names.}
-#'         \item{\code{value}: corresponding information data field value.}#'
-#'       }
-#'     }
-#'     \item{\code{fields}: a tibble. Columns include:
-#'       \itemize{
-#'         \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
-#'         \item{\code{field}: equity Bloomberg market data fields for which data has been found.}
-#'       }
-#'     }
-#'     \item{\code{data}: a tibble. Columns include:
-#'       \itemize{
-#'         \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
-#'         \item{\code{field}: equity Bloomberg market data fields for which data has been found.}
-#'         \item{\code{date}: observation date.}
-#'         \item{\code{value}: corresponding value.}
-#'       }
-#'     }
-#'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
+#'     \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the Bloomnerg fields used here.}
+#'     \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
+#'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
 #'   }
 #'
-#' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
-#'
-#' @examples
-#' \dontrun{bbg_equity_market()}
-#'
-#' @import bbgsymbols
-#' @importFrom magrittr "%>%" "%<>%"
+#' @examples \dontrun{
+#'     BBG_futures_info(active_contract_tickers = c("W A Comdty", "KWA Comdty"))
+#'   }
 #'
 #' @export
+BBG_futures_info <- function(active_contract_tickers, ...){
 
-bbg_equity_market <- function(tickers = "NEM US Equity",
-                              start = "2018-01-01",
-                              end = "2018-06-30",
-                              verbose = TRUE,
-                              ...){
+  utils::data(list = c("fields"), package = "BBGsymbols", envir = environment())
 
-  data(list = c("fields"), package = "bbgsymbols", envir = environment())
+  fields <- dplyr::filter(fields, instrument == "futures", book == "info")
 
-  if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg tickers")
+  con <- tryCatch({
+    Rblpapi::blpConnect()
+  }, error = function(e) stop("Unable to connect Bloomberg. Please open a Bloomberg session on this terminal", call. = FALSE))
+
+  query <- Rblpapi::bdp(securities = active_contract_tickers, fields = dplyr::select(fields, symbol) %>% purrr::flatten_chr(), con = con) %>%
+    dplyr::mutate(ticker = row.names(.)) %>% dplyr::mutate_all(dplyr::funs(as.character)) %>%
+    tidyr::gather(field, value, -ticker) %>% dplyr::mutate(field = forcats::as_factor(field)) %>%
+    dplyr::arrange(ticker, field) %>% dplyr::mutate(field = as.character(field))
+
+  fields <- dplyr::left_join(dplyr::distinct(query, ticker, symbol = field), dplyr::select(fields, instrument, book, symbol),
+                             by = "symbol") %>% dplyr::select(ticker, instrument, book, symbol)
+
+  Rblpapi::blpDisconnect(con)
+
+  methods::new("FuturesInfo", info = tibble::as.tibble(query), fields = data.table::as.data.table(fields), call = match.call())
+}
+
+
+
+## equity ####
+
+### market ####
+
+#' Equity historical market data from Bloomberg
+#'
+#' @description Provided with a set of equity Bloomberg tickers and a time period,
+#'   queries Bloomberg for the corresponding equity historical market data.
+#'
+#' @param tickers A chatacter vector. Specifies the equity Bloomberg tickers to query data for.
+#' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
+#' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
+#' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
+#' @param ... Optional parameters to pass to the \link[Rblpapi]{bdh} function from the
+#' \href{http://dirk.eddelbuettel.com/code/rblpapi.html}{\pkg{Rblpapi}} package used
+#'   for the query (\code{options} parameter).
+#'
+#' @return An S4 object of class \linkS4class{EquityMarket}.
+#'
+#' @seealso
+#'   \itemize{
+#'     \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the Bloomnerg fields used here.}
+#'     \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
+#'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'   }
+#'
+#' @examples \dontrun{
+#'     BBG_equity_market(tickers = c("BP/ LN Equity", "WEIR LN Equity"),
+#'       start = "2000-01-01", end = as.character(Sys.Date()))
+#'   }
+#'
+#' @import BBGsymbols
+#' @importFrom magrittr "%<>%"
+#'
+#' @export
+BBG_equity_market <- function(tickers, start, end, verbose = TRUE, ...){
+
+  utils::data(list = c("fields"), package = "BBGsymbols", envir = environment())
+
+  if (! is.character(tickers))
+    stop("The parameter 'tickers' must be supplied as a character vector of equity Bloomberg tickers")
+
+  if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
+    stop("The parameters 'start' and 'end' must be supplied as scalar character vectors of dates (yyyy-mm-dd)")
+
   if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector")
 
   data <- lapply(tickers, function(x) {
-    data <- bbg_pull_historical_market(x, fields = dplyr::filter(fields, instrument == "equity", type == "market") %>% dplyr::select(symbol) %>% purrr::flatten_chr(),
+    data <- BBG_pull_historical_market(x, fields = dplyr::filter(fields, instrument == "equity", book == "market") %>% dplyr::select(symbol) %>% purrr::flatten_chr(),
                                start, end, ...) %>%
       dplyr::mutate(ticker = x)
-    if (verbose) message(x); data
+    if (verbose) done(x); data
   }) %>%
     data.table::rbindlist(use.names = TRUE)
 
   data %<>%
-    tidyr::gather(field, value, -c(ticker, date)) %>%
-    dplyr::filter(stats::complete.cases(.)) %>%
-    dplyr::select(ticker, field, date, value) %>%
-    dplyr::mutate(date = as.Date(date, origin = "1970-01-01")) %>%
-    dplyr::arrange(ticker, field, date)
+    tidyr::gather(field, value, -c(ticker, date)) %>% dplyr::filter(stats::complete.cases(.)) %>% dplyr::select(ticker, field, date, value) %>%
+    dplyr::mutate(date = as.Date(date, origin = "1970-01-01")) %>% dplyr::arrange(ticker, field, date)
 
   if (nrow(data) == 0L) warning("No market data found.")
 
-  tickers <- Rblpapi::bdp(dplyr::distinct(data, ticker) %>% purrr::flatten_chr(),
-                          dplyr::filter(fields, instrument == "equity", type == "info", ! stringr::str_detect(symbol, "^GICS_(?!.*SUB)")) %>%
-                            dplyr::select(symbol) %>%
-                            purrr::flatten_chr()) %>%
-    dplyr::mutate(ticker = row.names(.)) %>%
-    tidyr::gather(field, value, -ticker) %>%
-    dplyr::left_join(dplyr::filter(fields, instrument == "equity", type == "info") %>% dplyr::select(symbol, name), by = c("field" = "symbol"))  %>%
-    dplyr::mutate(name = forcats::as_factor(name)) %>%
-    dplyr::select(ticker, field = name, value) %>%
-    tidyr::spread(field, value)
+  tickers <- dplyr::distinct(data, ticker)
 
-  methods::new("EquityMarket",
-      tickers = tibble::as.tibble(tickers),
-      fields = tibble::as.tibble(dplyr::distinct(data, ticker, field)),
-      data = data.table::as.data.table(data),
-      call = match.call()
-  )
+  fields <- dplyr::filter(fields, instrument == "equity", book == "market")
+
+  fields <- dplyr::distinct(data, ticker, field) %>%
+    dplyr::left_join(dplyr::select(fields, instrument, book, symbol), by = c("field" = "symbol")) %>%
+    dplyr::select(ticker, instrument, book, symbol = field) %>% dplyr::arrange(ticker, instrument, book)
+
+  methods::new("EquityMarket", tickers = data.table::as.data.table(dplyr::arrange(tickers)),
+               fields = data.table::as.data.table(fields), data = data.table::as.data.table(data), call = match.call())
 }
 
 
-
+### book ####
 
 #' Equity historical book data from Bloomberg
 #'
-#' @description Retrieve equity historical book data from Bloomberg. Books include 'key stats', 'income statement', 'balance sheet',
-#'   'cash flow statement' and 'ratios' with the corresponding data fields retrieved from the 'fields' dataset of the \code{bbgsymbols}
-#'   package.
+#' @description Retrieves equity historical book data from Bloomberg. Books include 'key stats', 'income statement', 'balance sheet',
+#'   'cash flow statement' and 'ratios'.
 #'
 #' @param book A scalar chatacter vector, 'key stats', 'income statement', 'balance sheet', 'cash flow statement' or 'ratios'.
-#'   Defaults to 'key stats' which returns historical data for a set of key financial indicators; a quick dynamic financial
-#'   snapshot of the selected names.
 #' @param tickers A chatacter vector. Specifies the Bloomberg equity tickers to query data for.
-#'   Defaults to 'NEM US Equity', the Bloomberg equity ticker for the Newmont Minning Corporation.
 #' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-01-01'.
 #' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-06-30'.
 #' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
-#' @param ... Optional parameters to pass to the \code{\link[Rblpapi]{bdh}} function from the \code{Rblpapi} package used
+#' @param ... Optional parameters to pass to the \link[Rblpapi]{bdh} function from the
+#' \href{http://dirk.eddelbuettel.com/code/rblpapi.html}{\pkg{Rblpapi}} package used
 #'   for the query (\code{options} parameter).
 #'
-#' @return An S4 object of class \code{\linkS4class{EquityKS}} (\code{book = 'key stats'}), \code{\linkS4class{EquityIS}}
-#'   (\code{book = 'income statement'}), \code{\linkS4class{EquityBS}} (\code{book = 'balance sheet'}),
-#'    \code{\linkS4class{EquityCF}} (\code{book = 'cash flow statement'}), \code{\linkS4class{EquityRatios}}
-#'    (\code{book = 'ratios'}). Slots include:
+#' @return An S4 object of class \linkS4class{EquityKS} (\code{book = 'key stats'}), \linkS4class{EquityIS}
+#'   (\code{book = 'income statement'}), \\linkS4class{EquityBS} (\code{book = 'balance sheet'}),
+#'    \linkS4class{EquityCF} (\code{book = 'cash flow statement'}), \linkS4class{EquityRatios}
+#'    (\code{book = 'ratios'}).
+#'
+#' @seealso
 #'   \itemize{
-#'     \item{\code{tickers}: a tibble. Equity Bloomberg tickers for which data has been found and corresponding descriptive elements.}
-#'     \item{\code{fields}: a data.table. Data fields for which data has been found.}
-#'     \item{\code{data}: a data.table The data retrieved in the query.}
-#'     \item{\code{call}: a scalar character vector. The original call to the constructor.}
+#'     \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the Bloomnerg fields used here.}
+#'     \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
+#'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
 #'   }
 #'
-#' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
+#' @examples \dontrun{
+#'     BBG_equity_books(book = 'key stats',
+#'       tickers = c("BP/ LN Equity", "WEIR LN Equity"),
+#'       start = "2000-01-01", end = as.character(Sys.Date()))
+#'     BBG_equity_books(book = 'income statement',
+#'       tickers = c("BP/ LN Equity", "WEIR LN Equity"),
+#'       start = "2000-01-01", end = as.character(Sys.Date()))
+#'     BBG_equity_books(book = 'balance sheet',
+#'       tickers = c("BP/ LN Equity", "WEIR LN Equity"),
+#'       start = "2000-01-01", end = as.character(Sys.Date()))
+#'     BBG_equity_books(book = 'cash flow statement',
+#'       tickers = c("BP/ LN Equity", "WEIR LN Equity"),
+#'       start = "2000-01-01", end = as.character(Sys.Date()))
+#'     BBG_equity_books(book = 'ratios',
+#'       tickers = c("BP/ LN Equity", "WEIR LN Equity"),
+#'       start = "2000-01-01", end = as.character(Sys.Date()))
+#'   }
 #'
-#' @examples
-#' \dontrun{
-#'   bbg_equity_books(book = 'key stats')
-#'   bbg_equity_books(book = 'income statement')
-#'   bbg_equity_books(book = 'balance sheet')
-#'   bbg_equity_books(book = 'cash flow statement')
-#'   bbg_equity_books(book = 'ratios')
-#' }
-#'
-#' @import bbgsymbols
-#' @importFrom magrittr "%>%"
+#' @import BBGsymbols
 #'
 #' @export
-bbg_equity_books <- function(book = "key stats",
-                             tickers = "NEM US Equity",
-                             start = "2018-01-01",
-                             end = "2018-06-30",
-                             verbose = TRUE,
-                             ...){
+BBG_equity_book <- function(book, tickers, start, end, verbose = TRUE, ...){
 
-  data(list = c("fields"), package = "bbgsymbols", envir = environment())
+  utils::data(list = c("fields"), package = "BBGsymbols", envir = environment())
 
-  if (! rlang::is_scalar_character(book) & book %in% c("key stats", "income statement", "balance sheet", "cash flow statement", "ratios"))
-    stop("The parameter 'book' must be supplied as a scalar character vector, one of 'key stats', 'income statement', 'balance sheet', 'cash flow statement' or 'ratios'")
-  if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg equity tickers")
+  if (! all(rlang::is_scalar_character(book), book %in% (dplyr::filter(fields, instrument == "equity", ! book %in% c("info", "market")) %>%
+                                                         dplyr::distinct(book) %>% purrr::flatten_chr())))
+    stop("The parameter book' must be supplied as a scalar character vector; one of '",
+         paste(dplyr::filter(fields, instrument == "equity", book != "market") %>% dplyr::distinct(book) %>% purrr::flatten_chr(), collapse = "', '"), "'")
+
+  if (! is.character(tickers))
+    stop("The parameter 'tickers' must be supplied as a character vector of equity Bloomberg tickers")
+
+  if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
+    stop("The parameters 'start' and 'end' must be supplied as scalar character vectors of dates (yyyy-mm-dd)")
+
   if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector (TRUE or FALSE)")
+
   if (! "periodicitySelection" %in% names(list(...))) utils::modifyList(list(...), list(periodicitySelection = "MONTHLY"))
 
-  symbols <- dplyr::filter(fields, instrument == "equity", type == book)
+  symbols <- dplyr::filter(fields, instrument == "equity", book == !! book)
 
-  data <- lapply(dplyr::distinct(symbols, symbol) %>% purrr::flatten_chr(), function(x) {
-    data <- bbg_pull_historical_books(tickers = tickers, field = x, start, end, ...)
-    if (verbose) message(x); data
+  data <- lapply(unique(symbols$symbol), function(x) {
+    data <- BBG_pull_historical_books(tickers = tickers, field = x, start, end, ...)
+    if (verbose) done(x); data
   }) %>%
-    data.table::rbindlist(use.names = TRUE) %>%
-    dplyr::filter(stats::complete.cases(.)) %>%
-    dplyr::arrange(ticker, field, date) %>%
+    data.table::rbindlist(use.names = TRUE) %>% dplyr::filter(stats::complete.cases(.)) %>% dplyr::arrange(ticker, field, date) %>%
     dplyr::select(ticker, field, date, value)
 
   if (nrow(data) == 0L) warning(paste("No", book, "data found.", sep = " "))
 
-  tickers <- Rblpapi::bdp(dplyr::distinct(data, ticker) %>% purrr::flatten_chr(),
-                          dplyr::filter(fields, instrument == "equity", type == "info", ! stringr::str_detect(symbol, "^GICS_(?!.*SUB)")) %>%
-                            dplyr::select(symbol) %>%
-                            purrr::flatten_chr()) %>%
-    dplyr::mutate(ticker = row.names(.)) %>%
-    tidyr::gather(field, value, -ticker) %>%
-    dplyr::left_join(dplyr::filter(fields, instrument == "equity", type == "info") %>% dplyr::select(symbol, name), by = c("field" = "symbol"))  %>%
-    dplyr::mutate(name = forcats::as_factor(name)) %>%
-    dplyr::select(ticker, field = name, value) %>%
-    tidyr::spread(field, value)
+  tickers <- dplyr::distinct(data, ticker)
 
-  fields <- dplyr::left_join(dplyr::distinct(data, ticker, field), symbols, by = c("field" = "symbol"))
+  fields <- dplyr::filter(fields, instrument == "equity", book == !! book)
 
-  fields <- switch(book,
-                   `key stats` = dplyr::select(fields, ticker, field = name),
-                   `income statement` = dplyr::select(fields, ticker, field = name),
-                   `balance sheet` = dplyr::select(fields, ticker, section, subsection, field = name),
-                   `cash flow statement` = dplyr::select(fields, ticker, section, field = name),
-                   `ratios` = dplyr::select(data, ticker, section, subsection, field = name)
-
-  )
+  fields <- dplyr::distinct(data, ticker, field) %>%
+    dplyr::left_join(dplyr::select(fields, instrument, book, type, section, subsection, symbol), by = c("field" = "symbol")) %>%
+    dplyr::select(ticker, instrument, book, type, section, subsection, symbol = field) %>%
+    dplyr::arrange(ticker, instrument, book, type, section, subsection)
 
   methods::new(dplyr::case_when(book == "key stats" ~ "EquityKS", book == "balance sheet" ~ "EquityBS",
                                 book == "cash flow statement" ~ "EquityCF", book == "income statement" ~ "EquityIS",
                                 book == "ratios" ~ "EquityRatios"),
-               tickers = tibble::as.tibble(tickers),
-               fields = tibble::as.tibble(fields),
-               data = data.table::as.data.table(data),
-               call = match.call()
-  )
+               tickers = data.table::as.data.table(dplyr::arrange(tickers)), fields = data.table::as.data.table(fields),
+               data = data.table::as.data.table(data), call = match.call())
 }
 
 
+### info ####
+
+#' Equity qualitative information from Bloomberg.
+#'
+#' @description Provided with a set of equity Bloomberg tickers retrieves qualitative information
+#'   on the corresponding corporations.
+#'
+#' @param tickers A chatacter vector. Specifies the equity Bloomberg tickers to query data for.
+#' @param ... Optional parameters to pass to the \link[Rblpapi]{bdp} function from the
+#' \href{http://dirk.eddelbuettel.com/code/rblpapi.html}{\pkg{Rblpapi}} package used
+#'   for the query (\code{options} parameter).
+#'
+#' @return An S4 object of class \linkS4class{EquityInfo}.
+#'
+#' @seealso
+#'   \itemize{
+#'     \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the Bloomnerg fields used here.}
+#'     \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
+#'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'   }
+#'
+#' @examples \dontrun{
+#'     BBG_equity_info(tickers = c("BP/ LN Equity", "WEIR LN Equity"))
+#'   }
+#'
+#' @import BBGsymbols
+#' @importFrom magrittr "%<>%"
+#'
+#' @export
+BBG_equity_info <- function(tickers, ...){
+
+  utils::data(list = c("fields"), package = "BBGsymbols", envir = environment())
+
+  fields <- dplyr::filter(fields, instrument == "equity", book == "info")
+
+  con <- tryCatch({
+    Rblpapi::blpConnect()
+  }, error = function(e) stop("Unable to connect Bloomberg. Please open a Bloomberg session on this terminal", call. = FALSE))
+
+  query <- Rblpapi::bdp(securities = tickers, fields = dplyr::select(fields, symbol) %>% purrr::flatten_chr(), con = con) %>%
+    dplyr::mutate(ticker = row.names(.)) %>% dplyr::mutate_all(dplyr::funs(as.character)) %>%
+    tidyr::gather(field, value, -ticker) %>% dplyr::mutate(field = forcats::as_factor(field)) %>%
+    dplyr::arrange(ticker, field) %>% dplyr::mutate(field = as.character(field))
+
+  fields <- dplyr::left_join(dplyr::distinct(query, ticker, symbol = field), dplyr::select(fields, instrument, book, symbol),
+                             by = "symbol") %>% dplyr::select(ticker, instrument, book, symbol)
+
+  Rblpapi::blpDisconnect(con)
+
+  methods::new("EquityInfo", info = tibble::as.tibble(query), fields = data.table::as.data.table(fields), call = match.call())
+}
 
 
+## fund ####
+
+### market ####
+
+#' Fund historical market data from Bloomberg
+#'
+#' @description Provided with a set of Bloomberg fund tickers and a time period,
+#'   queries Bloomberg for the corresponding fund historical market data.
+#'
+#' @param tickers A chatacter vector. Specifies the Bloomberg fund tickers to query data for.
+#' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
+#' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
+#' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
+#' @param ... Optional parameters to pass to the \link[Rblpapi]{bdh} function from the
+#' \href{http://dirk.eddelbuettel.com/code/rblpapi.html}{\pkg{Rblpapi}} package used
+#'   for the query (\code{options} parameter).
+#'
+#' @return An S4 object of class \linkS4class{FundMarket}.
+#'
+#' @seealso
+#'   \itemize{
+#'     \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the Bloomnerg fields used here.}
+#'     \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
+#'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'   }
+#'
+#' @examples \dontrun{
+#'     BBG_fund_market(tickers = c("SPY US Equity", "IVV US Equity"),
+#'       start = "2000-01-01", end = as.character(Sys.Date()))
+#'   }
+#'
+#' @import BBGsymbols
+#' @importFrom magrittr "%<>%"
+#'
+#' @export
+BBG_fund_market <- function(tickers, start, end, verbose = TRUE, ...){
+
+  utils::data(list = c("fields"), package = "BBGsymbols", envir = environment())
+
+  if (! is.character(tickers))
+    stop("The parameter 'tickers' must be supplied as a character vector of equity Bloomberg tickers")
+
+  if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
+    stop("The parameters 'start' and 'end' must be supplied as scalar character vectors of dates (yyyy-mm-dd)")
+
+  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector")
+
+  data <- lapply(tickers, function(x) {
+    data <- BBG_pull_historical_market(x, fields = dplyr::filter(fields, instrument == "fund", book == "market") %>% dplyr::select(symbol) %>% purrr::flatten_chr(),
+                                       start, end, ...) %>% dplyr::mutate(ticker = x)
+    if (verbose) done(x); data
+  }) %>%
+    data.table::rbindlist(use.names = TRUE)
+
+  data %<>%
+    tidyr::gather(field, value, -c(ticker, date)) %>% dplyr::filter(stats::complete.cases(.)) %>% dplyr::select(ticker, field, date, value) %>%
+    dplyr::mutate(date = as.Date(date, origin = "1970-01-01")) %>% dplyr::arrange(ticker, field, date)
+
+  if (nrow(data) == 0L) warning("No market data found")
+
+  tickers <- dplyr::distinct(data, ticker)
+
+  fields <- dplyr::filter(fields, instrument == "fund", book == "market")
+
+  fields <- dplyr::distinct(data, ticker, field) %>%
+    dplyr::left_join(dplyr::select(fields, instrument, book, symbol), by = c("field" = "symbol")) %>%
+    dplyr::select(ticker, instrument, book, symbol = field) %>%
+    dplyr::arrange(ticker, instrument, book)
+
+  methods::new("FundMarket", tickers = data.table::as.data.table(dplyr::arrange(tickers)), fields = data.table::as.data.table(fields),
+               data = data.table::as.data.table(data), call = match.call())
+}
 
 
+### info ####
+
+#' fund qualitative information from Bloomberg.
+#'
+#' @description Provided with a set of fund Bloomberg tickers retrieves qualitative information
+#'   on the corresponding fund(s).
+#'
+#' @param tickers A chatacter vector. Specifies the futures active contract Bloomberg tickers to query data for.
+#' @param ... Optional parameters to pass to the \link[Rblpapi]{bdp} function from the
+#' \href{http://dirk.eddelbuettel.com/code/rblpapi.html}{\pkg{Rblpapi}} package used
+#'   for the query (\code{options} parameter).
+#'
+#' @return An S4 object of class \linkS4class{FundInfo}.
+#'
+#' @seealso
+#'   \itemize{
+#'     \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the Bloomnerg fields used here.}
+#'     \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
+#'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'   }
+#'
+#' @examples \dontrun{
+#'     BBG_fund_info(tickers = c("SPY US Equity", "IVV US Equity"))
+#'   }
+#'
+#' @importFrom magrittr "%<>%"
+#'
+#' @export
+BBG_fund_info <- function(tickers, ...){
+
+  utils::data(list = c("fields"), package = "BBGsymbols", envir = environment())
+
+  fields <- dplyr::filter(fields, instrument == "fund", book == "info")
+
+  con <- tryCatch({
+    Rblpapi::blpConnect()
+  }, error = function(e) stop("Unable to connect Bloomberg. Please open a Bloomberg session on this terminal", call. = FALSE))
+
+  query <- Rblpapi::bdp(securities = tickers, fields = dplyr::select(fields, symbol) %>% purrr::flatten_chr(), con = con) %>%
+    dplyr::mutate(ticker = row.names(.)) %>% dplyr::mutate_all(dplyr::funs(as.character)) %>%
+    tidyr::gather(field, value, -ticker) %>% dplyr::mutate(field = forcats::as_factor(field)) %>%
+    dplyr::arrange(ticker, field) %>% dplyr::mutate(field = as.character(field))
+
+  fields <- dplyr::left_join(dplyr::distinct(query, ticker, symbol = field), dplyr::select(fields, instrument, book, symbol),
+                             by = "symbol") %>% dplyr::select(ticker, instrument, book, symbol)
+
+  Rblpapi::blpDisconnect(con)
+
+  methods::new("FundInfo", info = tibble::as.tibble(query), fields = data.table::as.data.table(fields), call = match.call())
+}
 
 
+# storethat ####
 
+## futures ####
 
+### market ####
 
-#' Futures historical market data from a \code{storethat} SQLite database
+#### global ####
+
+#' Futures historical market data from a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database
 #'
 #' @description Provided with a set of Bloomberg futures active contract tickers, term structure positions, roll parameters and a time period,
-#'   retrieves the corresponding futures market historical data previously stored in a \code{storethat} SQLite database.
+#'   retrieves the corresponding futures market historical data previously stored in a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
+#'   SQLite database.
 #'
-#' @param file A scalar chatacter vector. Specifies the target \code{storethat} SQLite database file.
+#' @param file A scalar chatacter vector. Specifies the target \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
+#'   SQLite database file.
 #' @param type A scalar character vector, 'term sructure' or 'aggregate'. 'term structure' returns individual futures chain data for a selected
 #'   portion of the term structure (specify desired positions in \code{TS_positions}) while 'aggregate' returns aggregated data over the whole
-#'   term structure for the corresponding names (specify desired names via corresponding tickers in \code{active_contract_tickers}).
-#'   Defaults to 'term structure'.
-#' @param active_contract_tickers A chatacter vector. Specifies the Bloomberg futures active contract tickers to query data for.
-#'   Defaults to 'C A Comdty', the Bloomberg active contract ticker for the XCBT corn futures series.
+#'   term structure for the corresponding names (\code{active_contract_tickers}).
+#' @param active_contract_tickers A chatacter vector. Specifies the futures active contract Bloomberg tickers to query data for.
 #' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-01-01'.
 #' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-06-30'.
 #' @param TS_positions An integer vector. Specifies the term structure positions to query data for.
-#' Defaults to 1: front nearby contract for the corresponding futures series.
 #' @param roll_type A scalar chatacter vector. Specifies roll type to use for term structure ticker construction.
 #'   Must be one of 'A', 'B', 'D', 'F', 'N', 'O' or 'R'.
-#'   Defaults to 'A' or 'With active future': rolls to the most actively traded contract in the futures series.
 #' @param roll_days A scalar integer vector. Specifies the day the roll should be done.
 #'   Refers to the day of the month (\code{roll_type} = 'F') or the number of days before a reference date
 #'   (\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O', \code{roll_type} = 'R').
-#'   Works in tandem with `roll_months` below.
-#'   Defaults to 0.
+#'   Works in tandem with \code{roll_months} below.
 #' @param roll_months A scalar integer vector. Specifies the month the roll should be done.
 #'   Refers to the number of months before a reference date (\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O',
-#'   \code{roll_type} = 'R'). Works in tandem with `roll_days` above.
-#'   Defaults to 0.
+#'   \code{roll_type} = 'R'). Works in tandem with \code{roll_days} above.
 #' @param roll_adjustment A scalar chatacter vector. Specifies roll adjustment method to use for term structure ticker construction.
-#'   Must be one of 'D', 'N', 'R', or 'W'. Defaults to 'N' or 'None'.
+#'   Must be one of 'D', 'N', 'R', or 'W'.
 #' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
-#' @param ... optional extra parameters for grouping:
+#'
+#' @return An S4 object of class \linkS4class{FuturesTS} (\code{type = 'term structure'}) or \linkS4class{FuturesAggregate}
+#'   (\code{type = 'aggregate'}).
+#'
+#' @seealso
 #'   \itemize{
-#'     \item{\code{asset_class}: a character vector. See column 'asset class' of the \code{tickers_futures}
-#'       dataset in the  \code{bbgsymbols}.}
-#'     \item{\code{sector}: a character vector. See column 'sector' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
-#'     \item{\code{subsector}: a character vector. See column 'subsector' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
-#'     \item{\code{exchange}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{exchanges}} dataset in the \code{fewISOs}.}
-#'     \item{\code{currency}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{currencies}} dataset in the \code{fewISOs}.}
+#'     \item{"GFUT <GO>" on a Bloomberg terminal.}
+#'     \item{The \link[BBGsymbols]{rolls} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details regarding the \code{roll_type} & \code{roll_adjustment} parameters.}
+#'     \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+#'     for details on the Bloomnerg fields used here.}
+#'     \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
 #'   }
 #'
-#' @return An S4 object of class \code{\linkS4class{FuturesTS}} (\code{type = 'term structure'}) or \code{\linkS4class{FuturesAggregate}}
-#'   \code{type = 'aggregate'}). Slots include:
-#'   \itemize{
-#'     \item{\code{tickers}: a data.table showing the tickers for which data has been found.}
-#'     \item{\code{fields}: a data.table showing the data fields for which data has been found.}
-#'     \item{\code{data}: a data.table containing the data retrieved.}
-#'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
+#' @examples \dontrun{
+#'     storethat_futures_market(type = 'term structure',
+#'       active_contract_tickers = c("W A Comdty", "KWA Comdty"),
+#'       start = "2000-01-01", end = as.character(Sys.Date()),
+#'       TS_positions = 1L:5L, roll_type = "A", roll_days = 0L,
+#'       roll_months = 0L, roll_adjustment = "N")
+#'     storethat_futures_market(type = "aggregate",
+#'       active_contract_tickers = c("W A Comdty", "KWA Comdty"),
+#'       start = "2000-01-01", end = as.character(Sys.Date()))
 #'   }
-#'
-#' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg data fields used here.
-#'
-#' @examples
-#' \dontrun{
-#'   bbg_futures_market(type = 'term structure')
-#'   bbg_futures_market(type = 'aggregate')
-#' }
 #'
 #' @export
-storethat_futures_market <- function(file = NULL,
-                                     type = "term structure",
-                                     active_contract_tickers = "C A Comdty",
-                                     start = "2018-01-01",
-                                     end = "2018-06-30",
-                                     TS_positions = 1L,
-                                     roll_type = "A",
-                                     roll_days = 0L,
-                                     roll_months = 0L,
-                                     roll_adjustment = "N",
-                                     verbose = TRUE,
-                                     ...){
+storethat_futures_market <- function(file = NULL, type, active_contract_tickers, start, end, TS_positions = NULL,
+                                     roll_type = NULL, roll_days = NULL, roll_months = NULL, roll_adjustment = NULL, verbose = TRUE){
 
-  if (! rlang::is_scalar_character(type) & type %in% c("term structure", "aggregate"))
-    stop("The parameter 'type' must be supplied as a scalar character vector; one of 'term structure' or 'aggregate'")
-  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers")
-  if (! is.integer(TS_positions)) stop("The parameter 'TS_positions' must be supplied as a vector of integers")
-  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector")
+  if (is.null(file)) file <- file.choose()
+  else
+    if (! all(rlang::is_scalar_character(file), stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
+      stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite database file (ie. ~/storethat.sqlite)")
+
+  con <- RSQLite::dbConnect(RSQLite::SQLite(), file); fields <- RSQLite::dbReadTable(con, "support_fields")
+  tickers <- "SELECT ticker FROM tickers_futures;"; tickers <- RSQLite::dbGetQuery(con, tickers)
+  roll_types <- RSQLite::dbReadTable(con, "support_futures_roll_types")$symbol
+  roll_adjustments <- RSQLite::dbReadTable(con, "support_futures_roll_adjustments")$symbol
+  RSQLite::dbDisconnect(con)
+
+  if (! all(rlang::is_scalar_character(type), type %in% unique(dplyr::filter(fields, instrument == "futures", book == "market")$type)))
+    stop("The parameter 'type' must be supplied as a scalar character vector; one of '",
+         paste(unique(dplyr::filter(fields, instrument == "futures", book == "market")$type), collapse = "', '"), "'")
+
+  if (! all(active_contract_tickers %in% tickers$ticker))
+    stop("The parameter 'active_contract_tickers' must be supplied as a character vector; one or more of '",
+                paste(tickers$ticker, collapse = "', '"), "'")
+
+  if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
+    stop("The parameters 'start' and 'end' must be supplied as scalar character vectors of dates (yyyy-mm-dd)")
+
+  if (! is.null(TS_positions))
+    if (! all(is.integer(TS_positions))) stop("The parameters 'TS_positions' must be supplied as a vector of integers")
+
+  if (! all(is.null(roll_days), is.null(roll_months)))
+    if (! all(rlang::is_scalar_integer(roll_days), rlang::is_scalar_integer(roll_months)))
+      stop("The parameters 'roll_days' and 'roll_months' must be supplied as scalar integer vectors")
+
+  if (! all(is.null(roll_type), is.null(roll_adjustment)))
+    if (! all(rlang::is_scalar_character(roll_type), rlang::is_scalar_character(roll_adjustment),
+            roll_type %in% roll_types, roll_adjustment %in% roll_adjustments))
+      stop("The parameters 'roll_type' and 'roll_adjustment' must be supplied as scalar character vectors; one of '",
+         paste(roll_types, collapse = "', '"), "' ('roll_type') or '", paste(roll_adjustments, collapse = "', '"), "' ('roll_adjustment')")
+
+  if (! rlang::is_scalar_logical(verbose))
+    stop("The parameter 'verbose' must be supplied as a scalar logical vector")
 
   switch(type,
          `term structure` = storethat_futures_TS(active_contract_tickers = active_contract_tickers, start = start, end = end, TS_positions = TS_positions,
@@ -780,961 +872,715 @@ storethat_futures_market <- function(file = NULL,
 }
 
 
+#### term structure ####
 
-
-#' Futures term structure historical data from a \code{storethat} SQLite database
+#' Futures term structure historical data from a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database
 #'
 #' @description Provided with a set of Bloomberg futures active contract tickers, term structure positions, roll parameters and a time period,
-#'   retrieves the corresponding term structure historical data previously stored in a \code{storethat} SQLite database.
+#'   retrieves the corresponding term structure historical data previously stored in a
+#'   \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database.
 #'
-#' @param file A scalar chatacter vector. Specifies the target \code{storethat} SQLite database file.
-#' @param active_contract_tickers A chatacter vector. Specifies the Bloomberg futures active contract tickers to query data for.
-#'   Defaults to 'C A Comdty', the Bloomberg active contract ticker for the XCBT corn futures series.
+#' @param file A scalar chatacter vector. Specifies the target \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
+#'   SQLite database file.
+#' @param active_contract_tickers A chatacter vector. Specifies the futures active contract Bloomberg tickers to query data for.
 #' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-01-01'.
 #' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-06-30'.
 #' @param TS_positions An integer vector. Specifies the term structure positions to query data for.
-#' Defaults to 1: front nearby contract for the corresponding futures series.
 #' @param roll_type A scalar chatacter vector. Specifies roll type to use for term structure ticker construction.
 #'   Must be one of 'A', 'B', 'D', 'F', 'N', 'O' or 'R'.
-#'   Defaults to 'A' or 'With active future': rolls to the most actively traded contract in the futures series.
 #' @param roll_days A scalar integer vector. Specifies the day the roll should be done.
 #'   Refers to the day of the month (\code{roll_type} = 'F') or the number of days before a reference date
 #'   (\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O', \code{roll_type} = 'R').
-#'   Works in tandem with `roll_months` below.
-#'   Defaults to 0.
+#'   Works in tandem with \code{roll_months} below.
 #' @param roll_months A scalar integer vector. Specifies the month the roll should be done.
 #'   Refers to the number of months before a reference date (\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O',
-#'   \code{roll_type} = 'R'). Works in tandem with `roll_days` above.
-#'   Defaults to 0.
+#'   \code{roll_type} = 'R'). Works in tandem with \code{roll_days} above.
 #' @param roll_adjustment A scalar chatacter vector. Specifies roll adjustment method to use for term structure ticker construction.
-#'   Must be one of 'D', 'N', 'R', or 'W'. Defaults to 'N' or 'None'.
+#'   Must be one of 'D', 'N', 'R', or 'W'.
 #' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
-#' @param ... optional extra parameters for grouping:
+#'
+#' @return An S4 object of class \linkS4class{FuturesTS}.
+#'
+#' @seealso
 #'   \itemize{
-#'     \item{\code{asset_class}: a character vector. See column 'asset class' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
-#'     \item{\code{sector}: a character vector. See column 'sector' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
-#'     \item{\code{subsector}: a character vector. See column 'subsector' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
-#'     \item{\code{exchange}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{exchanges}} dataset in the \code{fewISOs}.}
-#'     \item{\code{currency}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{currencies}} dataset in the \code{fewISOs}.}
+#'     \item{"GFUT <GO>" on a Bloomberg terminal.}
+#'     \item{The \link[BBGsymbols]{rolls} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details regarding the \code{roll_type} & \code{roll_adjustment} parameters.}
+#'     \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+#'     for details on the Bloomnerg fields used here.}
+#'     \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
 #'   }
 #'
-#'
-#' @return An S4 object of class \code{\linkS4class{FuturesTS}} with slots:
-#'   \itemize{
-#'     \item{\code{tickers}: a tibble. Columns include:
-#'       \itemize{
-#'         \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
-#'         \item{\code{ticker}: futures term structure Bloomberg tickers for which data has been found.}
-#'         \item{\code{TS position}: corresponding futures term structure position.}
-#'         \item{\code{roll type}: corresponding roll type (by name).}
-#'         \item{\code{roll days}: corresponding day(s) offset.}
-#'         \item{\code{roll months}: corresponding month(s) offset.}
-#'         \item{\code{roll adjustment}: corresponding roll adjustment (by name).}
-#'       }
-#'     }
-#'     \item{\code{fields}: a tibble. Columns include:
-#'       \itemize{
-#'         \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
-#'         \item{\code{TS position}: corresponding futures chain term structure positions for which data has been found.}
-#'         \item{\code{field}: futures Bloomberg market data fields for which data has been found.}
-#'       }
-#'     }
-#'     \item{\code{data}: a tibble. Columns include:
-#'       \itemize{
-#'         \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
-#'         \item{\code{TS position}: futures chain term structure positions for which data has been found.}
-#'         \item{\code{field}: futures Bloomberg market data fields for which data has been found.}
-#'         \item{\code{date}: observation date.}
-#'         \item{\code{value}: corresponding value.}
-#'       }
-#'     }
-#'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
+#' @examples \dontrun{
+#'     storethat_futures_market(type = 'term structure',
+#'       active_contract_tickers = c("W A Comdty", "KWA Comdty"),
+#'       start = "2000-01-01", end = as.character(Sys.Date()),
+#'       TS_positions = 1L:5L, roll_type = "A", roll_days = 0L,
+#'       roll_months = 0L, roll_adjustment = "N")
 #'   }
 #'
-#' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
-#'
-#' @examples
-#' \dontrun{bbg_futures_TS()}
-#'
-#' @import bbgsymbols
-#' @importFrom magrittr "%>%" "%<>%"
-storethat_futures_TS <- function(file = NULL,
-                                 active_contract_tickers = "C A Comdty",
-                                 start = "2018-01-01",
-                                 end = "2018-06-30",
-                                 TS_positions = 1L,
-                                 roll_type = "A",
-                                 roll_days = 0L,
-                                 roll_months = 0L,
-                                 roll_adjustment = "N",
-                                 verbose = TRUE,
-                                 ...){
+#' @importFrom magrittr "%<>%"
+storethat_futures_TS <- function(file, active_contract_tickers, start, end, TS_positions, roll_type, roll_days, roll_months, roll_adjustment, verbose){
 
-  data(list = c("tickers_futures", "fields", "rolls"), package = "bbgsymbols", envir = environment())
+  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
 
-  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be
-                                                    supplied as a character vector of Bloomberg tickers")
-  if (! is.integer(TS_positions)) stop("The parameter 'TS_positions' must be supplied as a vector of integers")
-  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector")
-  if (is.null(file)) file <- "~/storethat.sqlite"
+  term_structure_tickers <- sapply(active_contract_tickers,
+                    function(y) sapply(TS_positions, function(x) futures_ticker(y, TS_position = x, roll_type, roll_days, roll_months, roll_adjustment)))
+
+  term_structure_tickers <- paste0("SELECT * FROM tickers_support_futures_ts WHERE ticker IN ('", paste(term_structure_tickers, collapse = "', '"), "');")
+  term_structure_tickers <- RSQLite::dbGetQuery(con, term_structure_tickers)
+  query <- paste0("SELECT id, ticker AS 'active contract ticker' FROM tickers_futures WHERE id IN (",
+                  paste(term_structure_tickers$active_contract_ticker_id, collapse = ", "), ");")
+  term_structure_tickers %<>% dplyr::left_join(RSQLite::dbGetQuery(con, query), by = c("active_contract_ticker_id" = "id")) %>%
+    dplyr::select(id, active_contract_ticker_id, `active contract ticker`, ticker, `TS position` = position, `roll type symbol` = roll_type_symbol,
+                  `roll days` = roll_days, `roll months` = roll_months, `roll adjustment symbol` = roll_adjustment_symbol)
+
+  dates <- paste0("SELECT * FROM support_dates WHERE date >= '", start, "' AND date <= '", end, "';")
+  dates <- RSQLite::dbGetQuery(con, dates)
+
+  data <- lapply(unique(dates$period), function(z){
+    query <- paste0("SELECT * FROM data_futures_ts_", z, " WHERE ticker_id IN (", paste(term_structure_tickers$id, collapse = ", "),
+                    ") AND date_id >= ", min(dates$id), " AND date_id <= ", max(dates$id), ";")
+    query <- RSQLite::dbGetQuery(con, query)
+    if (verbose) done(paste0("Period ", data.table::first(dplyr::filter(dates, period == z)$date), "/", data.table::last(dplyr::filter(dates, period == z)$date)))
+    query
+  }) %>% data.table::rbindlist()
+
+  fields <- paste0("SELECT id, instrument, book, type, symbol FROM support_fields WHERE instrument = 'futures' AND book = 'market' AND type = 'term structure';")
+  fields <- RSQLite::dbGetQuery(con, fields)
+
+  RSQLite::dbDisconnect(con)
+
+  data %<>% dplyr::left_join(dplyr::select(term_structure_tickers, id, ticker), by = c("ticker_id" = "id")) %>%
+    dplyr::left_join(dplyr::select(dates, id, date), by = c("date_id" = "id")) %>% dplyr::left_join(fields, by = c("field_id" = "id")) %>%
+    dplyr::select(ticker, field = symbol, date, value) %>% dplyr::arrange(ticker, field, date)
+
+  fields <- dplyr::left_join(dplyr::distinct(data, ticker, symbol = field), dplyr::select(fields, instrument, book, type, symbol), by = "symbol") %>%
+    dplyr::left_join(dplyr::select(term_structure_tickers, `active contract ticker`, ticker), by = "ticker") %>%
+    dplyr::select(`active contract ticker`, ticker, instrument, book, type, symbol)
+
+  active_contract_tickers <- dplyr::distinct(term_structure_tickers, `active contract ticker`)
+
+  methods::new("FuturesTS", active_contract_tickers = data.table::as.data.table(dplyr::arrange(active_contract_tickers)),
+               term_structure_tickers = data.table::as.data.table(dplyr::select(term_structure_tickers, -c(id, active_contract_ticker_id))),
+               fields = data.table::as.data.table(fields), data = data.table::as.data.table(data), call = match.call())
+}
+
+
+#### aggregate ####
+
+#' Futures aggregate historical data from from a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database
+#'
+#' @description Provided with a set of Bloomberg futures active contract tickers and a time period,
+#'   retrieves the corresponding futures historical aggregate data previously stored in a
+#'   \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database. For each
+#'   individual field, futures aggregate data represents the aggregation of the corresponding field
+#'   values over all the corresponding term structure contracts.
+#'
+#' @param file A scalar chatacter vector. Specifies the target \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
+#'   SQLite database file.
+#' @param active_contract_tickers A chatacter vector. Specifies the futures active contract Bloomberg tickers to query data for.
+#' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
+#' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
+#' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
+#'
+#' @return An S4 object of class \linkS4class{FuturesAggregate}.
+#'
+#' @seealso
+#'   \itemize{
+#'     \item{"GFUT <GO>" on a Bloomberg terminal.}
+#'     \item{The \link[BBGsymbols]{rolls} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details regarding the \code{roll_type} & \code{roll_adjustment} parameters.}
+#'     \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+#'     for details on the Bloomnerg fields used here.}
+#'     \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'   }
+#'
+#' @examples \dontrun{
+#'     storethat_futures_market(type = "aggregate",
+#'       active_contract_tickers = c("W A Comdty", "KWA Comdty"),
+#'       start = "2000-01-01", end = as.character(Sys.Date()))
+#'   }
+#'
+#' @importFrom magrittr "%<>%"
+storethat_futures_aggregate <- function(file, active_contract_tickers, start, end, verbose){
+
+  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
+
+  active_contract_tickers <- paste0("SELECT * FROM tickers_futures WHERE ticker IN ('", paste(active_contract_tickers, collapse = "', '"), "');")
+  active_contract_tickers <- RSQLite::dbGetQuery(con, active_contract_tickers)
+
+  dates <- paste0("SELECT * FROM support_dates WHERE date >= '", start, "' AND date <= '", end, "';")
+  dates <- RSQLite::dbGetQuery(con, dates)
+
+  data <- lapply(unique(dates$period), function(z){
+    query <- paste0("SELECT * FROM data_futures_aggregate_", z, " WHERE ticker_id IN (", paste(active_contract_tickers$id, collapse = ", "),
+                    ") AND date_id >= ", min(dates$id), " AND date_id <= ", max(dates$id), ";")
+    query <- RSQLite::dbGetQuery(con, query)
+    if (verbose) done(paste0("Period ", data.table::first(dplyr::filter(dates, period == z)$date), "/", data.table::last(dplyr::filter(dates, period == z)$date)))
+    query
+  }) %>% data.table::rbindlist()
+
+  fields <- paste0("SELECT id, instrument, book, type, symbol FROM support_fields WHERE id IN (", paste(unique(data$field_id), collapse = ", "), ");")
+  fields <- RSQLite::dbGetQuery(con, fields)
+
+  RSQLite::dbDisconnect(con)
+
+  data %<>% dplyr::left_join(dplyr::select(active_contract_tickers, id, ticker), by = c("ticker_id" = "id")) %>%
+    dplyr::left_join(dplyr::select(dates, id, date), by = c("date_id" = "id")) %>%
+    dplyr::left_join(fields, by = c("field_id" = "id")) %>% dplyr::select(ticker, field = symbol, date, value) %>%
+    dplyr::arrange(ticker, field, date)
+
+  fields <- dplyr::left_join(dplyr::distinct(data, ticker, symbol = field), dplyr::select(fields, instrument, book, type, symbol), by = "symbol") %>%
+    dplyr::left_join(dplyr::select(active_contract_tickers, ticker), by = "ticker") %>%
+    dplyr::select(ticker, instrument, book, type, symbol)
+
+  methods::new("FuturesAggregate", active_contract_tickers = data.table::as.data.table(tickers),
+               fields = data.table::as.data.table(fields), data = data.table::as.data.table(data), call = match.call())
+}
+
+
+### CFTC ####
+
+#' Futures CFTC position historical data from from a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database
+#'
+#' @description Provided with a set of Bloomberg futures active contract tickers and a time period,
+#'   retrieves the corresponding futures CFTC position historical data previously stored in a
+#'   \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database.
+#'
+#' @param file A scalar chatacter vector. Specifies the target \pkg{storethat} SQLite database file.
+#' @param active_contract_tickers A chatacter vector. Specifies the futures active contract Bloomberg tickers to query data for.
+#' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
+#' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
+#' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
+#' @param ... Optional parameters to pass to the \link[Rblpapi]{bdh} function from the
+#' \href{http://dirk.eddelbuettel.com/code/rblpapi.html}{\pkg{Rblpapi}} package used
+#'   for the query (\code{options} parameter).
+#'
+#' @return An S4 object of class \linkS4class{FuturesCFTC}.
+#'
+#' @seealso
+#'   \itemize{
+#'     \item{"GFUT <GO>" on a Bloomberg terminal.}
+#'     \item{The \link[BBGsymbols]{tickers_CFTC} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the Bloomnerg position tickers used here.}
+#'     \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'   }
+#'
+#' @examples \dontrun{
+#'     storethat_futures_CFTC(active_contract_tickers = c("W A Comdty", "KWA Comdty"),
+#'       start = "2000-01-01", end = as.character(Sys.Date()))
+#'   }
+#'
+#' @importFrom magrittr "%<>%"
+#'
+#' @export
+storethat_futures_CFTC <- function(file = NULL, active_contract_tickers, start, end, verbose = TRUE){
+
+  if (is.null(file)) file <- file.choose()
   else
     if (! all(rlang::is_scalar_character(file), stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
       stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite database file (ie. ~/storethat.sqlite)")
 
-  if ( any(c("asset_class", "sector", "subsector", "exchange", "currency") %in% names(list(...)))){
-    tickers <- futures_groups(file, ...)
-    if ( all(!is.null(tickers), NROW(tickers) == 0L)) stop("No ticker found for the specified grouping")
-    if (! any(active_contract_tickers %in% tickers))
-      warning("'", paste(active_contract_tickers[! active_contract_tickers %in% tickers], collapse = "', '"), "' not in specified grouping.")
-    active_contract_tickers <- tickers
-  }
-
   con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
-  data <- lapply(active_contract_tickers, function(y){
-    tickers <- sapply(TS_positions, function(x) futures_ticker(y, TS_position = x, roll_type, roll_days, roll_months, roll_adjustment))
+  tickers <- "SELECT id, ticker FROM tickers_futures;"; tickers <- RSQLite::dbGetQuery(con, tickers)
+  if (! all(active_contract_tickers %in% tickers$ticker))
+    stop("The parameter 'active_contract_tickers' must be supplied as a character vector; one or more of '",
+         paste(tickers$ticker, collapse = "', '"), "'")
 
-    query <- paste0("SELECT DISTINCT id, symbol AS ticker, active_contract_ticker_id
-                    FROM tickers_support_futures_ts WHERE symbol ",
-                    ifelse(NROW(tickers) == 1L,
-                           paste0("= '", tickers, "';"),
-                           paste0("IN ('", paste(tickers, collapse = "', '"), "');"))
-    )
+  if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
+    stop("The parameters 'start' and 'end' must be supplied as scalar character vectors of dates (yyyy-mm-dd)")
 
-    tickers <- RSQLite::dbGetQuery(con, query)
-    query <- paste0("SELECT DISTINCT id, symbol FROM tickers_futures WHERE id ",
-                    ifelse(NROW(tickers$active_contract_ticker_id) == 1L,
-                           paste0("= ", tickers$active_contract_ticker_id, ";"),
-                           paste0("IN (", paste(tickers$active_contract_ticker_id, collapse = ", "), ");"))
-    )
-    tickers <- tickers %>%
-      dplyr::left_join(RSQLite::dbGetQuery(con, query), by = c("active_contract_ticker_id" = "id")) %>%
-      dplyr::select(id, ticker, `active contract ticker` = symbol)
-    query <- paste0("SELECT id, date FROM support_dates WHERE date >= '", start, "' AND date <= '", end, "';")
-    dates <- RSQLite::dbGetQuery(con, query)
+  if (! rlang::is_scalar_logical(verbose))
+    stop("The parameter 'verbose' must be supplied as a scalar logical vector")
 
-    query <- paste0("SELECT * FROM data_futures_ts WHERE ticker_id ",
-                    ifelse(NROW(tickers$id) == 1L,
-                           paste0("= ", tickers$id),
-                           paste0("IN (", paste0(tickers$id, collapse = ", "), ")")),
-                    " AND date_id ",
-                    ifelse(NROW(dates$id) == 1L,
-                           paste0("= ", dates$id),
-                           paste0("IN (", paste0(dates$id, collapse = ", "), ")")),
-                    ";"
-    )
+  cftc_tickers <- paste0("SELECT * FROM tickers_support_futures_cftc WHERE active_contract_ticker_id IN (", paste(tickers$id, collapse = ", "), ");")
+  cftc_tickers <- RSQLite::dbGetQuery(con, cftc_tickers) %>%
+    dplyr::left_join(dplyr::select(tickers, id, `active contract ticker` = ticker), by = c("active_contract_ticker_id" = "id")) %>%
+    dplyr::select(id, active_contract_ticker_id, `active contract ticker`, ticker)
 
-    data <- RSQLite::dbGetQuery(con, query) %>%
-      dplyr::left_join(tickers, by = c("ticker_id" = "id")) %>%
-      dplyr::left_join(dates, by = c("date_id" = "id")) %>%
-      dplyr::select(-c(ticker_id, date_id)) %>%
-      tidyr::gather(field, value, -c(ticker, `active contract ticker`, date)) %>%
-      dplyr::filter(stats::complete.cases(.))
-    if (verbose) message(y); data
-  }) %>%
-    data.table::rbindlist(use.names = TRUE)
+  dates <- paste0("SELECT * FROM support_dates WHERE date >= '", start, "' AND date <= '", end, "';"); dates <- RSQLite::dbGetQuery(con, dates)
 
-  RSQLite::dbDisconnect(con)
+  data <- lapply(unique(dates$period), function(z){
+    query <- paste0("SELECT * FROM data_futures_cftc_", z, " WHERE ticker_id IN (", paste(cftc_tickers$id, collapse = ", "),
+                    ") AND date_id >= ", min(dates$id), " AND date_id <= ", max(dates$id), ";")
+    query <- RSQLite::dbGetQuery(con, query)
+    if (verbose) done(paste0("Period ", data.table::first(dplyr::filter(dates, period == z)$date), "/", data.table::last(dplyr::filter(dates, period == z)$date)))
+    query
+  }) %>% data.table::rbindlist() %>%
+    dplyr::mutate(field = "PX_LAST") %>%
+    dplyr::left_join(dplyr::select(cftc_tickers, id, `active contract ticker`, ticker), by = c("ticker_id" = "id")) %>%
+    dplyr::left_join(dplyr::select(dates, id, date), by = c("date_id" = "id")) %>%
+    dplyr::select(`active contract ticker`, ticker, field, date, value) %>%
+    dplyr::arrange(`active contract ticker`, ticker, field, date)
 
-  if (nrow(data) == 0L) warning("No term structure data found.")
-
-  data %<>%
-    dplyr::arrange(`active contract ticker`, ticker, field, date) %>%
-    dplyr::mutate(date = as.Date(date, origin = "1970-01-01"))
-
-  tickers <- dplyr::distinct(data, `active contract ticker`, ticker) %>%
-    dplyr::mutate(`TS position` = stringr::str_extract(ticker, pattern = "(?<=^.{0,10})\\d(?=\\s[A-Z]:)"),
-                  `roll type` = stringr::str_extract(ticker, pattern = "(?<= )[A-Z](?=:)"),
-                  `roll days` = stringr::str_extract(ticker, pattern = "(?<=:)\\d{2}(?=_)") %>% as.numeric(),
-                  `roll months` = stringr::str_extract(ticker, pattern = "(?<=_)\\d(?=_)") %>% as.numeric(),
-                  `roll adjustment` = stringr::str_extract(ticker, pattern = "(?<=_)[A-Z](?= )")) %>%
-    dplyr::left_join(dplyr::filter(rolls, roll == "type") %>% dplyr::select(symbol, name), by = c("roll type" = "symbol")) %>%
-    dplyr::select(`active contract ticker`, ticker, `TS position`, `roll type` = name, `roll days`, `roll months`, `roll adjustment`) %>%
-    dplyr::left_join(dplyr::filter(rolls, roll == "adjustment") %>% dplyr::select(symbol, name), by = c("roll adjustment" = "symbol")) %>%
-    dplyr::select(`active contract ticker`, ticker, `TS position`, `roll type`, `roll days`, `roll months`, `roll adjustment` = name) %>%
-    dplyr::left_join(tickers_futures, by = c("active contract ticker" = "ticker"))
-
-  methods::new("FuturesTS",
-               tickers = tibble::as.tibble(tickers),
-               fields = tibble::as.tibble(dplyr::distinct(data, `active contract ticker`, ticker, field)),
-               data = data.table::as.data.table(dplyr::select(ticker, field, date, value)),
-               call = match.call()
-  )
-}
-
-
-
-#' Futures aggregate historical data from Bloomberg
-#'
-#' @description Provided with a set of Bloomberg futures active contract tickers and a time period,
-#'   retrieves the corresponding futures historical aggregate data previously stored in a \code{storethat}
-#'   SQLite database. For each individual field, futures aggregate data represents the aggregation of the
-#'   corresponding field values over all the corresponding term structure contracts.
-#'
-#' @param file A scalar chatacter vector. Specifies the target \code{storethat} SQLite database file.
-#' @param active_contract_tickers A chatacter vector. Specifies the Bloomberg futures active contract tickers to query data for.
-#'   Defaults to 'C A Comdty', the Bloomberg active contract ticker for the XCBT corn futures series.
-#' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-01-01'.
-#' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-06-30'.
-#' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
-#' @param ... optional extra parameters for grouping:
-#'   \itemize{
-#'     \item{\code{asset_class}: a character vector. See column 'asset class' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
-#'     \item{\code{sector}: a character vector. See column 'sector' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
-#'     \item{\code{subsector}: a character vector. See column 'subsector' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
-#'     \item{\code{exchange}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{exchanges}} dataset in the \code{fewISOs}.}
-#'     \item{\code{currency}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{currencies}} dataset in the \code{fewISOs}.}
-#'   }
-#'
-#' @return An S4 object of class \code{\linkS4class{FuturesAggregate}} with slots:
-#'   \itemize{
-#'     \item{\code{tickers}: a character vector. Active contract Bloomberg tickers for which data has been found.}
-#'     \item{\code{fields}: a tibble. Columns include:
-#'       \itemize{
-#'         \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
-#'         \item{\code{field}: futures Bloomberg aggregate data fields for which data has been found.}
-#'       }
-#'     }
-#'     \item{\code{data}: a tibble. Columns inlude:
-#'       \itemize{
-#'         \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
-#'         \item{\code{field}: Bloomberg aggregate data fields for which data has been found.}
-#'         \item{\code{date}: observation date.}
-#'         \item{\code{value}: corresponding value.}
-#'       }
-#'     }
-#'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
-#'   }
-#'
-#' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
-#'
-#' @examples
-#' \dontrun{bbg_futures_aggregate()}
-#'
-#' @import bbgsymbols
-#' @importFrom magrittr "%>%" "%<>%"
-storethat_futures_aggregate <- function(file = NULL,
-                                        active_contract_tickers = "C A Comdty",
-                                        start = "2018-01-01",
-                                        end = "2018-06-30",
-                                        verbose = TRUE,
-                                        ...){
-
-  data(list = c("fields"), package = "bbgsymbols", envir = environment())
-
-  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers")
-  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector")
-  if (is.null(file)) file <- "~/storethat.sqlite"
-  else
-    if (! all(rlang::is_scalar_character(file) & stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
-      stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite database file (ie. ~/storethat.sqlite)")
-
-  if ( any(c("asset_class", "sector", "subsector", "exchange", "currency") %in% names(list(...)))){
-    tickers <- futures_groups(file, ...)
-    if ( all(!is.null(tickers), NROW(tickers) == 0L)) stop("No ticker found for the specified grouping")
-    if (! any(active_contract_tickers %in% tickers))
-      warning("'", paste(active_contract_tickers[! active_contract_tickers %in% tickers], collapse = "', '"), "' not in specified grouping.")
-    active_contract_tickers <- tickers
-  }
-
-  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
-  data <- lapply(active_contract_tickers, function(x) {
-    query <- paste0("SELECT DISTINCT id, symbol FROM tickers_futures WHERE symbol ",
-                    paste0("= '", x, "';")
-    )
-    tickers <- RSQLite::dbGetQuery(con, query)
-    query <- paste0("SELECT id, date FROM support_dates WHERE date >= '", start, "' AND date <= '", end, "';")
-    dates <- RSQLite::dbGetQuery(con, query)
-
-    query <- paste0("SELECT * FROM data_futures_aggregate WHERE ticker_id ",
-                    ifelse(NROW(tickers$id) == 1L,
-                           paste0("= ", tickers$id),
-                           paste0("IN (", paste0(tickers$id, collapse = ", "), ")")),
-                    " AND date_id ",
-                    ifelse(NROW(dates$id) == 1L,
-                           paste0("= ", dates$id),
-                           paste0("IN (", paste0(dates$id, collapse = ", "), ")")),
-                    ";"
-    )
-
-    data <- RSQLite::dbGetQuery(con, query) %>%
-      dplyr::left_join(tickers, by = c("ticker_id" = "id")) %>%
-      dplyr::left_join(dates, by = c("date_id" = "id")) %>%
-      dplyr::select(-c(ticker_id, date_id)) %>%
-      dplyr::rename(`active contract ticker` = symbol) %>%
-      tidyr::gather(field, value, -c(`active contract ticker`, date)) %>%
-      dplyr::filter(stats::complete.cases(.))
-    if (verbose) message(x); data
-  }) %>%
-    data.table::rbindlist(use.names = TRUE)
-
-  if (nrow(data) == 0L) warning("No aggregate data found.")
-
-  RSQLite::dbDisconnect(con)
-
-  data %<>%
-    dplyr::arrange(`active contract ticker`, field, date) %>%
-    dplyr::mutate(date = as.Date(date, origin = "1970-01-01")) %>%
-    dplyr::select(ticker = `active contract ticker`, field, date, value)
-
-  tickers <- dplyr::left_join(dplyr::distinct(data, ticker), tickers_futures, by = "ticker") %>%
-    tibble::as.tibble()
-
-  methods::new("FuturesAggregate",
-               tickers = tickers,
-               fields = tibble::as.tibble(dplyr::distinct(data, ticker, field)),
-               data = data.table::as.data.table(data),
-               call = match.call()
-  )
-}
-
-
-
-
-#' Futures CFTC position historical data from Bloomberg
-#'
-#' @description Provided with a set of Bloomberg futures active contract tickers and a time period,
-#'   retrieves the corresponding futures CFTC position historical data previously stored in a \code{storethat}
-#'   SQLite database.
-#'
-#' @param file A scalar chatacter vector. Specifies the target \code{storethat} SQLite database file.
-#' @param active_contract_tickers A chatacter vector. Specifies the Bloomberg futures active contract tickers to query data for.
-#'   Defaults to 'C A Comdty', the Bloomberg active contract ticker for the XCBT corn futures series.
-#' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-01-01'.
-#' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-06-30'.
-#' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
-#' @param ... optional extra parameters for grouping:
-#'   \itemize{
-#'     \item{\code{asset_class}: a character vector. See column 'asset class' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
-#'     \item{\code{sector}: a character vector. See column 'sector' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
-#'     \item{\code{subsector}: a character vector. See column 'subsector' of the \code{\link[bbgsymbols]{tickers_futures}} dataset in the  \code{bbgsymbols}.}
-#'     \item{\code{exchange}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{exchanges}} dataset in the \code{fewISOs}.}
-#'     \item{\code{currency}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{currencies}} dataset in the \code{fewISOs}.}
-#'   }
-#'
-#' @return An S4 object of class \code{\linkS4class{FuturesCFTC}} with slots:
-#'   \itemize{
-#'     \item{\code{tickers}: a data.table. Active contract and corresponding position Bloomberg tickers for which data has been found. Columns include:
-#'       \itemize{
-#'         \item{active contract ticker: futures series active contract Bloomberg ticker.}
-#'         \item{position ticker: CFTC position Bloomberg ticker.}
-#'       }
-#'     }
-#'     \item{\code{fields}: a data.table. Columns include:
-#'       \itemize{
-#'         \item{\code{format}: report formats ('legacy', 'disaggregated', 'supplemental' or 'traders in financial futures')
-#'           for which data has been found.}
-#'         \item{\code{underlying}: underlying instruments ('futures only' or 'futures & options') for which data has been found..}
-#'         \item{\code{unit}: counting units (number of 'contracts', 'traders' or 'total') for which data has been found.}
-#'         \item{\code{participant}: trader classifications for which data has been found. Report specific:
-#'           \itemize{
-#'             \item{legacy: 'commercial', 'non-commercial', 'non-reportable', 'total'.}
-#'             \item{disaggregated: 'managed money', 'producer/merchant/processor/user', 'swap dealers', 'other reportables'.}
-#'             \item{supplemental: 'commercial - non-CIT', 'non-commercial - non-CIT', 'index traders - non-CIT', 'index traders'.}
-#'             \item{traders in financial futures: 'asset manager/institutional', 'dealer/intermediary', 'leveraged funds', 'other reportables'.}
-#'           }
-#'         }
-#'         \item{\code{position}: trader positions for which data has been found. Participant specific.
-#'           \itemize{
-#'             \item{commercial: 'long', 'short', 'net'.}
-#'             \item{non-commercial: 'long', 'short', 'net', 'spreading'.}
-#'             \item{non-reportable: 'long', 'short', 'net'.}
-#'             \item{total: 'long', 'short', 'net', 'open interest', 'total'.}
-#'             \item{managed money: 'long', 'short', 'net', 'spreading'.}
-#'             \item{producer/merchant/processor/user: 'long', 'short', 'net'.}
-#'             \item{swap dealers: 'long', 'short', 'net', 'spreading'.}
-#'             \item{other reportables: 'long', 'short', 'net', 'spreading'.}
-#'             \item{commercial - non-CIT: 'long', 'short', 'net'.}
-#'             \item{non-commercial - non-CIT: 'long', 'short', 'net', 'spreading'.}
-#'             \item{index traders - non-CIT: 'long', 'short'.}
-#'             \item{index traders: 'long', 'short', 'net'.}
-#'             \item{asset manager/institutional: 'long', 'short', 'net', 'spreading'.}
-#'             \item{dealer/intermediary: 'long', 'short', 'net', 'spreading'.}
-#'             \item{leveraged funds: 'long', 'short', 'net', 'spreading'.}
-#'             \item{other reportables: 'long', 'short', 'net', 'spreading'.}
-#'          }
-#'        }
-#'        \item{\code{position ticker}: corresponding CFTC position Bloomberg ticker.}
-#'      }
-#'    }
-#'     \item{\code{data}: a tibble. Columns inlude:
-#'       \itemize{
-#'         \item{\code{active contract ticker}: futures active contract Bloomberg tickers for which data has been found.}
-#'         \item{\code{position ticker}: CFTC position Bloomberg tickers for which data has been found.}
-#'         \item{\code{date}: observation date.}
-#'         \item{\code{value}: observed value}
-#'       }
-#'     }
-#'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
-#'  }
-#'
-#' @seealso The \code{\link[bbgsymbols]{tickers_cftc}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
-#'
-#' @examples
-#' \dontrun{storethat_futures_cftc()}
-#'
-#' @import bbgsymbols
-#' @importFrom magrittr "%>%" "%<>%"
-#'
-#' @export
-storethat_futures_cftc <- function(file = NULL,
-                                   active_contract_tickers = "C A Comdty",
-                                   start = "2018-01-01",
-                                   end = "2018-06-30",
-                                   verbose = TRUE,
-                                   ...){
-
-  data(list = c("fields"), package = "bbgsymbols", envir = environment())
-
-  if (! is.character(active_contract_tickers)) stop("The parameter 'active_contract_tickers' must be supplied as a character vector of Bloomberg tickers")
-  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector")
-  if (is.null(file)) file <- "~/storethat.sqlite"
-  else
-    if (! all(rlang::is_scalar_character(file) & stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
-      stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite database file (ie. ~/storethat.sqlite)")
-
-  if ( any(c("asset_class", "sector", "subsector", "exchange", "currency") %in% names(list(...)))){
-    tickers <- futures_groups(file, ...)
-    if ( all(!is.null(tickers), NROW(tickers) == 0L)) stop("No ticker found for the specified grouping")
-    if (! any(active_contract_tickers %in% tickers))
-      warning("'", paste(active_contract_tickers[! active_contract_tickers %in% tickers], collapse = "', '"), "' not in specified grouping.")
-    active_contract_tickers <- tickers
-  }
-
-  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
-  data <- lapply(active_contract_tickers, function(x) {
-
-    query <- paste0("SELECT active_contract_ticker_id, active_contract_ticker, position_ticker_id, position_ticker
-                    FROM (SELECT id, symbol AS active_contract_ticker FROM tickers_futures WHERE symbol ",
-                    paste0("= '", x, "') A "),
-                    "LEFT JOIN (SELECT id AS position_ticker_id, symbol AS position_ticker, active_contract_ticker_id FROM tickers_support_futures_cftc) B
-                    ON A.id = B.active_contract_ticker_id;")
-    tickers <- RSQLite::dbGetQuery(con, query)
-
-    if (all(is.na(tickers$active_contract_ticker_id))) {
-      warning(paste0("No CFTC data found for ", x, "."))
-      NULL
-    } else {
-      query <- paste0("SELECT id, date FROM support_dates WHERE date >= '", start, "' AND date <= '", end, "';")
-      dates <- RSQLite::dbGetQuery(con, query)
-
-      query <- paste0("SELECT * FROM data_futures_cftc WHERE ticker_id IN (",
-                      paste0(tickers$ position_ticker_id, collapse = ", "),
-                      ") AND date_id ",
-                      ifelse(NROW(dates$id) == 1L,
-                             paste0("= ", dates$id),
-                             paste0("IN (", paste0(dates$id, collapse = ", "), ")")),
-                      ";"
-      )
-
-      data <- RSQLite::dbGetQuery(con, query) %>%
-        dplyr::left_join(tickers, by = c("ticker_id" = "position_ticker_id")) %>%
-        dplyr::left_join(dates, by = c("date_id" = "id")) %>%
-        dplyr::select(-c(ticker_id, date_id)) %>%
-        dplyr::select(`active contract ticker` = active_contract_ticker, `position ticker` = position_ticker, date, value) %>%
-        dplyr::filter(stats::complete.cases(.))
-      if (verbose) message(x); data
-    }
-  }) %>%
-    data.table::rbindlist(use.names = TRUE)
-
-  if (nrow(data) == 0L) warning("No aggregate data found.")
-
-  data %<>%
-    dplyr::arrange(`active contract ticker`, `position ticker`, date) %>%
-    dplyr::mutate(field = "CFTC",
-                  date = as.Date(date, origin = "1970-01-01")) %>%
-    dplyr::select(`active contract ticker`, `position ticker`, field, date, value)
-
-  query <- paste0("SELECT symbol, name, asset_class, sector, subsector, TS_length,
-                  MIC, currency_id, FIGI FROM (SELECT * FROM tickers_futures WHERE symbol IN ('",
-                  paste(dplyr::distinct(data, `active contract ticker`)$`active contract ticker`, collapse = "', '"),
-                  "')) A LEFT JOIN (SELECT id AS exchange_id, symbol AS MIC FROM support_exchanges) B ON A.MIC_id = B.exchange_id")
-  query <- paste0("SELECT symbol AS 'active contract ticker', name, asset_class AS 'asset class', sector, subsector, TS_length AS 'term structure length',
-                  MIC, currency, FIGI FROM (",
-                  query, ") C LEFT JOIN (SELECT id AS currency_id, symbol AS currency FROM support_currencies) D ON C.currency_id = D.currency_id;")
-  tickers <- tibble::as.tibble(RSQLite::dbGetQuery(con, query))
-  query <- paste0("SELECT symbol AS 'active contract ticker', format, underlying, unit, participant, position FROM
-                  (SELECT active_contract_ticker_id, format, underlying, unit, participant, position FROM
-                  tickers_support_futures_cftc WHERE symbol IN ('",
-                  paste(dplyr::distinct(data, `position ticker`)$`position ticker`, collapse = "', '"),
-                  "')) A LEFT JOIN (SELECT id, symbol FROM tickers_futures) B ON A.active_contract_ticker_id = B.id;")
-  fields <- tibble::as.tibble(RSQLite::dbGetQuery(con, query))
   RSQLite::dbDisconnect(con)
 
   methods::new("FuturesCFTC",
-               tickers = tickers,
-               fields = tibble::as.tibble(fields),
-               data = data.table::as.data.table(dplyr::select(data, ticker = `position ticker`, field, date, value)),
-               call = match.call()
-  )
+               active_contract_tickers = data.table::as.data.table(dplyr::distinct(cftc_tickers, ticker = `active contract ticker`)),
+               cftc_tickers = data.table::as.data.table(dplyr::select(cftc_tickers, -c(id, active_contract_ticker_id))),
+               data = data.table::as.data.table(data), call = match.call())
 }
 
 
 
+### info ####
 
-
-#' Equity historical market data from a \code{storethat} SQLite database.
+#' Futures series qualitative information from a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database
 #'
-#' @description Provided with a set of Bloomberg equity tickers and a time period,
-#'   retrieves the corresponding equity historical market data previously stored in a \code{storethat}
+#' @description Provided with a set of futures active contract Bloomberg tickers retrieves qualitative information
+#'   on the corresponding futures series previously stored in a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
 #'   SQLite database.
 #'
-#' @param file A scalar chatacter vector. Specifies the target \code{storethat} SQLite database file.
-#' @param tickers A chatacter vector. Specifies the Bloomberg equity tickers to query data for.
-#'   Defaults to 'NEM US Equity', the Bloomberg equity ticker for the Newmont Minning Corporation.
-#' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-01-01'.
-#' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-06-30'.
-#' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
-#' @param ... optional extra parameters for grouping:
+#' @param file A scalar chatacter vector. Specifies the target \pkg{storethat} SQLite database file.
+#' @param active_contract_tickers A chatacter vector. Specifies the futures active contract Bloomberg tickers to query data for.
+#'
+#' @return An S4 object of class \linkS4class{FuturesInfo}.
+#'
+#' @seealso
 #'   \itemize{
-#'     \item{\code{type}: a character vector. See 'SECURITY_TYP' data field on Bloomberg.}
-#'     \item{\code{exchange}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{exchanges}} dataset in the \code{fewISOs} package.}
-#'     \item{\code{country}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{countries}} dataset in the \code{fewISOs} package.}
-#'     \item{\code{currency}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{currencies}} dataset in the \code{fewISOs} package.}
-#'     \item{\code{sector}: a character vector. See column 'sector name' of the \code{GICS} dataset in the \code{storethat} package.}
-#'     \item{\code{industry_group}: a character vector. See column 'industry group name' of the \code{GICS} dataset in the \code{storethat} package.}
-#'     \item{\code{industry}: a character vector. See column 'industry name' of the \code{GICS} dataset in the \code{storethat} package.}
-#'     \item{\code{subindustry}: a character vector. See column 'subindustry name' of the \code{GICS} dataset in the \code{storethat} package.}
+#'     \item{The \link[BBGsymbols]{fields} (\pkg{finRes} suite) dataset in the \pkg{BBGsymbols} package for details on the Bloomnerg fields used here.}
+#'     \item{Helper datasets in the \pkg{fewISOs} and \pkg{GICS} packages (\pkg{finRes} suite).}
 #'   }
 #'
-#' @return An S4 object of class \code{\linkS4class{EquityMarket}} with slots:
-#'   \itemize{
-#'     \item{\code{tickers}: a character vector. Equity Bloomberg tickers for which data has been found.}
-#'     \item{\code{fields}: a tibble. Columns include:
-#'       \itemize{
-#'         \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
-#'         \item{\code{field}: equity Bloomberg market data fields for which data has been found.}
-#'       }
-#'     }
-#'     \item{\code{data}: a tibble. Columns include:
-#'       \itemize{
-#'         \item{\code{ticker}: equity Bloomberg tickers for which data has been found.}
-#'         \item{\code{field}: equity Bloomberg market data fields for which data has been found.}
-#'         \item{\code{date}: observation date.}
-#'         \item{\code{value}: corresponding value.}
-#'       }
-#'     }
-#'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
+#' @examples \dontrun{
+#'     storethat_futures_info(active_contract_tickers = c("W A Comdty", "KWA Comdty"))
 #'   }
-#'
-#' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
-#'
-#' @examples
-#' \dontrun{bbg_equity_market()}
-#'
-#' @import bbgsymbols
-#' @importFrom magrittr "%>%" "%<>%"
 #'
 #' @export
-storethat_equity_market <- function(file = NULL,
-                                    tickers = "NEM US Equity",
-                                    start = "2018-01-01",
-                                    end = "2018-06-30",
-                                    verbose = TRUE,
-                                    ...){
+storethat_futures_info <- function(file = NULL, active_contract_tickers){
 
-  data(list = c("fields"), package = "bbgsymbols", envir = environment())
-
-  if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg tickers")
-  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector")
-  if (is.null(file)) file <- "~/storethat.sqlite"
-  else
-    if (! all(rlang::is_scalar_character(file) & stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
-      stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite database file (ie. ~/storethat.sqlite)")
-
-  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
-
-  if ( any(c("type", "exchange", "country", "currency", "sector", "industry_group", "industry", "subindustry") %in% names(list(...)))){
-    data <- equity_groups(file, ...)
-    if ( all(!is.null(data), NROW(data) == 0L)) stop("No ticker found for the specified grouping")
-    if (! any(tickers %in% data))
-      warning("'", paste(tickers[! tickers %in% data], collapse = "', '"), "' not in specified grouping.")
-    tickers <- data
-  }
-
-  data <- lapply(tickers, function(x) {
-    query <- paste0("SELECT DISTINCT id, symbol FROM tickers_equity WHERE symbol ",
-                    paste0("= '", x, "';")
-    )
-    tickers <- RSQLite::dbGetQuery(con, query)
-    query <- paste0("SELECT id, date FROM support_dates WHERE date >= '", start, "' AND date <= '", end, "';")
-    dates <- RSQLite::dbGetQuery(con, query)
-
-    query <- paste0("SELECT * FROM data_equity_market WHERE ticker_id ",
-                    paste0("= ", tickers$id),
-                    " AND date_id ",
-                    ifelse(NROW(dates$id) == 1L,
-                           paste0("= ", dates$id),
-                           paste0("IN (", paste0(dates$id, collapse = ", "), ")")),
-                    ";"
-    )
-
-    data <- RSQLite::dbGetQuery(con, query) %>%
-      dplyr::left_join(tickers, by = c("ticker_id" = "id")) %>%
-      dplyr::left_join(dates, by = c("date_id" = "id")) %>%
-      dplyr::select(-c(ticker_id, date_id)) %>%
-      dplyr::rename(ticker = symbol) %>%
-      tidyr::gather(field, value, -c(ticker, date)) %>%
-      dplyr::filter(stats::complete.cases(.))
-    if (verbose) message(x); data
-  }) %>%
-    data.table::rbindlist(use.names = TRUE)
-
-  if (nrow(data) == 0L) warning("No equity historical market data found.")
-
-  data %<>%
-    tidyr::gather(field, value, -c(ticker, date)) %>%
-    dplyr::select(ticker, field, date, value) %>%
-    dplyr::mutate(date = as.Date(date, origin = "1970-01-01")) %>%
-    dplyr::arrange(ticker, field, date)
-
-  tickers <- dplyr::distinct(data, ticker)$ticker
-  query <- paste0("(SELECT symbol AS ticker, name, type, MIC_id, country_id, currency_id, GICS_id, FIGI, description
-                  FROM tickers_equity WHERE symbol ",
-                  ifelse(NROW(tickers) == 1L,
-                         paste0("= '", tickers, "'"),
-                         paste0("IN ('", paste0(tickers, collapse = "', '"), "')")),
-                  ")"
-  )
-  query <- paste0("(SELECT ticker, name, type, symbol AS exchange, country_id, currency_id, GICS_id, FIGI, description FROM ",
-                  query,
-                  " A LEFT JOIN (SELECT id, symbol FROM support_exchanges) B ON A.MIC_id = B.id)")
-  query <- paste0("(SELECT ticker, name, type, exchange, symbol AS country, currency_id, GICS_id, FIGI, description FROM ",
-                  query,
-                  " C LEFT JOIN (SELECT id, symbol FROM support_countries) D ON C.country_id = D.id)")
-  query <- paste0("(SELECT ticker, name, type, exchange, country, symbol AS currency, GICS_id, FIGI, description FROM ",
-                  query,
-                  " E LEFT JOIN (SELECT id, symbol FROM support_currencies) F ON E.currency_id = F.id)")
-  query <- paste0("SELECT ticker, name, type AS 'security type', exchange, country AS 'country of incorporation',
-                  currency, sector_name AS sector, industry_group_name AS 'industry group', industry_name AS 'industry',
-                  subindustry_name AS subindustry, FIGI, description FROM ",
-                  query,
-                  " G LEFT JOIN (SELECT sector_name, industry_group_name, industry_name, subindustry_name, id FROM
-                  support_GICS) H ON G.GICS_id = H.id;")
-
-  tickers <- RSQLite::dbGetQuery(con, query)
-  RSQLite::dbDisconnect(con)
-
-  methods::new("EquityMarket",
-               tickers = tibble::as.tibble(tickers),
-               fields = tibble::as.tibble(dplyr::distinct(data, ticker, field)),
-               data = data.table::as.data.table(data),
-               call = match.call()
-  )
-}
-
-
-
-
-#' Equity historical book data from Bloomberg
-#'
-#' @description Retrieve equity historical book data from Bloomberg. Books include 'key stats', 'income statement', 'balance sheet',
-#'   'cash flow statement' and 'ratios' with the corresponding data fields retrieved from the 'fields' dataset of the \code{bbgsymbols}
-#'   package.
-#'
-#' @param file A scalar chatacter vector. Specifies the target \code{storethat} SQLite database file.
-#' @param book A scalar chatacter vector, 'key stats', 'income statement', 'balance sheet', 'cash flow statement' or 'ratios'.
-#'   Defaults to 'key stats' which returns historical data for a set of key financial indicators; a quick dynamic financial
-#'   snapshot of the selected names.
-#' @param tickers A chatacter vector. Specifies the Bloomberg equity tickers to query data for.
-#'   Defaults to 'NEM US Equity', the Bloomberg equity ticker for the Newmont Minning Corporation.
-#' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-01-01'.
-#' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-06-30'.
-#' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
-#' @param ... optional extra parameters for grouping:
-#'   \itemize{
-#'     \item{\code{type}: a character vector. See 'SECURITY_TYP' data field on Bloomberg.}
-#'     \item{\code{exchange}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{exchanges}} dataset in the \code{fewISOs} package.}
-#'     \item{\code{country}: a character vector. See column 'symbol' of the \code{\link[fewISOs]{countries}} dataset in the \code{fewISOs} package.}
-#'     \item{\code{currency}: a character vector. See column 'symbol' in \code{\link[fewISOs]{currencies}} dataset in the \code{fewISOs} package.}
-#'     \item{\code{sector}: a character vector. See column 'sector name' of the \code{GICS} dataset in the \code{storethat} package.}
-#'     \item{\code{industry_group}: a character vector. See column 'industry group name' of the \code{GICS} dataset in the \code{storethat} package.}
-#'     \item{\code{industry}: a character vector. See column 'industry name' of the \code{GICS} dataset in the \code{storethat} package.}
-#'     \item{\code{subindustry}: a character vector. See column 'subindustry name' of the \code{GICS} dataset in the \code{storethat} package.}
-#'   }
-#'
-#' @return An S4 object of class \code{\linkS4class{EquityKS}} (\code{book = 'key stats'}), \code{\linkS4class{EquityIS}}
-#'   (\code{book = 'income statement'}), \code{\linkS4class{EquityBS}} (\code{book = 'balance sheet'}),
-#'    \code{\linkS4class{EquityCF}} (\code{book = 'cash flow statement'}), \code{\linkS4class{EquityRatios}}
-#'    (\code{book = 'ratios'}). Slots include:
-#'   \itemize{
-#'     \item{\code{tickers}: a data.table. Equity Bloomberg tickers for which data has been found.}
-#'     \item{\code{fields}: a data.table. Data fields for which data has been found.}
-#'     \item{\code{data}: a data.table The data retrieved in the query.}
-#'     \item{\code{call}: a scalar character vector. The original call to the constructor.}
-#'   }
-#'
-#' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
-#'
-#' @examples
-#' \dontrun{
-#'   bbg_equity_books(book = 'key stats')
-#'   bbg_equity_books(book = 'income statement')
-#'   bbg_equity_books(book = 'balance sheet')
-#'   bbg_equity_books(book = 'cash flow statement')
-#'   bbg_equity_books(book = 'ratios')
-#' }
-#'
-#' @import bbgsymbols
-#' @importFrom magrittr "%>%"
-#'
-#' @export
-storethat_equity_books <- function(file = NULL,
-                                   book = "key stats",
-                                   tickers = "NEM US Equity",
-                                   start = "2018-01-01",
-                                   end = "2018-06-30",
-                                   verbose = TRUE,
-                                   ...){
-
-  data(list = c("fields"), package = "bbgsymbols", envir = environment())
-
-  if (! rlang::is_scalar_character(book) & book %in% c("key stats", "income statement", "balance sheet", "cash flow statement", "ratios"))
-    stop("The parameter 'book' must be supplied as a scalar character vector, one of 'key stats', 'income statement', 'balance sheet',
-         'cash flow statement' or 'ratios'")
-  if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg equity tickers")
-  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector (TRUE or FALSE)")
-  if (is.null(file)) file <- "~/storethat.sqlite"
+  if (is.null(file)) file <- file.choose()
   else
     if (! all(rlang::is_scalar_character(file), stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
       stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite database file (ie. ~/storethat.sqlite)")
 
-  if ( any(c("type", "exchange", "country", "currency", "sector", "industry_group", "industry", "subindustry") %in% names(list(...)))){
-    data <- equity_groups(file, ...)
-    if ( all(!is.null(data), NROW(data) == 0L)) stop("No ticker found for the specified grouping")
-    if (! any(tickers %in% data))
-      warning("'", paste(tickers[! tickers %in% data], collapse = "', '"), "' not in specified grouping.")
-    tickers <- data
-  }
-
-  symbols <- dplyr::filter(fields, instrument == "equity", type == book)
   con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
+  tickers <- "SELECT id, ticker FROM tickers_futures;"; tickers <- RSQLite::dbGetQuery(con, tickers)
+  if (! all(active_contract_tickers %in% tickers$ticker))
+    stop("The parameter 'active_contract_tickers' must be supplied as a character vector; one or more of '",
+         paste(tickers$ticker, collapse = "', '"), "'")
 
-  data <- lapply(tickers, function(x) {
-    query <- paste0("SELECT DISTINCT id, symbol FROM tickers_equity WHERE symbol ",
-                    paste0("= '", x, "';")
-    )
-    tickers <- RSQLite::dbGetQuery(con, query)
-    if (nrow(tickers) == 0L) stop(paste0("No data found for '", x, "'"))
-    query <- paste0("SELECT id, date FROM support_dates WHERE date >= '", start, "' AND date <= '", end, "';")
-    dates <- RSQLite::dbGetQuery(con, query)
+  data <- paste0("SELECT ticker_id, field_id, value FROM data_futures_info WHERE ticker_id IN (", paste(tickers$id, collapse = ", "), ");")
+  data <- RSQLite::dbGetQuery(con, data)
 
-    query <- paste0("SELECT * FROM data_equity_",
-                    dplyr::case_when(book == "key stats" ~ "KS", book == "income statement" ~ "IS", book == "balance sheet" ~ "BS",
-                                     book == "cash flow statement" ~ "CF", book == "ratios" ~ "ratios"),
-                    " WHERE ticker_id ",
-                    paste0("= ", tickers$id),
-                    " AND date_id ",
-                    ifelse(NROW(dates$id) == 1L,
-                           paste0("= ", dates$id),
-                           paste0("IN (", paste0(dates$id, collapse = ", "), ")")),
-                    ";"
-    )
+  fields <- paste0("SELECT id, instrument, book, symbol FROM support_fields WHERE instrument = 'futures' AND book = 'info' AND id IN (",
+                   paste(unique(data$field_id), collapse = ", "), ");")
+  fields <- RSQLite::dbGetQuery(con, fields)
 
-    data <- RSQLite::dbGetQuery(con, query) %>%
-      dplyr::left_join(tickers, by = c("ticker_id" = "id")) %>%
-      dplyr::left_join(dates, by = c("date_id" = "id")) %>%
-      dplyr::select(-c(ticker_id, date_id)) %>%
-      dplyr::rename(ticker = symbol) %>%
-      tidyr::gather(field, value, -c(ticker, date)) %>%
-      dplyr::filter(stats::complete.cases(.))
-    if (verbose) message(x); data
-  }) %>%
-    data.table::rbindlist(use.names = TRUE) %>%
-    dplyr::arrange(ticker, field, date) %>%
-    dplyr::select(ticker, field, date, value)
-
-  if (nrow(data) == 0L) warning(paste("No", book, "historical data found.", sep = " "))
-
-  tickers <- dplyr::distinct(data, ticker)$ticker
-  query <- paste0("(SELECT symbol AS ticker, name, type, MIC_id, country_id, currency_id, GICS_id, FIGI, description
-                  FROM tickers_equity WHERE symbol ",
-                  ifelse(NROW(tickers) == 1L,
-                         paste0("= '", tickers, "'"),
-                         paste0("IN ('", paste0(tickers, collapse = "', '"), "')")),
-                  ")"
-  )
-  query <- paste0("(SELECT ticker, name, type, symbol AS exchange, country_id, currency_id, GICS_id, FIGI, description FROM ",
-                  query,
-                  " A LEFT JOIN (SELECT id, symbol FROM support_exchanges) B ON A.MIC_id = B.id)")
-  query <- paste0("(SELECT ticker, name, type, exchange, symbol AS country, currency_id, GICS_id, FIGI, description FROM ",
-                  query,
-                  " C LEFT JOIN (SELECT id, symbol FROM support_countries) D ON C.country_id = D.id)")
-  query <- paste0("(SELECT ticker, name, type, exchange, country, symbol AS currency, GICS_id, FIGI, description FROM ",
-                  query,
-                  " E LEFT JOIN (SELECT id, symbol FROM support_currencies) F ON E.currency_id = F.id)")
-  query <- paste0("SELECT ticker, name, type AS 'security type', exchange, country AS 'country of incorporation',
-                  currency, sector_name AS sector, industry_group_name AS 'industry group', industry_name AS 'industry',
-                  subindustry_name AS subindustry, FIGI, description FROM ",
-                  query,
-                  " G LEFT JOIN (SELECT sector_name, industry_group_name, industry_name, subindustry_name, id FROM
-                  support_GICS) H ON G.GICS_id = H.id;")
-
-  tickers <- RSQLite::dbGetQuery(con, query)
   RSQLite::dbDisconnect(con)
 
-  fields <- dplyr::left_join(dplyr::distinct(data, ticker, field), symbols, by = c("field" = "symbol"))
+  data <- dplyr::left_join(data, tickers, by = c("ticker_id" = "id")) %>% dplyr::left_join(fields, by = c("field_id" = "id")) %>%
+    dplyr::select(ticker, symbol, value)
 
-  fields <-   switch(book,
-                     `key stats` = dplyr::select(fields, ticker, field = name),
-                     `income statement` = dplyr::select(fields, ticker, field = name),
-                     `balance sheet` = dplyr::select(fields, ticker, section, subsection, field = name),
-                     `cash flow statement` = dplyr::select(fields, ticker, section, field = name),
-                     `ratios` = dplyr::select(data, ticker, section, subsection, field = name)
+  fields <- dplyr::left_join(dplyr::distinct(data, ticker, symbol), fields, by = "symbol") %>%
+    dplyr::select(ticker, instrument, book, symbol)
 
-  )
+  methods::new("FuturesInfo", info = tibble::as.tibble(data), fields = data.table::as.data.table(fields), call = match.call())
+}
+
+
+
+
+## equity ####
+
+### market ####
+
+#' Equity historical market data from a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database
+#'
+#' @description Provided with a set of Bloomberg equity tickers and a time period, retrieves the corresponding equity
+#'   historical market data previously stored in \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database
+#'   SQLite database.
+#'
+#' @param file A scalar chatacter vector. Specifies the target \pkg{storethat} SQLite database file.
+#' @param tickers A chatacter vector. Specifies the equity Bloomberg tickers to query data for.
+#' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
+#' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
+#' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
+#'
+#' @return An S4 object of class \linkS4class{EquityMarket}.
+#'
+#' @seealso
+#'   \itemize{
+#'     \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the Bloomnerg fields used here.}
+#'     \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
+#'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'   }
+#'
+#' @examples \dontrun{
+#'     storethat_equity_market(tickers = c("BP/ LN Equity", "WEIR LN Equity"),
+#'       start = "2000-01-01", end = as.character(Sys.Date()))
+#'   }
+#'
+#' @importFrom magrittr "%<>%"
+#'
+#' @export
+storethat_equity_market <- function(file = NULL, tickers, start, end, verbose = TRUE){
+
+  if (is.null(file)) file <- file.choose()
+  else
+    if (! all(rlang::is_scalar_character(file), stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
+      stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite database file (ie. ~/storethat.sqlite)")
+  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
+  query <- "SELECT id, ticker FROM tickers_equity;"; query <- RSQLite::dbGetQuery(con, query)
+  if (! all(tickers %in% query$ticker))
+    stop("The parameter 'tickers' must be supplied as a character vector; one or more of '", paste(query$ticker, collapse = "', '"), "'")
+  if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
+    stop("The parameters 'start' and 'end' must be supplied as scalar character vectors of dates (yyyy-mm-dd)")
+  if (! rlang::is_scalar_logical(verbose))
+    stop("The parameter 'verbose' must be supplied as a scalar logical vector")
+
+  tickers <- query
+  dates <- paste0("SELECT * FROM support_dates WHERE date >= '", start, "' AND date <= '", end, "';")
+  dates <- RSQLite::dbGetQuery(con, dates)
+
+  data <- lapply(unique(dates$period), function(z){
+    query <- paste0("SELECT * FROM data_equity_market_", z, " WHERE ticker_id IN (", paste(tickers$id, collapse = ", "),
+                    ") AND date_id >= ", min(dates$id), " AND date_id <= ", max(dates$id), ";")
+    query <- RSQLite::dbGetQuery(con, query)
+    if (verbose) done(paste0("Period ", data.table::first(dplyr::filter(dates, period == z)$date), "/", data.table::last(dplyr::filter(dates, period == z)$date)))
+    query
+  }) %>% data.table::rbindlist()
+
+  fields <- paste0("SELECT id, instrument, book, symbol FROM support_fields WHERE instrument = 'equity' AND book = 'market' AND id IN (",
+                   paste(unique(data$field_id), collapse = ", "), ");")
+  fields <- RSQLite::dbGetQuery(con, fields)
+
+  data %<>% dplyr::left_join(dplyr::select(tickers, id, ticker), by = c("ticker_id" = "id")) %>%
+    dplyr::left_join(dplyr::select(dates, id, date), by = c("date_id" = "id")) %>%
+    dplyr::left_join(fields, by = c("field_id" = "id")) %>% dplyr::select(ticker, field = symbol, date, value) %>%
+    dplyr::arrange(ticker, field, date)
+
+  fields <- dplyr::left_join(dplyr::distinct(data, ticker, symbol = field),
+                             dplyr::select(fields, instrument, book, symbol),
+                             by = "symbol") %>%
+    dplyr::select(ticker, instrument, book, symbol) %>%
+    dplyr::arrange(ticker, instrument, book)
+
+  methods::new("EquityMarket", tickers = data.table::as.data.table(dplyr::distinct(tickers, ticker)),
+               fields = data.table::as.data.table(fields), data = data.table::as.data.table(data), call = match.call())
+}
+
+
+### book ####
+
+#' Equity historical book data from a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database
+#'
+#' @description Retrieve equity historical book data previously stored in a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
+#'   SQLite database. Books include 'key stats', 'income statement', 'balance sheet', 'cash flow statement' and 'ratios'.
+#'
+#' @param file A scalar chatacter vector. Specifies the target \pkg{storethat} SQLite database file.
+#' @param book A scalar chatacter vector, 'key stats', 'income statement', 'balance sheet', 'cash flow statement' or 'ratios'.
+#' @param tickers A chatacter vector. Specifies the Bloomberg equity tickers to query data for.
+#' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
+#' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
+#' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
+#'
+#' @return An S4 object of class \linkS4class{EquityKS} (\code{book = 'key stats'}), \linkS4class{EquityIS}
+#'   (\code{book = 'income statement'}), \\linkS4class{EquityBS} (\code{book = 'balance sheet'}),
+#'    \linkS4class{EquityCF} (\code{book = 'cash flow statement'}), \linkS4class{EquityRatios}
+#'    (\code{book = 'ratios'}).
+#'
+#' @seealso
+#'   \itemize{
+#'     \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the Bloomnerg fields used here.}
+#'     \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
+#'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'   }
+#'
+#' @examples \dontrun{
+#'     storethat_equity_books(book = 'key stats',
+#'       tickers = c("BP/ LN Equity", "WEIR LN Equity"),
+#'       start = "2010-01-01", end = as.character(Sys.Date()))
+#'     storethat_equity_books(book = 'income statement',
+#'       tickers = c("BP/ LN Equity", "WEIR LN Equity"),
+#'       start = "2010-01-01", end = as.character(Sys.Date()))
+#'     storethat_equity_books(book = 'balance sheet',
+#'       tickers = c("BP/ LN Equity", "WEIR LN Equity"),
+#'       start = "2010-01-01", end = as.character(Sys.Date()))
+#'     storethat_equity_books(book = 'cash flow statement',
+#'       tickers = c("BP/ LN Equity", "WEIR LN Equity"),
+#'       start = "2010-01-01", end = as.character(Sys.Date()))
+#'     storethat_equity_books(book = 'ratios',
+#'       tickers = c("BP/ LN Equity", "WEIR LN Equity"),
+#'       start = "2010-01-01", end = as.character(Sys.Date()))
+#'   }
+#'
+#' @import BBGsymbols
+#'
+#' @export
+storethat_equity_book <- function(file = NULL, book, tickers, start, end, verbose = TRUE){
+
+  if (is.null(file)) file <- file.choose()
+  else
+    if (! all(rlang::is_scalar_character(file), stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
+      stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite database file (ie. ~/storethat.sqlite)")
+
+  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
+  fields <- "SELECT * FROM support_fields WHERE instrument = 'equity' AND book NOT IN ('info', 'market');"
+  fields <- RSQLite::dbGetQuery(con, fields)
+
+  if (! all(rlang::is_scalar_character(book), book %in% unique(fields$book)))
+    stop("The parameter book' must be supplied as a scalar character vector; one of '", paste(fields, collapse = "', '"), "'")
+
+  query <- "SELECT * FROM tickers_equity;"
+  query <- RSQLite::dbGetQuery(con, query)
+  if (! all(tickers %in% query$ticker))
+    stop("The parameter 'tickers' must be supplied as a character vector; one or more of '", paste(query$ticker, collapse = "', '"), "'")
+
+  if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
+    stop("The parameters 'start' and 'end' must be supplied as scalar character vectors of dates (yyyy-mm-dd)")
+
+  if (! rlang::is_scalar_logical(verbose))
+    stop("The parameter 'verbose' must be supplied as a scalar logical vector")
+
+  fields <- dplyr::filter(fields, book == !!book)
+  tickers <- query
+  dates <- paste0("SELECT * FROM support_dates WHERE date >= '", start, "' AND date <= '", end, "';")
+  dates <- RSQLite::dbGetQuery(con, dates)
+
+  data <- lapply(unique(dates$period), function(z){
+    query <- paste0("SELECT * FROM data_equity_book_", z, " WHERE ticker_id IN (", paste(tickers$id, collapse = ", "),
+                    ") AND field_id IN (", paste(fields$id, collapse = ", "),
+                    ") AND date_id >= ", min(dates$id), " AND date_id <= ", max(dates$id), ";")
+    query <- RSQLite::dbGetQuery(con, query)
+    if (verbose) done(paste0("Period ", data.table::first(dplyr::filter(dates, period == z)$date), "/",
+                             data.table::last(dplyr::filter(dates, period == z)$date)))
+    query
+  }) %>% data.table::rbindlist() %>%
+    dplyr::left_join(dplyr::select(tickers, id, ticker), by = c("ticker_id" = "id")) %>%
+    dplyr::left_join(dplyr::select(dates, id, date), by = c("date_id" = "id")) %>%
+    dplyr::left_join(fields, by = c("field_id" = "id")) %>% dplyr::select(ticker, field = symbol, date, value) %>%
+    dplyr::arrange(ticker, field, date)
+
+  fields <- dplyr::left_join(dplyr::distinct(data, ticker, symbol = field),
+                             dplyr::select(fields, -id), by = "symbol") %>%
+    dplyr::select(ticker, instrument:subsection, symbol) %>%
+    dplyr::arrange(ticker, instrument, book, type, subtype, section , subsection)
 
   methods::new(dplyr::case_when(book == "key stats" ~ "EquityKS", book == "balance sheet" ~ "EquityBS",
                                 book == "cash flow statement" ~ "EquityCF", book == "income statement" ~ "EquityIS",
                                 book == "ratios" ~ "EquityRatios"),
-               tickers = tibble::as.tibble(tickers),
-               fields = tibble::as.tibble(fields),
-               data = data.table::as.data.table(data),
-               call = match.call()
-  )
+               tickers = data.table::as.data.table(dplyr::select(tickers, -id)),
+               fields = data.table::as.data.table(fields),
+               data = data.table::as.data.table(data), call = match.call())
+
 }
 
 
 
+### info ####
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#' Fund historical market data from Bloomberg
+#' Corporate qualitative information from a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database
 #'
-#' @description Provided with a set of Bloomberg fund tickers and a time period,
-#'   queries Bloomberg for the corresponding fund historical market data.
+#' @description Provided with a set of equity Bloomberg tickers retrieves qualitative information
+#'   on the corresponding corporation previously stored in a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
+#'   SQLite database.
 #'
-#' @param tickers A chatacter vector. Specifies the Bloomberg fund tickers to query data for.
-#'   Defaults to 'GLD US Equity', the Bloomberg fund ticker for the 'SPRD gold shares' ETF, the commodiy ETF
-#'   with the highest market capitalization at the time of writing (August, 2018).
-#' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-01-01'.
-#' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
-#'   Defaults to '2018-06-30'.
-#' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
-#' @param ... Optional parameters to pass to the \code{\link[Rblpapi]{bdh}} function from the \code{Rblpapi} package used
-#'   for the query (\code{options} parameter).
+#' @param file A scalar chatacter vector. Specifies the target \pkg{storethat} SQLite database file.
+#' @param tickers A chatacter vector. Specifies the equity Bloomberg tickers to query data for.
 #'
-#' @return An S4 object of class \code{\linkS4class{FundMarket}} with slots:
+#' @return An S4 object of class \linkS4class{EquityInfo}.
+#'
+#' @seealso
 #'   \itemize{
-#'     \item{\code{tickers}: a tibble. Columns include:
-#'       \itemize{
-#'         \item{\code{ticker}: fund Bloomberg tickers for which data has been found.}
-#'         \item{\code{field}: fund Bloomberg information data fields. Descriptive elements on the fund identified.}
-#'         \item{\code{name}: corresponding information data field names.}
-#'         \item{\code{value}: corresponding information data field value.}#'
-#'       }
-#'     }
-#'     \item{\code{fields}: a tibble. Columns include:
-#'       \itemize{
-#'         \item{\code{ticker}: fund Bloomberg tickers for which data has been found.}
-#'         \item{\code{field}: fund Bloomberg market data fields for which data has been found.}
-#'       }
-#'     }
-#'     \item{\code{data}: a tibble. Columns include:
-#'       \itemize{
-#'         \item{\code{ticker}: fund Bloomberg tickers for which data has been found.}
-#'         \item{\code{field}: fund Bloomberg market data fields for which data has been found.}
-#'         \item{\code{date}: observation date.}
-#'         \item{\code{value}: corresponding value.}
-#'       }
-#'     }
-#'     \item{\code{call}: a scalar character vector showing the original call to the constructor.}
+#'     \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the Bloomnerg fields used here.}
+#'     \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
+#'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
 #'   }
 #'
-#' @seealso The \code{\link[bbgsymbols]{fields}} dataset in the \code{bbgsymbols} package for details on the Bloomnerg fields used here.
-#'
-#' @examples
-#' \dontrun{bbg_fund_market()}
-#'
-#' @import bbgsymbols
-#' @importFrom magrittr "%>%" "%<>%"
+#' @examples \dontrun{
+#'     storethat_equity_info(tickers = c("BP/ LN Equity", "WEIR LN Equity"))
+#'   }
 #'
 #' @export
+storethat_equity_info <- function(file = NULL, tickers){
 
-bbg_fund_market <- function(tickers = "GLD US Equity",
-                              start = "2018-01-01",
-                              end = "2018-06-30",
-                              verbose = TRUE,
-                              ...){
+  if (is.null(file)) file <- file.choose()
+  else
+    if (! all(rlang::is_scalar_character(file), stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
+      stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite database file (ie. ~/storethat.sqlite)")
 
-  data(list = c("fields"), package = "bbgsymbols", envir = environment())
+  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
+  query <- "SELECT id, ticker FROM tickers_equity;"; query <- RSQLite::dbGetQuery(con, query)
+  if (! all(tickers %in% query$ticker))
+    stop("The parameter 'tickers' must be supplied as a character vector; one or more of '",
+         paste(query$ticker, collapse = "', '"), "'")
 
-  if (! is.character(tickers)) stop("The parameter 'tickers' must be supplied as a character vector of Bloomberg tickers")
-  if (! rlang::is_scalar_logical(verbose)) stop("The parameter 'verbose' must be supplied as a scalar logical vector")
+  tickers <- query
+  data <- paste0("SELECT ticker_id, field_id, value FROM data_equity_info WHERE ticker_id IN (", paste(tickers$id, collapse = ", "), ");")
+  data <- RSQLite::dbGetQuery(con, data)
 
-  data <- lapply(tickers, function(x) {
-    data <- bbg_pull_historical_market(x, fields = dplyr::filter(fields, instrument == "fund", type == "market") %>% dplyr::select(symbol) %>% purrr::flatten_chr(),
-                                       start, end, ...) %>%
-      dplyr::mutate(ticker = x)
-    if (verbose) message(x); data
-  }) %>%
-    data.table::rbindlist(use.names = TRUE)
+  fields <- paste0("SELECT id, instrument, book, symbol FROM support_fields WHERE instrument = 'equity' AND book = 'info' AND id IN (",
+                   paste(unique(data$field_id), collapse = ", "), ");")
+  fields <- RSQLite::dbGetQuery(con, fields)
 
-  data %<>%
-    tidyr::gather(field, value, -c(ticker, date)) %>%
-    dplyr::filter(stats::complete.cases(.)) %>%
-    dplyr::select(ticker, field, date, value) %>%
-    dplyr::mutate(date = as.Date(date, origin = "1970-01-01")) %>%
+  RSQLite::dbDisconnect(con)
+
+  data <- dplyr::left_join(data, tickers, by = c("ticker_id" = "id")) %>% dplyr::left_join(fields, by = c("field_id" = "id")) %>%
+    dplyr::select(ticker, symbol, value)
+
+  fields <- dplyr::left_join(dplyr::distinct(data, ticker, symbol), fields, by = "symbol") %>%
+    dplyr::select(ticker, instrument, book, symbol)
+
+  methods::new("EquityInfo", info = tibble::as.tibble(data), fields = data.table::as.data.table(fields), call = match.call())
+}
+
+
+
+## fund ####
+
+### market ####
+
+#' Fund historical market data from a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database
+#'
+#' @description Provided with a set of Bloomberg fund tickers and a time period, retrieves the corresponding fund
+#'   historical market data previously stored in a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
+#'   SQLite database.
+#'
+#' @param file A scalar chatacter vector. Specifies the target \pkg{storethat} SQLite database file.
+#' @param tickers A chatacter vector. Specifies the Bloomberg fund tickers to query data for.
+#' @param start A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.
+#' @param end A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.
+#' @param verbose A logical scalar vector. Should progression messages be printed? Defaults to TRUE.
+#'
+#' @return An S4 object of class \linkS4class{FundMarket}.
+#'
+#' @seealso
+#'   \itemize{
+#'     \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the Bloomnerg fields used here.}
+#'     \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
+#'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'   }
+#'
+#' @examples \dontrun{
+#'     storethat_fund_market(tickers = c("SPY US Equity", "IVV US Equity"),
+#'       start = "2000-01-01", end = as.character(Sys.Date()))
+#'   }
+#'
+#' @importFrom magrittr "%<>%"
+#'
+#' @export
+storethat_fund_market <- function(file = NULL, tickers, start, end, verbose = TRUE){
+
+  if (is.null(file)) file <- file.choose()
+  else
+    if (! all(rlang::is_scalar_character(file), stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
+      stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite database file (ie. ~/storethat.sqlite)")
+
+  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
+  query <- "SELECT id, ticker FROM tickers_fund;"; query <- RSQLite::dbGetQuery(con, query)
+  if (! all(tickers %in% query$ticker))
+    stop("The parameter 'tickers' must be supplied as a character vector; one or more of '", paste(query$ticker, collapse = "', '"), "'")
+
+  if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
+    stop("The parameters 'start' and 'end' must be supplied as scalar character vectors of dates (yyyy-mm-dd)")
+
+  if (! rlang::is_scalar_logical(verbose))
+    stop("The parameter 'verbose' must be supplied as a scalar logical vector")
+
+  tickers <- query
+  dates <- paste0("SELECT * FROM support_dates WHERE date >= '", start, "' AND date <= '", end, "';")
+  dates <- RSQLite::dbGetQuery(con, dates)
+
+  data <- lapply(unique(dates$period), function(z){
+    query <- paste0("SELECT * FROM data_fund_market_", z, " WHERE ticker_id IN (", paste(tickers$id, collapse = ", "),
+                    ") AND date_id >= ", min(dates$id), " AND date_id <= ", max(dates$id), ";")
+    query <- RSQLite::dbGetQuery(con, query)
+    if (verbose) done(paste0("Period ", data.table::first(dplyr::filter(dates, period == z)$date), "/", data.table::last(dplyr::filter(dates, period == z)$date)))
+    query
+  }) %>% data.table::rbindlist()
+
+  fields <- paste0("SELECT * FROM support_fields WHERE id IN (", paste(unique(data$field_id), collapse = ", "), ");")
+  fields <- RSQLite::dbGetQuery(con, fields)
+
+  data %<>% dplyr::left_join(dplyr::select(tickers, id, ticker), by = c("ticker_id" = "id")) %>%
+    dplyr::left_join(dplyr::select(dates, id, date), by = c("date_id" = "id")) %>%
+    dplyr::left_join(fields, by = c("field_id" = "id")) %>% dplyr::select(ticker, field = symbol, date, value) %>%
     dplyr::arrange(ticker, field, date)
 
-  if (nrow(data) == 0L) warning("No market data found.")
+  fields <- dplyr::left_join(dplyr::distinct(data, ticker, symbol = field),
+                             dplyr::select(fields, instrument, book, symbol),
+                             by = "symbol") %>%
+    dplyr::select(ticker, instrument, book, symbol) %>%
+    dplyr::arrange(ticker, instrument, book)
 
-  tickers <- Rblpapi::bdp(dplyr::distinct(data, ticker) %>% purrr::flatten_chr(),
-                          dplyr::filter(fields, instrument == "fund", type == "info") %>%
-                            dplyr::select(symbol) %>%
-                            purrr::flatten_chr()) %>%
-    dplyr::mutate(ticker = row.names(.)) %>%
-    dplyr::mutate_all(dplyr::funs(as.character)) %>%
-    tidyr::gather(field, value, -ticker) %>%
-    dplyr::left_join(dplyr::filter(fields, instrument == "fund", type == "info") %>% dplyr::select(symbol, name), by = c("field" = "symbol"))  %>%
-    dplyr::mutate(name = forcats::as_factor(name)) %>%
-    dplyr::select(ticker, field = name, value) %>%
-    tidyr::spread(field, value)
-
-  methods::new("FundMarket",
-               tickers = tibble::as.tibble(tickers),
-               fields = tibble::as.tibble(dplyr::distinct(data, ticker, field)),
-               data = data.table::as.data.table(data),
-               call = match.call()
-  )
+  methods::new("FundMarket", tickers = data.table::as.data.table(dplyr::select(tickers, -id)),
+               fields = data.table::as.data.table(fields), data = data.table::as.data.table(data), call = match.call())
 }
 
 
 
 
+### info ####
 
+#' Fund qualitative information from a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database
+#'
+#' @description Provided with a set of equity Bloomberg tickers retrieves qualitative information
+#'   on the corresponding fund previously stored in a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
+#'   SQLite database.
+#'
+#' @param file A scalar chatacter vector. Specifies the target \pkg{storethat} SQLite database file.
+#' @param tickers A chatacter vector. Specifies the futures active contract Bloomberg tickers to query data for.
+#'
+#' @return An S4 object of class \linkS4class{FundInfo}.
+#'
+#' @seealso
+#'   \itemize{
+#'     \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the Bloomnerg fields used here.}
+#'     \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
+#'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
+#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'   }
+#'
+#' @examples \dontrun{
+#'     storethat_fund_info(tickers = c("SPY US Equity", "IVV US Equity"))
+#'   }
+#'
+#' @export
+storethat_fund_info <- function(file = NULL, tickers){
 
+  if (is.null(file)) file <- file.choose()
+  else
+    if (! all(rlang::is_scalar_character(file), stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
+      stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite database file (ie. ~/storethat.sqlite)")
+
+  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
+  query <- "SELECT id, ticker FROM tickers_fund;"; query <- RSQLite::dbGetQuery(con, query)
+  if (! all(tickers %in% query$ticker))
+    stop("The parameter 'tickers' must be supplied as a character vector; one or more of '",
+         paste(query$ticker, collapse = "', '"), "'")
+
+  tickers <- query
+  data <- paste0("SELECT ticker_id, field_id, value FROM data_fund_info WHERE ticker_id IN (", paste(tickers$id, collapse = ", "), ");")
+  data <- RSQLite::dbGetQuery(con, data)
+
+  fields <- paste0("SELECT id, instrument, book, symbol FROM support_fields WHERE instrument = 'fund' AND book = 'info' AND id IN (",
+                   paste(unique(data$field_id), collapse = ", "), ");")
+  fields <- RSQLite::dbGetQuery(con, fields)
+
+  RSQLite::dbDisconnect(con)
+
+  data <- dplyr::left_join(data, tickers, by = c("ticker_id" = "id")) %>% dplyr::left_join(fields, by = c("field_id" = "id")) %>%
+    dplyr::select(ticker, symbol, value)
+
+  fields <- dplyr::left_join(dplyr::distinct(data, ticker, symbol), fields, by = "symbol") %>%
+    dplyr::select(ticker, instrument, book, symbol)
+
+  methods::new("FundInfo", info = tibble::as.tibble(data), fields = data.table::as.data.table(fields), call = match.call())
+}
 
 
 
