@@ -9,8 +9,8 @@
 \alias{get_periods,DataHistorical,FuturesMarket}
 \alias{get_periods,FuturesCFTC-method}
 \alias{get_periods,DataHistorical,FuturesCFTC}
-\title{Show the time periods for which various S4 objects output of \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}
-  contain data.}
+\title{Show the time periods for which various S4 objects output of
+  \href{https://github.com/bautheac/pullit/}{\pkg{pullit}} contain data.}
 \usage{
 get_periods(object)
 
@@ -24,8 +24,9 @@ get_periods(object)
 \item{object}{an S4 object of class \linkS4class{DataHistorical} or childs.}
 }
 \value{
-A \link[data.table]{data.table} showing for each Bloomberg ticker and Bloomberg field
-  the time periods for which the \code{object} provided contains data.
+A \link[data.table]{data.table} showing for each Bloomberg ticker and
+  Bloomberg field the time periods for which the \code{object} provided
+  contains data.
 
 A data.table showing, for each equity ticker the start and end
   dates of the historical data time series contained in the object.
@@ -38,6 +39,7 @@ A data.table showing, for each active contract and position tickers
   the start and end dates of the historical data time series contained in the object.
 }
 \description{
-Generic method for showing the time periods for which various S4 objects from the
-  \href{https://github.com/bautheac/pullit/}{\pkg{pullit}} package contain data.
+Generic method for showing the time periods for which various S4
+  objects from the \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}
+  package contain data.
 }

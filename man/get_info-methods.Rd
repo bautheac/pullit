@@ -5,8 +5,8 @@
 \alias{get_info}
 \alias{get_info,DataInfo-method}
 \alias{get_info,DataInfo}
-\title{Accesses the 'info' slot of S4 objects of class \linkS4class{DataInfo} output of
-  \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}.}
+\title{Accesses the \code{info} slot of S4 objects of class \linkS4class{DataInfo}
+  output of \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}.}
 \usage{
 get_info(object)
 
@@ -16,9 +16,10 @@ get_info(object)
 \item{object}{an S4 object of class \linkS4class{DataInfo} or childs.}
 }
 \value{
-A \link[tibble]{tibble} showing qualitative data contained in the \code{object} provided.
+A \link[tibble]{tibble} showing qualitative data contained in the
+  \code{object} provided.
 }
 \description{
-Generic method for accessing the 'info' slot of S4 objects of class \linkS4class{DataInfo}
-  from the \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}.
+Access method for the \code{info} slot of S4 objects of class
+  \linkS4class{DataInfo} from the \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}.
 }

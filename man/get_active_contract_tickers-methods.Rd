@@ -5,7 +5,7 @@
 \alias{get_active_contract_tickers}
 \alias{get_active_contract_tickers,FuturesHistorical-method}
 \alias{get_active_contract_tickers,FuturesHistorical}
-\title{Accesses the 'active_contract_tickers' slot \linkS4class{FuturesMarket} S4 objects
+\title{Accesses the \code{active_contract_tickers} slot \linkS4class{FuturesMarket} S4 objects
   output of \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}.}
 \usage{
 get_active_contract_tickers(object)
@@ -20,7 +20,7 @@ A \link[data.table]{data.table} showing the futures active contract
   Bloomberg tickers for which the \code{object} provided contains data.
 }
 \description{
-Generic method for accessing the 'active_contract_tickers' slot of
+Access method for the \code{active_contract_tickers} slot of
   \linkS4class{FuturesMarket} S4 objects from the
   \href{https://github.com/bautheac/pullit/}{\pkg{pullit}} package.
 }

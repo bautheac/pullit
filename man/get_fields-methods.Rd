@@ -7,7 +7,8 @@
 \alias{get_fields,DataInfo}
 \alias{get_fields,DataHistorical-method}
 \alias{get_fields,DataHistorical}
-\title{Accesses the 'fields' slot of various S4 objects output of \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}.}
+\title{Accesses the \code{fields} slot of various S4 objects output of
+  \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}.}
 \usage{
 get_fields(object)
 
@@ -16,13 +17,14 @@ get_fields(object)
 \S4method{get_fields}{DataHistorical}(object)
 }
 \arguments{
-\item{object}{an S4 object with a 'fields' slot.}
+\item{object}{an S4 object of class \linkS4class{DataInfo} or
+\linkS4class{DataHistorical} or childs.}
 }
 \value{
-A \link[data.table]{data.table} showing for each Bloomberg ticker, the Bloomberg fields
-  for which the \code{object} provided contains data.
+A \link[data.table]{data.table} showing for each Bloomberg ticker, the
+  Bloomberg fields for which the \code{object} provided contains data.
 }
 \description{
-Generic method for accessing the 'fields' slot of various S4 objects from the
+Access method for the \code{fields} slot of various S4 objects from the
   \href{https://github.com/bautheac/pullit/}{\pkg{pullit}} package.
 }

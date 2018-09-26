@@ -5,7 +5,7 @@
 \alias{get_cftc_tickers}
 \alias{get_cftc_tickers,FuturesCFTC-method}
 \alias{get_cftc_tickers,FuturesCFTC}
-\title{Accesses the 'cftc_tickers' slot \linkS4class{FuturesCFTC} S4 objects
+\title{Accesses the \code{cftc_tickers} slot \linkS4class{FuturesCFTC} S4 objects
   output of \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}.}
 \usage{
 get_cftc_tickers(object)
@@ -20,6 +20,6 @@ A \link[data.table]{data.table} showing the futures position
   Bloomberg tickers for which the \code{object} provided contains data.
 }
 \description{
-Generic method for accessing the 'cftc_tickers' slot of \linkS4class{FuturesCFTC}
+Access method for the \code{cftc_tickers} slot of \linkS4class{FuturesCFTC}
   S4 objects from the \href{https://github.com/bautheac/pullit/}{\pkg{pullit}} package.
 }

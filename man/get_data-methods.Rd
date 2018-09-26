@@ -5,20 +5,21 @@
 \alias{get_data}
 \alias{get_data,DataHistorical-method}
 \alias{get_data,DataHistorical}
-\title{Accesses the 'data' slot of various S4 objects output of \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}.}
+\title{Accesses the \code{data} slot of various S4 objects output of
+  \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}.}
 \usage{
 get_data(object)
 
 \S4method{get_data}{DataHistorical}(object)
 }
 \arguments{
-\item{object}{an S4 object with a 'data' slot.}
+\item{object}{an S4 object of class \linkS4class{DataHistorical} or childs.}
 }
 \value{
-A \link[data.table]{data.table} showing for each Bloomberg ticker and the Bloomberg field
-  the data contained in the \code{object} provided.
+A \link[data.table]{data.table} showing for each Bloomberg ticker and the
+  Bloomberg field the data contained in the \code{object} provided.
 }
 \description{
-Generic method for accessing the 'data' slot of various S4 objects from the
+Access method for the \code{data} slot of various S4 objects from the
   \href{https://github.com/bautheac/pullit/}{\pkg{pullit}} package.
 }

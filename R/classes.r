@@ -3,7 +3,7 @@
 #                                                         "roll days", "roll months", "roll type", "rolls", "section", "subsection", "symbol", "ticker", "tickers_cftc",
 #                                                         "tickers_futures", "ticker_id", "TS position", "type", "underlying", "unit", "value", "y"))
 
-setOldClass(c("tbl_df", "tbl", "data.frame"))
+# setOldClass(c("tbl_df", "tbl", "data.frame"))
 
 
 # info ####

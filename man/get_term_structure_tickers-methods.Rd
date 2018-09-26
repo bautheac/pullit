@@ -5,8 +5,8 @@
 \alias{get_term_structure_tickers}
 \alias{get_term_structure_tickers,FuturesTS-method}
 \alias{get_term_structure_tickers,FuturesTS}
-\title{Accesses the 'term_structure_tickers' slot \linkS4class{FuturesTS} S4 objects
-  output of \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}.}
+\title{Accesses the \code{term_structure_tickers} slot \linkS4class{FuturesTS} S4
+  objects output of \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}.}
 \usage{
 get_term_structure_tickers(object)
 
@@ -20,7 +20,7 @@ A \link[data.table]{data.table} showing the futures term structure
   Bloomberg tickers for which the \code{object} provided contains data.
 }
 \description{
-Generic method for accessing the 'term_structure_tickers' slot of
-  \linkS4class{FuturesTS} S4 objects from the \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}
-  package.
+Access method for the \code{term_structure_tickers} slot of
+  \linkS4class{FuturesTS} S4 objects from the
+  \href{https://github.com/bautheac/pullit/}{\pkg{pullit}} package.
 }

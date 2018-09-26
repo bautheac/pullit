@@ -7,7 +7,8 @@
 \alias{get_tickers,EquityHistorical}
 \alias{get_tickers,FundHistorical-method}
 \alias{get_tickers,FundHistorical}
-\title{Accesses 'tickers' slot of various S4 objects output of \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}.}
+\title{Accesses \code{tickers} slot of various S4 objects output of
+  \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}.}
 \usage{
 get_tickers(object)
 
@@ -23,6 +24,6 @@ A \link[data.table]{data.table} showing the Bloomberg tickers for which the
   \code{object} provided contains data.
 }
 \description{
-Generic method for accessing the 'tickers' slot of various S4 objects from the
+Access method for the \code{tickers} slot of various S4 objects from the
   \href{https://github.com/bautheac/pullit/}{\pkg{pullit}} package.
 }

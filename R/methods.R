@@ -4,6 +4,9 @@
 #'
 #' @param object an S4 object of class \linkS4class{DataInfo}.
 #'
+#' @rdname show-methods
+#' @aliases show,DataInfo
+#' 
 #' @importFrom methods show
 #'
 #' @export
@@ -21,6 +24,9 @@ setMethod("show", "DataInfo", function(object) {
 #'
 #' @param object an S4 object of class \linkS4class{FuturesHistorical}.
 #'
+#' @rdname show-methods
+#' @aliases show,FuturesHistorical
+#' 
 #' @importFrom methods show
 #'
 #' @export
@@ -40,6 +46,9 @@ setMethod("show", "FuturesHistorical", function(object) {
 #'
 #' @param object an S4 object of class \linkS4class{EquityHistorical}.
 #'
+#' @rdname show-methods
+#' @aliases show,EquityHistorical
+#' 
 #' @importFrom methods show
 #'
 #' @export
@@ -58,6 +67,9 @@ setMethod("show", signature = "EquityHistorical", function(object) {
 #'
 #' @param object an S4 object of class \linkS4class{FundHistorical}.
 #'
+#' @rdname show-methods
+#' @aliases show,FundHistorical
+#' 
 #' @importFrom methods show
 #'
 #' @export
@@ -77,6 +89,9 @@ setMethod("show", signature = "FundHistorical", function(object) {
 #'
 #' @param object an S4 object of class \linkS4class{FuturesTS}.
 #'
+#' @rdname show-methods
+#' @aliases show,FuturesTS
+#' 
 #' @importFrom methods show
 #'
 #' @export
@@ -97,6 +112,9 @@ setMethod("show", "FuturesTS", function(object) {
 #'
 #' @param object an S4 object of class \linkS4class{FuturesCFTC}.
 #'
+#' @rdname show-methods
+#' @aliases show,FuturesCFTC
+#' 
 #' @importFrom methods show
 #'
 #' @export

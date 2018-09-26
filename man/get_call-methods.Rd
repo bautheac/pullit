@@ -7,7 +7,8 @@
 \alias{get_call,DataInfo}
 \alias{get_call,DataHistorical-method}
 \alias{get_call,DataHistorical}
-\title{Accesses the 'call' slot of various S4 objects output of \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}.}
+\title{Accesses the \code{call} slot of various S4 objects output of
+  \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}.}
 \usage{
 get_call(object)
 
@@ -16,12 +17,14 @@ get_call(object)
 \S4method{get_call}{DataHistorical}(object)
 }
 \arguments{
-\item{object}{an S4 object with a 'call' slot.}
+\item{object}{an S4 object of class \linkS4class{DataInfo} or
+\linkS4class{DataHistorical} or childs.}
 }
 \value{
 The original call to the constructor function.
 }
 \description{
-Generic method for accessing the 'call' slot of various S4 objects from the
-  \href{https://github.com/bautheac/pullit/}{\pkg{pullit}} package.
+Access method for the \code{call} slot of various S4
+  objects from the \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}
+  package.
 }
