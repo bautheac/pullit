@@ -2,22 +2,25 @@
 % Please edit documentation in R/functions.r
 \name{storethat_futures_info}
 \alias{storethat_futures_info}
-\title{Futures series qualitative information from a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database}
+\title{Futures series qualitative information from a
+\href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database}
 \usage{
 storethat_futures_info(file = NULL, active_contract_tickers)
 }
 \arguments{
-\item{file}{A scalar chatacter vector. Specifies the target \pkg{storethat} SQLite database file.}
+\item{file}{a scalar chatacter vector. Specifies the target \pkg{storethat} SQLite
+database file.}
 
-\item{active_contract_tickers}{A chatacter vector. Specifies the futures active contract Bloomberg tickers to query data for.}
+\item{active_contract_tickers}{a chatacter vector. Specifies the futures active contract
+Bloomberg tickers to query data for.}
 }
 \value{
 An S4 object of class \linkS4class{FuturesInfo}.
 }
 \description{
-Provided with a set of futures active contract Bloomberg tickers retrieves qualitative information
-  on the corresponding futures series previously stored in a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
-  SQLite database.
+Provided with a set of futures active contract Bloomberg tickers retrieves
+  qualitative information on the corresponding futures series previously stored in a
+  \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database.
 }
 \examples{
 \dontrun{
@@ -27,7 +30,15 @@ Provided with a set of futures active contract Bloomberg tickers retrieves quali
 }
 \seealso{
 \itemize{
-    \item{The \link[BBGsymbols]{fields} (\pkg{finRes} suite) dataset in the \pkg{BBGsymbols} package for details on the Bloomnerg fields used here.}
+
+    \item{The \link[BBGsymbols]{fields} (\pkg{finRes} suite) dataset in the \pkg{BBGsymbols}
+    package for details on the Bloomnerg fields used here.}
+
     \item{Helper datasets in the \pkg{fewISOs} and \pkg{GICS} packages (\pkg{finRes} suite).}
+
+    \item{The \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite,
+    in particular the \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
+    package.}
+
   }
 }

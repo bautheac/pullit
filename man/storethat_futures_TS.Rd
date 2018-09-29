@@ -2,67 +2,94 @@
 % Please edit documentation in R/functions.r
 \name{storethat_futures_TS}
 \alias{storethat_futures_TS}
-\title{Futures term structure historical data from a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database}
+\title{Futures term structure historical data from a
+  \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
+  SQLite database}
 \usage{
 storethat_futures_TS(file, active_contract_tickers, start, end,
   TS_positions, roll_type, roll_days, roll_months, roll_adjustment,
   verbose)
 }
 \arguments{
-\item{file}{A scalar chatacter vector. Specifies the target \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
+\item{file}{a scalar chatacter vector. Specifies the target
+\href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
 SQLite database file.}
 
-\item{active_contract_tickers}{A chatacter vector. Specifies the futures active contract Bloomberg tickers to query data for.}
+\item{active_contract_tickers}{a chatacter vector. Specifies the futures active
+contract Bloomberg tickers to query data for.}
 
-\item{start}{A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.}
+\item{start}{a scalar character vector. Specifies the starting date for the query
+in the following format: 'yyyy-mm-dd'.}
 
-\item{end}{A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.}
+\item{end}{a scalar character vector. Specifies the end date for the query in the
+following format: 'yyyy-mm-dd'.}
 
-\item{TS_positions}{An integer vector. Specifies the term structure positions to query data for.}
+\item{TS_positions}{An integer vector. Specifies the term structure positions to
+query data for.}
 
-\item{roll_type}{A scalar chatacter vector. Specifies roll type to use for term structure ticker construction.
-Must be one of 'A', 'B', 'D', 'F', 'N', 'O' or 'R'.}
+\item{roll_type}{a scalar chatacter vector. Specifies roll type to use for term
+structure ticker construction. Must be one of 'A', 'B', 'D', 'F', 'N', 'O' or 'R'.}
 
-\item{roll_days}{A scalar integer vector. Specifies the day the roll should be done.
-Refers to the day of the month (\code{roll_type} = 'F') or the number of days before a reference date
-(\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O', \code{roll_type} = 'R').
-Works in tandem with \code{roll_months} below.}
+\item{roll_days}{a scalar integer vector. Specifies the day the roll should be done.
+Refers to the day of the month (\code{roll_type} = 'F') or the number of days
+before a reference date (\code{roll_type} = 'D', \code{roll_type} = 'N',
+\code{roll_type} = 'O', \code{roll_type} = 'R'). Works in tandem with
+\code{roll_months} below.}
 
-\item{roll_months}{A scalar integer vector. Specifies the month the roll should be done.
-Refers to the number of months before a reference date (\code{roll_type} = 'D', \code{roll_type} = 'N', \code{roll_type} = 'O',
-\code{roll_type} = 'R'). Works in tandem with \code{roll_days} above.}
+\item{roll_months}{a scalar integer vector. Specifies the month the roll should be
+done. Refers to the number of months before a reference date (\code{roll_type} = 'D',
+\code{roll_type} = 'N', \code{roll_type} = 'O', \code{roll_type} = 'R'). Works in
+tandem with \code{roll_days} above.}
 
-\item{roll_adjustment}{A scalar chatacter vector. Specifies roll adjustment method to use for term structure ticker construction.
-Must be one of 'D', 'N', 'R', or 'W'.}
+\item{roll_adjustment}{a scalar chatacter vector. Specifies roll adjustment method
+to use for term structure ticker construction. Must be one of 'D', 'N', 'R', or 'W'.}
 
-\item{verbose}{A logical scalar vector. Should progression messages be printed? Defaults to TRUE.}
+\item{verbose}{a logical scalar vector. Should progression messages be printed?
+Defaults to TRUE.}
 }
 \value{
 An S4 object of class \linkS4class{FuturesTS}.
 }
 \description{
-Provided with a set of Bloomberg futures active contract tickers, term structure positions, roll parameters and a time period,
-  retrieves the corresponding term structure historical data previously stored in a
-  \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database.
+Provided with a set of Bloomberg futures active contract tickers,
+term structure positions, roll parameters and a time period,
+  retrieves the corresponding term structure historical data previously stored
+  in a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite
+  database.
 }
 \examples{
 \dontrun{
+
     storethat_futures_market(type = 'term structure',
       active_contract_tickers = c("W A Comdty", "KWA Comdty"),
       start = "2000-01-01", end = as.character(Sys.Date()),
       TS_positions = 1L:5L, roll_type = "A", roll_days = 0L,
       roll_months = 0L, roll_adjustment = "N")
+
   }
 
 }
 \seealso{
 \itemize{
+
     \item{"GFUT <GO>" on a Bloomberg terminal.}
-    \item{The \link[BBGsymbols]{rolls} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-    (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details regarding the \code{roll_type} & \code{roll_adjustment} parameters.}
-    \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+
+    \item{The \link[BBGsymbols]{rolls} dataset in the
+    \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+    (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
+    regarding the \code{roll_type} & \code{roll_adjustment} parameters.}
+
+    \item{The \link[BBGsymbols]{fields} dataset in the
+    \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
     for details on the Bloomnerg fields used here.}
-    \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
+
+    \item{Helper datasets in the
+    \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+
+    \item{The \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite,
+    in particular the \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
+    package.}
+
   }
 }

@@ -2,49 +2,70 @@
 % Please edit documentation in R/functions.r
 \name{storethat_futures_aggregate}
 \alias{storethat_futures_aggregate}
-\title{Futures aggregate historical data from from a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database}
+\title{Futures aggregate historical data from from a
+  \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database}
 \usage{
 storethat_futures_aggregate(file, active_contract_tickers, start, end,
   verbose)
 }
 \arguments{
-\item{file}{A scalar chatacter vector. Specifies the target \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
-SQLite database file.}
+\item{file}{a scalar chatacter vector. Specifies the target
+\href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database file.}
 
-\item{active_contract_tickers}{A chatacter vector. Specifies the futures active contract Bloomberg tickers to query data for.}
+\item{active_contract_tickers}{a chatacter vector. Specifies the futures active contract
+Bloomberg tickers to query data for.}
 
-\item{start}{A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.}
+\item{start}{a scalar character vector. Specifies the starting date for the query in the
+following format: 'yyyy-mm-dd'.}
 
-\item{end}{A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.}
+\item{end}{a scalar character vector. Specifies the end date for the query in the
+following format: 'yyyy-mm-dd'.}
 
-\item{verbose}{A logical scalar vector. Should progression messages be printed? Defaults to TRUE.}
+\item{verbose}{a logical scalar vector. Should progression messages be printed?
+Defaults to TRUE.}
 }
 \value{
 An S4 object of class \linkS4class{FuturesAggregate}.
 }
 \description{
-Provided with a set of Bloomberg futures active contract tickers and a time period,
-  retrieves the corresponding futures historical aggregate data previously stored in a
-  \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database. For each
-  individual field, futures aggregate data represents the aggregation of the corresponding field
-  values over all the corresponding term structure contracts.
+Provided with a set of Bloomberg futures active contract tickers and
+  a time period, retrieves the corresponding futures historical aggregate data previously
+  stored in a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite
+  database. For each individual field, futures aggregate data represents the aggregation
+  of the corresponding field values over all the corresponding term structure contracts.
 }
 \examples{
 \dontrun{
+
     storethat_futures_market(type = "aggregate",
       active_contract_tickers = c("W A Comdty", "KWA Comdty"),
       start = "2000-01-01", end = as.character(Sys.Date()))
+
   }
+
 
 }
 \seealso{
 \itemize{
+
     \item{"GFUT <GO>" on a Bloomberg terminal.}
-    \item{The \link[BBGsymbols]{rolls} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-    (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details regarding the \code{roll_type} & \code{roll_adjustment} parameters.}
-    \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+
+    \item{The \link[BBGsymbols]{rolls} dataset in the
+    \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+    (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
+    regarding the \code{roll_type} & \code{roll_adjustment} parameters.}
+
+    \item{The \link[BBGsymbols]{fields} dataset in the
+    \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
     for details on the Bloomnerg fields used here.}
-    \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
+
+    \item{Helper datasets in the
+    \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+
+    \item{The \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite,
+    in particular the \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
+    package.}
+
   }
 }

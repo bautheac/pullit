@@ -8,15 +8,19 @@ BBG_futures_CFTC(active_contract_tickers, start, end, verbose = TRUE,
   ...)
 }
 \arguments{
-\item{active_contract_tickers}{A chatacter vector. Specifies the futures active contract Bloomberg tickers to query data for.}
+\item{active_contract_tickers}{a chatacter vector. Specifies the futures active
+contract Bloomberg tickers to query data for.}
 
-\item{start}{A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.}
+\item{start}{a scalar character vector. Specifies the starting date for the query
+in the following format: 'yyyy-mm-dd'.}
 
-\item{end}{A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.}
+\item{end}{a scalar character vector. Specifies the end date for the query in the
+following format: 'yyyy-mm-dd'.}
 
-\item{verbose}{A logical scalar vector. Should progression messages be printed? Defaults to TRUE.}
+\item{verbose}{a logical scalar vector. Should progression messages be printed?
+Defaults to TRUE.}
 
-\item{...}{Optional parameters to pass to the \link[Rblpapi]{bdh} function from the
+\item{...}{optional parameters to pass to the \link[Rblpapi]{bdh} function from the
 \href{http://dirk.eddelbuettel.com/code/rblpapi.html}{\pkg{Rblpapi}} package used
   for the query (\code{options} parameter).}
 }
@@ -24,8 +28,9 @@ BBG_futures_CFTC(active_contract_tickers, start, end, verbose = TRUE,
 An S4 object of class \linkS4class{FuturesCFTC}.
 }
 \description{
-Provided with a set of futures active contract Bloomberg tickers and a time period,
-  queries Bloomberg for the corresponding futures CFTC reports historical data.
+Provided with a set of futures active contract Bloomberg tickers and a
+  time period, queries Bloomberg for the corresponding futures CFTC reports
+  historical data.
 }
 \examples{
 \dontrun{
@@ -33,13 +38,21 @@ Provided with a set of futures active contract Bloomberg tickers and a time peri
       start = "2000-01-01", end = as.character(Sys.Date()))
   }
 
+
 }
 \seealso{
 \itemize{
+
     \item{"GFUT <GO>" on a Bloomberg terminal.}
-    \item{The \link[BBGsymbols]{tickers_CFTC} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-    (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the Bloomnerg position tickers used here.}
-    \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
+
+    \item{The \link[BBGsymbols]{tickers_CFTC} dataset in the
+    \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+    (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite)
+    for details on the Bloomnerg position tickers used here.}
+
+    \item{Helper datasets in the
+    \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+
   }
 }

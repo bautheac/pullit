@@ -7,9 +7,10 @@
 BBG_equity_info(tickers, ...)
 }
 \arguments{
-\item{tickers}{A chatacter vector. Specifies the equity Bloomberg tickers to query data for.}
+\item{tickers}{a chatacter vector. Specifies the equity Bloomberg tickers to query
+data for.}
 
-\item{...}{Optional parameters to pass to the \link[Rblpapi]{bdp} function from the
+\item{...}{optional parameters to pass to the \link[Rblpapi]{bdp} function from the
 \href{http://dirk.eddelbuettel.com/code/rblpapi.html}{\pkg{Rblpapi}} package used
   for the query (\code{options} parameter).}
 }
@@ -17,21 +18,29 @@ BBG_equity_info(tickers, ...)
 An S4 object of class \linkS4class{EquityInfo}.
 }
 \description{
-Provided with a set of equity Bloomberg tickers retrieves qualitative information
-  on the corresponding corporations.
+Provided with a set of equity Bloomberg tickers retrieves qualitative
+  information on the corresponding corporations.
 }
 \examples{
 \dontrun{
     BBG_equity_info(tickers = c("BP/ LN Equity", "WEIR LN Equity"))
   }
 
+
 }
 \seealso{
 \itemize{
-    \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the Bloomnerg fields used here.}
-    \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
+
+    \item{The \link[BBGsymbols]{fields} dataset in the
+    \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
+     on the Bloomnerg fields used here.}
+
+    \item{Helper datasets in the
+    \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+
+
   }
 }

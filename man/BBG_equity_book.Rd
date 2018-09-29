@@ -7,56 +7,73 @@
 BBG_equity_book(book, tickers, start, end, verbose = TRUE, ...)
 }
 \arguments{
-\item{book}{A scalar chatacter vector, 'key stats', 'income statement', 'balance sheet', 'cash flow statement' or 'ratios'.}
+\item{book}{a scalar chatacter vector, 'key stats', 'income statement', 'balance sheet',
+'cash flow statement' or 'ratios'.}
 
-\item{tickers}{A chatacter vector. Specifies the Bloomberg equity tickers to query data for.}
+\item{tickers}{a chatacter vector. Specifies the Bloomberg equity tickers to query data for.}
 
-\item{start}{A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.}
+\item{start}{a scalar character vector. Specifies the starting date for the query in the
+following format: 'yyyy-mm-dd'.}
 
-\item{end}{A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.}
+\item{end}{a scalar character vector. Specifies the end date for the query in the
+following format: 'yyyy-mm-dd'.}
 
-\item{verbose}{A logical scalar vector. Should progression messages be printed? Defaults to TRUE.}
+\item{verbose}{a logical scalar vector. Should progression messages be printed?
+Defaults to TRUE.}
 
-\item{...}{Optional parameters to pass to the \link[Rblpapi]{bdh} function from the
+\item{...}{optional parameters to pass to the \link[Rblpapi]{bdh} function from the
 \href{http://dirk.eddelbuettel.com/code/rblpapi.html}{\pkg{Rblpapi}} package used
   for the query (\code{options} parameter).}
 }
 \value{
-An S4 object of class \linkS4class{EquityKS} (\code{book = 'key stats'}), \linkS4class{EquityIS}
-  (\code{book = 'income statement'}), \\linkS4class{EquityBS} (\code{book = 'balance sheet'}),
-   \linkS4class{EquityCF} (\code{book = 'cash flow statement'}), \linkS4class{EquityRatios}
-   (\code{book = 'ratios'}).
+An S4 object of class \linkS4class{EquityKS} (\code{book = 'key stats'}),
+  \linkS4class{EquityIS} (\code{book = 'income statement'}), \\linkS4class{EquityBS}
+  (\code{book = 'balance sheet'}), \linkS4class{EquityCF}
+  (\code{book = 'cash flow statement'}), \linkS4class{EquityRatios} (\code{book = 'ratios'}).
 }
 \description{
-Retrieves equity historical book data from Bloomberg. Books include 'key stats', 'income statement', 'balance sheet',
-  'cash flow statement' and 'ratios'.
+Retrieves equity historical book data from Bloomberg. Books include
+  'key stats', 'income statement', 'balance sheet', 'cash flow statement' and 'ratios'.
 }
 \examples{
 \dontrun{
+
     BBG_equity_books(book = 'key stats',
       tickers = c("BP/ LN Equity", "WEIR LN Equity"),
       start = "2000-01-01", end = as.character(Sys.Date()))
+
     BBG_equity_books(book = 'income statement',
       tickers = c("BP/ LN Equity", "WEIR LN Equity"),
       start = "2000-01-01", end = as.character(Sys.Date()))
+
     BBG_equity_books(book = 'balance sheet',
       tickers = c("BP/ LN Equity", "WEIR LN Equity"),
       start = "2000-01-01", end = as.character(Sys.Date()))
+
     BBG_equity_books(book = 'cash flow statement',
       tickers = c("BP/ LN Equity", "WEIR LN Equity"),
       start = "2000-01-01", end = as.character(Sys.Date()))
+
     BBG_equity_books(book = 'ratios',
       tickers = c("BP/ LN Equity", "WEIR LN Equity"),
       start = "2000-01-01", end = as.character(Sys.Date()))
+
   }
+
 
 }
 \seealso{
 \itemize{
-    \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the Bloomnerg fields used here.}
-    \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
+
+    \item{The \link[BBGsymbols]{fields} dataset in the
+    \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for
+     details on the Bloomnerg fields used here.}
+
+    \item{Helper datasets in the
+    \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+
   }
 }

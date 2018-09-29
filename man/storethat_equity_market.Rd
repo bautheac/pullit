@@ -2,43 +2,58 @@
 % Please edit documentation in R/functions.r
 \name{storethat_equity_market}
 \alias{storethat_equity_market}
-\title{Equity historical market data from a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database}
+\title{Equity historical market data from a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
+  SQLite database}
 \usage{
 storethat_equity_market(file = NULL, tickers, start, end,
   verbose = TRUE)
 }
 \arguments{
-\item{file}{A scalar chatacter vector. Specifies the target \pkg{storethat} SQLite database file.}
+\item{file}{a scalar chatacter vector. Specifies the target \pkg{storethat} SQLite database file.}
 
-\item{tickers}{A chatacter vector. Specifies the equity Bloomberg tickers to query data for.}
+\item{tickers}{a chatacter vector. Specifies the equity Bloomberg tickers to query data for.}
 
-\item{start}{A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.}
+\item{start}{a scalar character vector. Specifies the starting date for the query in the following
+format: 'yyyy-mm-dd'.}
 
-\item{end}{A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.}
+\item{end}{a scalar character vector. Specifies the end date for the query in the following
+format: 'yyyy-mm-dd'.}
 
-\item{verbose}{A logical scalar vector. Should progression messages be printed? Defaults to TRUE.}
+\item{verbose}{a logical scalar vector. Should progression messages be printed? Defaults to TRUE.}
 }
 \value{
 An S4 object of class \linkS4class{EquityMarket}.
 }
 \description{
-Provided with a set of Bloomberg equity tickers and a time period, retrieves the corresponding equity
-  historical market data previously stored in \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database
-  SQLite database.
+Provided with a set of Bloomberg equity tickers and a time period, retrieves the
+  corresponding equity historical market data previously stored in
+  \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database SQLite database.
 }
 \examples{
 \dontrun{
+
     storethat_equity_market(tickers = c("BP/ LN Equity", "WEIR LN Equity"),
       start = "2000-01-01", end = as.character(Sys.Date()))
+
   }
+
 
 }
 \seealso{
 \itemize{
-    \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the Bloomnerg fields used here.}
+
+    \item{The \link[BBGsymbols]{fields} dataset in the
+    \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the
+     Bloomnerg fields used here.}
+
     \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+
+    \item{The \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite,
+    in particular the \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
+    package.}
+
   }
 }

@@ -2,21 +2,23 @@
 % Please edit documentation in R/functions.r
 \name{storethat_equity_info}
 \alias{storethat_equity_info}
-\title{Corporate qualitative information from a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database}
+\title{Corporate qualitative information from a
+  \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database}
 \usage{
 storethat_equity_info(file = NULL, tickers)
 }
 \arguments{
-\item{file}{A scalar chatacter vector. Specifies the target \pkg{storethat} SQLite database file.}
+\item{file}{a scalar chatacter vector. Specifies the target \pkg{storethat} SQLite database file.}
 
-\item{tickers}{A chatacter vector. Specifies the equity Bloomberg tickers to query data for.}
+\item{tickers}{a chatacter vector. Specifies the equity Bloomberg tickers to query data for.}
 }
 \value{
 An S4 object of class \linkS4class{EquityInfo}.
 }
 \description{
 Provided with a set of equity Bloomberg tickers retrieves qualitative information
-  on the corresponding corporation previously stored in a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
+  on the corresponding corporation previously stored in a
+  \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
   SQLite database.
 }
 \examples{
@@ -24,13 +26,23 @@ Provided with a set of equity Bloomberg tickers retrieves qualitative informatio
     storethat_equity_info(tickers = c("BP/ LN Equity", "WEIR LN Equity"))
   }
 
+
 }
 \seealso{
 \itemize{
-    \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the Bloomnerg fields used here.}
+
+    \item{The \link[BBGsymbols]{fields} dataset in the
+    \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the Bloomnerg
+     fields used here.}
+
     \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+
+    \item{The \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite,
+    in particular the \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
+    package.}
+
   }
 }

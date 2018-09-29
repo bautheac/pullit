@@ -7,15 +7,18 @@
 BBG_futures_aggregate(active_contract_tickers, start, end, verbose, ...)
 }
 \arguments{
-\item{active_contract_tickers}{A chatacter vector. Specifies the futures active contract Bloomberg tickers to query data for.}
+\item{active_contract_tickers}{a chatacter vector. Specifies the futures active contract
+Bloomberg tickers to query data for.}
 
-\item{start}{A scalar character vector. Specifies the starting date for the query in the following format: 'yyyy-mm-dd'.}
+\item{start}{a scalar character vector. Specifies the starting date for the query in the
+following format: 'yyyy-mm-dd'.}
 
-\item{end}{A scalar character vector. Specifies the end date for the query in the following format: 'yyyy-mm-dd'.}
+\item{end}{a scalar character vector. Specifies the end date for the query in the following
+format: 'yyyy-mm-dd'.}
 
-\item{verbose}{A logical scalar vector. Should progression messages be printed? Defaults to TRUE.}
+\item{verbose}{a logical scalar vector. Should progression messages be printed? Defaults to TRUE.}
 
-\item{...}{Optional parameters to pass to the \link[Rblpapi]{bdh} function from the
+\item{...}{optional parameters to pass to the \link[Rblpapi]{bdh} function from the
 \href{http://dirk.eddelbuettel.com/code/rblpapi.html}{\pkg{Rblpapi}} package used
   for the query (\code{options} parameter).}
 }
@@ -35,15 +38,24 @@ Provided with a set of futures active contract Bloomberg tickers and a time peri
       start = "2000-01-01", end = as.character(Sys.Date()))
   }
 
+
 }
 \seealso{
 \itemize{
+
     \item{"GFUT <GO>" on a Bloomberg terminal.}
-    \item{The \link[BBGsymbols]{rolls} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-    (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details regarding the \code{roll_type} & \code{roll_adjustment} parameters.}
-    \item{The \link[BBGsymbols]{fields} dataset in the \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+
+    \item{The \link[BBGsymbols]{rolls} dataset in the
+    \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
+    (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
+    regarding the \code{roll_type} & \code{roll_adjustment} parameters.}
+    \item{The \link[BBGsymbols]{fields} dataset in the
+    \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
     for details on the Bloomnerg fields used here.}
-    \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
+
+    \item{Helper datasets in the
+    \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+
   }
 }
