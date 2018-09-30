@@ -1,16 +1,27 @@
+---
+title: "pullit!"
+author: "Olivier Bauthéac"
+date: "30 septembre 2018"
+output: html_document
+---
+
 [![Travis-CI Build Status](https://travis-ci.org/bautheac/pullit.svg?branch=master)](https://travis-ci.org/bautheac/pullit)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/bautheac/pullit?branch=master&svg=true)](https://ci.appveyor.com/project/bautheac/pullit)
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 
 
-# pullit!
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
 
 Pulling financial data from Bloomberg in R made easy.
+
 
 ## Installation
 
 pullit! velongs to the [finRes](https://bautheac.github.io/finRes/) suite, install the development version from [github](https://github.com/bautheac/finRes/) with `r devtools::install_github(repo = "finRes", username = "bautheac")` or install pullit! individually with `devtools::install_github(repo = "pullit", username = "bautheac")`.
-
 
 
 ## Example
