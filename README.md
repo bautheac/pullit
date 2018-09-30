@@ -7,9 +7,10 @@
 
 Pulling financial data from Bloomberg in R made easy.
 
+
 ## Installation
 
-pullit! velongs to the [finRes](https://bautheac.github.io/finRes/) suite, install the development version from [github](https://github.com/bautheac/finRes/) with `r devtools::install_github(repo = "finRes", username = "bautheac")` or install pullit! individually with `devtools::install_github(repo = "pullit", username = "bautheac")`.
+pullit! velongs to the [finRes](https://bautheac.github.io/finRes/) suite, install the development version from [github](https://github.com/bautheac/finRes/) with `devtools::install_github(repo = "finRes", username = "bautheac")` or install pullit! individually with `devtools::install_github(repo = "pullit", username = "bautheac")`.
 
 
 
