@@ -21,7 +21,11 @@ Futures term structure historical market data from Bloomberg
 
 ``` r
 library(pullit)
-term_structure <- BBG_futures_market(type = 'term structure', active_contract_tickers = c("W A Comdty", "KWA Comdty"), start = "2000-01-01", end = as.character(Sys.Date()), TS_positions = 1L:5L, roll_type = "A", roll_days = 0L,  roll_months = 0L, roll_adjustment = "N")
+term_structure <- BBG_futures_market(type = 'term structure', 
+  active_contract_tickers = c("W A Comdty", "KWA Comdty"), 
+  start = "2000-01-01", end = as.character(Sys.Date()), 
+  TS_positions = 1L:5L, 
+  roll_type = "A", roll_days = 0L,  roll_months = 0L, roll_adjustment = "N")
 
 get_active_contract_tickers(term_structure)
 get_term_structure_tickers(term_structure)
