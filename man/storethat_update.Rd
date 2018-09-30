@@ -20,6 +20,9 @@ the book for the snapshot; 'all' snapshots all the books available for the given
 
 \item{name}{a scalar character vector. Instrument dependent; for a given instrument, specifies
 the name for the snapshot; 'all' snapshots all the names available for the given instrument.}
+
+\item{verbose}{a logical scalar vector. Should progression messages be printed?
+Defaults to TRUE.}
 }
 \description{
 Updates an existing \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}

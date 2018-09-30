@@ -2558,6 +2558,9 @@ storethat_fund_info <- function(file = NULL, tickers){
 #' @param name a scalar character vector. Instrument dependent; for a given instrument, specifies
 #'   the name for the snapshot; 'all' snapshots all the names available for the given instrument.
 #'
+#' @param verbose a logical scalar vector. Should progression messages be printed?
+#'   Defaults to TRUE.
+#'
 #'
 #' @details For a given financial instrument, updates the database by book and name.
 #'

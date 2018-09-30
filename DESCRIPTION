@@ -10,7 +10,6 @@ Imports:
   crayon (>= 1.3.4),
   data.table (>= 1.11.4),
   dplyr (>= 0.7.6),
-  finRes,
   forcats (>= 0.3.0),
   glue (>= 1.3.0),
   magrittr (>= 1.5),
@@ -23,9 +22,13 @@ Imports:
   utils,
   tibble (>= 1.4.2),
   tidyr (>= 0.8.1)
+Suggests: 
+  finRes,
+  storethat
 Remotes: 
   bautheac/BBGsymbols,
-  bautheac/finRes
+  bautheac/finRes,
+  bautheac/storethat
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
