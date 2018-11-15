@@ -28,29 +28,28 @@ Install the development version from github with
 
 pullit queries Bloomberg for historical as well as contemporaneous data
 for multiple types of financial instruments using fields provided by
-[BBGsymbols](https://bautheac.github.io/BBGsymbols/) and returns the
-retrieved data in formats that are easy to work with.
+BBGsymbols and returns the retrieved data in formats that are easy to
+work with.
 
 ### plotit
 
-[finRes](https://bautheac.github.io/finRes/) provides a set of accessors
-and summary methods for these objects while
-[plotit](https://bautheac.github.io/plotit/) provides bespoke
+finRes provides a set of accessors and summary methods for these objects
+while [plotit](https://bautheac.github.io/plotit/) provides bespoke
 visualization tools.
 
 ### storethat
 
 Financial data retrieved using pullit can be stored using
 [storethat](https://bautheac.github.io/storethat/) for subsequent access
-whith no active Bloomberg connection needed.
-[storethat](https://bautheac.github.io/storethat/) uses a bespoke
+whith no active Bloomberg connection needed. storethat uses a bespoke
 database design for easy and fast access where the data can be stored
 locally or remotely for global access, in a cloud for example.
-Retrieving previously stored data from a
-[storethat](https://bautheac.github.io/storethat/) database using pullit
+Retrieving previously stored data from a storethat database using pullit
 is fairly similar to retrieving it from Bloomberg. The corresponding
 functions only differ in name with their prefix refering to the data
 source (storethat vs. Bloomberg); the parameters are equal.
+
+## References
 
 <div id="refs" class="references">
 
