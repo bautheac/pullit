@@ -5,13 +5,10 @@
 \title{Futures CFTC position historical data from from a
   \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database}
 \usage{
-storethat_futures_CFTC(file = NULL, active_contract_tickers, start, end,
+storethat_futures_CFTC(active_contract_tickers, start, end, file = NULL,
   verbose = TRUE)
 }
 \arguments{
-\item{file}{a scalar chatacter vector. Specifies the target \pkg{storethat}
-SQLite database file.}
-
 \item{active_contract_tickers}{a chatacter vector. Specifies the futures active
 contract Bloomberg tickers to query data for.}
 
@@ -20,6 +17,9 @@ the following format: 'yyyy-mm-dd'.}
 
 \item{end}{a scalar character vector. Specifies the end date for the query in the
 following format: 'yyyy-mm-dd'.}
+
+\item{file}{a scalar chatacter vector. Specifies the target \pkg{storethat}
+SQLite database file.}
 
 \item{verbose}{a logical scalar vector. Should progression messages be printed?
 Defaults to TRUE.}

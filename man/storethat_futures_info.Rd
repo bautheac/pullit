@@ -5,14 +5,14 @@
 \title{Futures series qualitative information from a
 \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database}
 \usage{
-storethat_futures_info(file = NULL, active_contract_tickers)
+storethat_futures_info(active_contract_tickers, file = NULL)
 }
 \arguments{
-\item{file}{a scalar chatacter vector. Specifies the target \pkg{storethat} SQLite
-database file.}
-
 \item{active_contract_tickers}{a chatacter vector. Specifies the futures active contract
 Bloomberg tickers to query data for.}
+
+\item{file}{a scalar chatacter vector. Specifies the target \pkg{storethat} SQLite
+database file.}
 }
 \value{
 An S4 object of class \linkS4class{FuturesInfo}.

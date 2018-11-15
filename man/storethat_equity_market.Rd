@@ -5,12 +5,10 @@
 \title{Equity historical market data from a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
   SQLite database}
 \usage{
-storethat_equity_market(file = NULL, tickers, start, end,
+storethat_equity_market(tickers, start, end, file = NULL,
   verbose = TRUE)
 }
 \arguments{
-\item{file}{a scalar chatacter vector. Specifies the target \pkg{storethat} SQLite database file.}
-
 \item{tickers}{a chatacter vector. Specifies the equity Bloomberg tickers to query data for.}
 
 \item{start}{a scalar character vector. Specifies the starting date for the query in the following
@@ -18,6 +16,8 @@ format: 'yyyy-mm-dd'.}
 
 \item{end}{a scalar character vector. Specifies the end date for the query in the following
 format: 'yyyy-mm-dd'.}
+
+\item{file}{a scalar chatacter vector. Specifies the target \pkg{storethat} SQLite database file.}
 
 \item{verbose}{a logical scalar vector. Should progression messages be printed? Defaults to TRUE.}
 }

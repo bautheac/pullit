@@ -5,13 +5,10 @@
 \title{Equity historical book data from a
   \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database}
 \usage{
-storethat_equity_book(file = NULL, book, tickers, start, end,
+storethat_equity_book(book, tickers, start, end, file = NULL,
   verbose = TRUE)
 }
 \arguments{
-\item{file}{a scalar chatacter vector. Specifies the target \pkg{storethat}
-SQLite database file.}
-
 \item{book}{a scalar chatacter vector, 'key stats', 'income statement',
 'balance sheet', 'cash flow statement' or 'ratios'.}
 
@@ -23,6 +20,9 @@ in the following format: 'yyyy-mm-dd'.}
 
 \item{end}{a scalar character vector. Specifies the end date for the query in the
 following format: 'yyyy-mm-dd'.}
+
+\item{file}{a scalar chatacter vector. Specifies the target \pkg{storethat}
+SQLite database file.}
 
 \item{verbose}{a logical scalar vector. Should progression messages be printed?
 Defaults to TRUE.}

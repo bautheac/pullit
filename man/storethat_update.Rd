@@ -5,13 +5,10 @@
 \title{Update your \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite
   database.}
 \usage{
-storethat_update(file = NULL, instrument = "all", book = "all",
-  name = "all", verbose = TRUE)
+storethat_update(instrument = "all", book = "all", name = "all",
+  file = NULL, verbose = TRUE)
 }
 \arguments{
-\item{file}{a scalar character vector. Specifies the path to the appropriate 'storethat.sqlite'
-file.}
-
 \item{instrument}{a scalar character vector. Specifies the financial instruments to get a
 snapshot for. Must be one of 'all', equity', 'fund' or 'futures'.}
 
@@ -20,6 +17,9 @@ the book for the snapshot; 'all' snapshots all the books available for the given
 
 \item{name}{a scalar character vector. Instrument dependent; for a given instrument, specifies
 the name for the snapshot; 'all' snapshots all the names available for the given instrument.}
+
+\item{file}{a scalar character vector. Specifies the path to the appropriate 'storethat.sqlite'
+file.}
 
 \item{verbose}{a logical scalar vector. Should progression messages be printed?
 Defaults to TRUE.}

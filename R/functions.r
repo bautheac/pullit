@@ -539,7 +539,7 @@ BBG_futures_aggregate <- function(active_contract_tickers, start, end, verbose, 
 #' @export
 BBG_futures_CFTC <- function(active_contract_tickers, start, end, verbose = TRUE, ...){
 
-  utils::data(list = c("fields", "tickers_cftc"), package = "BBGsymbols", envir = environment())
+  utils::data(list = c("fields", "tickers_CFTC"), package = "BBGsymbols", envir = environment())
 
   if (! is.character(active_contract_tickers))
     stop("The parameter 'active_contract_tickers' must be supplied as a character vector of
@@ -553,7 +553,7 @@ BBG_futures_CFTC <- function(active_contract_tickers, start, end, verbose = TRUE
     stop("The parameter 'verbose' must be supplied as a scalar logical vector")
 
   data <- lapply(active_contract_tickers, function(x) {
-    tickers <- dplyr::filter(tickers_cftc, `active contract ticker` == x) %>%
+    tickers <- dplyr::filter(tickers_CFTC, `active contract ticker` == x) %>%
       dplyr::select(ticker) %>% purrr::flatten_chr()
     if (NROW(tickers) == 0L) stop(paste0("No CFTC data for ", x, "."))
     data <- BBG_pull_historical_market(tickers, fields = "PX_LAST", start, end, ...)
@@ -565,7 +565,7 @@ BBG_futures_CFTC <- function(active_contract_tickers, start, end, verbose = TRUE
 
     data %<>%
       dplyr::mutate(`active contract ticker` = x) %>%
-      dplyr::left_join(dplyr::select(tickers_cftc, format, underlying, `unit` = unit,
+      dplyr::left_join(dplyr::select(tickers_CFTC, format, underlying, `unit` = unit,
                                      participant, position, ticker), by = "ticker")
     if (verbose) done(x); data
   }) %>%
@@ -1288,10 +1288,11 @@ BBG_fund_info <- function(tickers, ...){
 #'
 #'
 #' @export
-storethat_futures_market <- function(file = NULL, type, active_contract_tickers,
-                                     start, end, TS_positions = NULL, roll_type = NULL,
+storethat_futures_market <- function(type, active_contract_tickers, start, end,
+                                     TS_positions = NULL, roll_type = NULL,
                                      roll_days = NULL, roll_months = NULL,
-                                     roll_adjustment = NULL, verbose = TRUE){
+                                     roll_adjustment = NULL, file = NULL,
+                                     verbose = TRUE){
 
 
   if (is.null(file)) file <- file.choose()
@@ -1738,7 +1739,7 @@ storethat_futures_aggregate <- function(file, active_contract_tickers, start, en
 #'
 #'
 #' @export
-storethat_futures_CFTC <- function(file = NULL, active_contract_tickers, start, end, verbose = TRUE){
+storethat_futures_CFTC <- function(active_contract_tickers, start, end, file = NULL, verbose = TRUE){
 
 
   if (is.null(file)) file <- file.choose()
@@ -1858,7 +1859,7 @@ storethat_futures_CFTC <- function(file = NULL, active_contract_tickers, start, 
 #'   }
 #'
 #' @export
-storethat_futures_info <- function(file = NULL, active_contract_tickers){
+storethat_futures_info <- function(active_contract_tickers, file = NULL){
 
 
   if (is.null(file)) file <- file.choose()
@@ -1967,7 +1968,7 @@ storethat_futures_info <- function(file = NULL, active_contract_tickers){
 #'
 #'
 #' @export
-storethat_equity_market <- function(file = NULL, tickers, start, end, verbose = TRUE){
+storethat_equity_market <- function(tickers, start, end, file = NULL, verbose = TRUE){
 
 
   if (is.null(file)) file <- file.choose()
@@ -2126,7 +2127,7 @@ storethat_equity_market <- function(file = NULL, tickers, start, end, verbose = 
 #' @import BBGsymbols
 #'
 #' @export
-storethat_equity_book <- function(file = NULL, book, tickers, start, end, verbose = TRUE){
+storethat_equity_book <- function(book, tickers, start, end, file = NULL, verbose = TRUE){
 
 
   if (is.null(file)) file <- file.choose()
@@ -2255,7 +2256,7 @@ storethat_equity_book <- function(file = NULL, book, tickers, start, end, verbos
 #'
 #'
 #' @export
-storethat_equity_info <- function(file = NULL, tickers){
+storethat_equity_info <- function(tickers, file = NULL){
 
 
   if (is.null(file)) file <- file.choose()
@@ -2367,7 +2368,7 @@ storethat_equity_info <- function(file = NULL, tickers){
 #'
 #'
 #' @export
-storethat_fund_market <- function(file = NULL, tickers, start, end, verbose = TRUE){
+storethat_fund_market <- function(tickers, start, end, file = NULL, verbose = TRUE){
 
 
   if (is.null(file)) file <- file.choose()
@@ -2491,7 +2492,7 @@ storethat_fund_market <- function(file = NULL, tickers, start, end, verbose = TR
 #'
 #'
 #' @export
-storethat_fund_info <- function(file = NULL, tickers){
+storethat_fund_info <- function(tickers, file = NULL){
 
 
   if (is.null(file)) file <- file.choose()
@@ -2574,8 +2575,8 @@ storethat_fund_info <- function(file = NULL, tickers){
 #'
 #'
 #' @export
-storethat_update <- function(file = NULL, instrument = "all", book = "all", name = "all",
-                             verbose = TRUE){
+storethat_update <- function(instrument = "all", book = "all", name = "all",
+                             file = NULL, verbose = TRUE){
 
   if (is.null(file)) file <- file.choose()
   else
@@ -2648,14 +2649,4 @@ storethat_update <- function(file = NULL, instrument = "all", book = "all", name
   )
 
 }
-
-
-
-
-
-
-
-
-
-
 

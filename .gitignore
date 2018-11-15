@@ -3,3 +3,4 @@
 .RData
 development/
 data-raw/
+inst/doc

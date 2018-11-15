@@ -5,15 +5,12 @@
 \title{Futures historical market data from a
   \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database}
 \usage{
-storethat_futures_market(file = NULL, type, active_contract_tickers,
-  start, end, TS_positions = NULL, roll_type = NULL,
-  roll_days = NULL, roll_months = NULL, roll_adjustment = NULL,
+storethat_futures_market(type, active_contract_tickers, start, end,
+  TS_positions = NULL, roll_type = NULL, roll_days = NULL,
+  roll_months = NULL, roll_adjustment = NULL, file = NULL,
   verbose = TRUE)
 }
 \arguments{
-\item{file}{a scalar chatacter vector. Specifies the target
-\href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database file.}
-
 \item{type}{a scalar character vector, 'term sructure' or 'aggregate'. 'term structure'
 returns individual futures chain data for a selected portion of the term structure
 (specify desired positions in \code{TS_positions}) while 'aggregate' returns aggregated data
@@ -46,6 +43,9 @@ with \code{roll_days} above.}
 
 \item{roll_adjustment}{a scalar chatacter vector. Specifies roll adjustment method to use for
 term structure ticker construction. Must be one of 'D', 'N', 'R', or 'W'.}
+
+\item{file}{a scalar chatacter vector. Specifies the target
+\href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database file.}
 
 \item{verbose}{a logical scalar vector. Should progression messages be printed? Defaults to TRUE.}
 }

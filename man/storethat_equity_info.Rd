@@ -5,12 +5,12 @@
 \title{Corporate qualitative information from a
   \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database}
 \usage{
-storethat_equity_info(file = NULL, tickers)
+storethat_equity_info(tickers, file = NULL)
 }
 \arguments{
-\item{file}{a scalar chatacter vector. Specifies the target \pkg{storethat} SQLite database file.}
-
 \item{tickers}{a chatacter vector. Specifies the equity Bloomberg tickers to query data for.}
+
+\item{file}{a scalar chatacter vector. Specifies the target \pkg{storethat} SQLite database file.}
 }
 \value{
 An S4 object of class \linkS4class{EquityInfo}.

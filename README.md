@@ -1,40 +1,64 @@
-[![Travis-CI Build Status](https://travis-ci.org/bautheac/pullit.svg?branch=master)](https://travis-ci.org/bautheac/pullit)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/bautheac/pullit?branch=master&svg=true)](https://ci.appveyor.com/project/bautheac/pullit)
+pullit\!
+================
+
+[![Travis-CI Build
+Status](https://travis-ci.org/bautheac/pullit.svg?branch=master)](https://travis-ci.org/bautheac/pullit)
+[![AppVeyor Build
+Status](https://ci.appveyor.com/api/projects/status/github/bautheac/pullit?branch=master&svg=true)](https://ci.appveyor.com/project/bautheac/pullit)
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 
+<style> body {text-align: justify} </style>
 
-# pullit!
+## pullit\!
 
-Pulling financial data from Bloomberg in R made easy.
+Although pullit is self-contained with consumption value on its own, it
+is one of the workhorses of the
+[finRes](https://bautheac.github.io/finRes/) suite where it plays the
+very important role of interface to Bloomberg. Using carefully selected
+Bloomberg datafields from
+[BBGsymbols](https://bautheac.github.io/BBGsymbols/) in tandem with
+Armstrong, Eddelbuettel, and Laing (2018)’s Bloomberg interface it makes
+pulling financial data from Bloomberg rather easy for the R user.
+Install the development version from github with
+`devtools::install_github("bautheac/pullit")`.
 
+## finRes
 
-## Installation
+### BBGsymbols
 
-pullit! velongs to the [finRes](https://bautheac.github.io/finRes/) suite, install the development version from [github](https://github.com/bautheac/finRes/) with `devtools::install_github(repo = "finRes", username = "bautheac")` or install pullit! individually with `devtools::install_github(repo = "pullit", username = "bautheac")`.
+pullit queries Bloomberg for historical as well as contemporaneous data
+for multiple types of financial instruments using fields provided by
+[BBGsymbols](https://bautheac.github.io/BBGsymbols/) and returns the
+retrieved data in formats that are easy to work with.
 
+### plotit
 
+[finRes](https://bautheac.github.io/finRes/) provides a set of accessors
+and summary methods for these objects while
+[plotit](https://bautheac.github.io/plotit/) provides bespoke
+visualization tools.
 
-## Example
+### storethat
 
-Futures term structure historical market data from Bloomberg:
+Financial data retrieved using pullit can be stored using
+[storethat](https://bautheac.github.io/storethat/) for subsequent access
+whith no active Bloomberg connection needed.
+[storethat](https://bautheac.github.io/storethat/) uses a bespoke
+database design for easy and fast access where the data can be stored
+locally or remotely for global access, in a cloud for example.
+Retrieving previously stored data from a
+[storethat](https://bautheac.github.io/storethat/) database using pullit
+is fairly similar to retrieving it from Bloomberg. The corresponding
+functions only differ in name with their prefix refering to the data
+source (storethat vs. Bloomberg); the parameters are equal.
 
-``` r
-library(finRes)
+<div id="refs" class="references">
 
-term_structure <- BBG_futures_market(type = 'term structure', 
-  active_contract_tickers = c("W A Comdty", "KWA Comdty"), 
-  start = "2017-01-01", end = as.character(Sys.Date()), 
-  TS_positions = 1L:5L, 
-  roll_type = "A", roll_days = 0L,  roll_months = 0L, roll_adjustment = "N")
+<div id="ref-Armstrong_Rblpapi_2018">
 
-get_active_contract_tickers(term_structure)
-get_term_structure_tickers(term_structure)
-get_data(term_structure)
-get_call(term_structure)
+Armstrong, Whit, Dirk Eddelbuettel, and John Laing. 2018. *Rblpapi: R
+Interface to ’Bloomberg’*. <https://CRAN.R-project.org/package=Rblpapi>.
 
-plot_term_structure(object = term_structure, ticker = "W A Comdty", 
-  frame = 100L)
+</div>
 
-
-```
-
+</div>

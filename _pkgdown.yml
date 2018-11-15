@@ -1,0 +1,63 @@
+title: pullit
+
+url: https://bautheac.github.io/pullit
+
+
+reference:
+  - title: Bloomberg
+    desc: >
+        Retrieve data from Bloomberg:
+    contents:
+      - BBG_equity_market
+      - BBG_equity_book
+      - BBG_equity_info
+      - BBG_futures_market
+      - BBG_futures_CFTC
+      - BBG_futures_info
+      - BBG_fund_market
+      - BBG_fund_info
+  - title: storethat
+    desc: >
+        Retrieve data from a storethat database:
+    contents:
+      - storethat_equity_market
+      - storethat_equity_book
+      - storethat_equity_info
+      - storethat_futures_market
+      - storethat_futures_CFTC
+      - storethat_futures_info
+      - storethat_fund_market
+      - storethat_fund_info
+  - title: accessors
+    desc: >
+      Access returned data:
+    contents:
+      - get_tickers
+      - get_active_contract_tickers
+      - get_term_structure_tickers
+      - get_cftc_tickers
+      - get_fields
+      - get_data
+      - get_info
+      - get_call
+      - get_periods
+
+articles:
+  - title: pullit!
+    desc: >
+        Get started:
+    contents:
+      - pullit
+
+navbar:
+  title: ~
+  type: default
+  left:
+    - text: home
+      href: index.html
+    - text: functions
+      href: reference/index.html
+    - text: get started
+      href: articles/pullit.html
+
+

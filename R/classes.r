@@ -1,6 +1,6 @@
 # if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "active contract ticker", "active_contract_ticker", "date_id", "field", "fields", "id", "instrument",
 #                                                         "name", "participant", "position", "position ticker", "position_ticker", "PX_LAST", "roll", "roll adjustment",
-#                                                         "roll days", "roll months", "roll type", "rolls", "section", "subsection", "symbol", "ticker", "tickers_cftc",
+#                                                         "roll days", "roll months", "roll type", "rolls", "section", "subsection", "symbol", "ticker", "tickers_CFTC",
 #                                                         "tickers_futures", "ticker_id", "TS position", "type", "underlying", "unit", "value", "y"))
 
 setOldClass(c("tbl_df", "tbl", "data.frame"))
