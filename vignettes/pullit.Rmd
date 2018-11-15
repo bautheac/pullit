@@ -40,6 +40,7 @@ equity_market <- BBG_equity_market(equity_tickers, start, end, verbose = FALSE)
 For financial statements data BBGsymbols replicates the Bloomberg 'financial analysis' monitor (FA <GO>). At the time of writing, this includes balance sheet, cash flow statement, income statement as well as 'key stats' that gathers broad summary figures and 'ratios' that includes popular financial ratios.
 
 Retrieve the corresponding data for the abovementioned corporations with:  
+
 ##### balance sheet
 ```{r `equity balance sheet`}
 equity_BS <- BBG_equity_book(book = "balance sheet", equity_tickers, start, end, verbose = FALSE)
@@ -75,7 +76,7 @@ Fund data only comes in two categories, market and info. For a given fund market
 
 #### market
 Retrieve market data from Bloomberg for the SPDR S&P 500 ETF Trust (SPY US Equity), the SPDR Gold Shares investment fund (GLD US Equity) and the iShares MSCI Emerging Markets ETF (EEM US Equity) with:
-```{r `fund market`, cache = TRUE}
+```{r `fund market`}
 fund_tickers <- c("SPY US Equity", "GLD US Equity", "EEM US Equity")
 
 fund_market <- BBG_fund_market(fund_tickers, start, end, verbose = FALSE)
@@ -83,7 +84,7 @@ fund_market <- BBG_fund_market(fund_tickers, start, end, verbose = FALSE)
 
 #### info
 Retrieve the corresponding qualitative data for the abovementioned funds with:
-```{r `fund info`, cache = TRUE}
+```{r `fund info`}
 fund_info <- BBG_fund_info(fund_tickers, verbose = FALSE)
 ```
 
@@ -96,7 +97,7 @@ pullit helps retrieving both term structure as well as aggregated market data fo
 
 ##### term structure
 Retrieve market data from Bloomberg for the five first term structure contracts on the Corn - #2-yellow (C A Comdty), Eurodollar (EDA Comdty) and S&P500 - e-mini (ESA Index) futures series where the futures chains are constructed by rolling on liquidity (with active contract: "A") with no roll adjustment (none: "N") using:
-```{r `futures term structure`, cache = TRUE}
+```{r `futures term structure`}
 futures_tickers <- c("C A Comdty", "EDA Comdty", "ESA Index")
 
 futures_TS <- BBG_futures_market(type = "term structure", active_contract_tickers = futures_tickers, 
@@ -106,7 +107,7 @@ futures_TS <- BBG_futures_market(type = "term structure", active_contract_ticker
 
 ##### aggregate
 Retrieve the corresponding aggregated futures market data with:
-```{r `futures aggregated`, cache = TRUE}
+```{r `futures aggregated`}
 futures_agg <- BBG_futures_market(type = "aggregate", active_contract_tickers = futures_tickers,
                                   start, end, verbose = FALSE)
 ```
@@ -115,7 +116,7 @@ futures_agg <- BBG_futures_market(type = "aggregate", active_contract_tickers = 
 pullit helps retrieving CFTC futures market position data from Bloomberg. The Commodity Futures Trading Commission (CFTC) publishes the Commitments of Traders (COT) reports to help the public understand market dynamics. Specifically, the COT reports provide a breakdown of each Tuesday’s open interest for futures and options on futures markets in which 20 or more traders hold positions equal to or above the reporting levels established by the CFTC. See the 'fields' and 'tickers_CFTC' datasets in BBGsymbols for a details.
 
 Retrieve the corresponding futures market position data with:
-```{r `futures CFTC`, cache = TRUE}
+```{r `futures CFTC`}
 futures_CFTC <- BBG_futures_CFTC(active_contract_tickers = futures_tickers, start, end, verbose = FALSE)
 ```
 
@@ -124,7 +125,7 @@ futures_CFTC <- BBG_futures_CFTC(active_contract_tickers = futures_tickers, star
 'info' encompasses a range of contemporaneous qualitative information on the underlying futures series including, but not limited to, name for the series' underlying, trading exchange, term structure length, contract size, etc.
 
 Retrieve the corresponding data for the abovementioned futures series with:
-```{r `futures info`, cache = TRUE}
+```{r `futures info`}
 futures_info <- BBG_futures_info(futures_tickers, verbose = FALSE)
 ```
 
