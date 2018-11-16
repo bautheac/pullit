@@ -131,14 +131,14 @@ setGeneric("get_term_structure_tickers", function(object) standardGeneric("get_t
 #'
 #' @docType methods
 #'
-#' @rdname get_cftc_tickers-methods
+#' @rdname get_CFTC_tickers-methods
 #'
 #'
 #' @importClassesFrom data.table data.table
 #'
 #'
 #' @export
-setGeneric("get_cftc_tickers", function(object) standardGeneric("get_cftc_tickers"))
+setGeneric("get_CFTC_tickers", function(object) standardGeneric("get_CFTC_tickers"))
 
 
 # fields ####

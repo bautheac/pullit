@@ -127,7 +127,7 @@ setMethod("show", "FuturesCFTC", function(object) {
       methods::is(object)[[1L]],
       "\n\nSlots inlude\n",
       "  active_contract_tickers: access with get_active_contract_tickers()\n",
-      "  cftc_tickers: access with get_cftc_tickers()\n",
+      "  cftc_tickers: access with get_CFTC_tickers()\n",
       "  data: access with get_data()\n",
       "  call: access with get_call()\n",
       "\nSee also: get_periods()")
@@ -177,16 +177,16 @@ setMethod("get_active_contract_tickers", signature = c("FuturesHistorical"), fun
 setMethod("get_term_structure_tickers", signature = c("FuturesTS"), function(object) object@term_structure_tickers)
 
 ### FuturesCFTC ####
-#' @rdname get_cftc_tickers-methods
+#' @rdname get_CFTC_tickers-methods
 #'
-#' @aliases get_cftc_tickers,FuturesCFTC
+#' @aliases get_CFTC_tickers,FuturesCFTC
 #'
 #'
 #' @importFrom data.table data.table
 #'
 #'
 #' @export
-setMethod("get_cftc_tickers", signature = c("FuturesCFTC"), function(object) object@cftc_tickers)
+setMethod("get_CFTC_tickers", signature = c("FuturesCFTC"), function(object) object@cftc_tickers)
 
 ### EquityHistorical ####
 #' @rdname get_tickers-methods

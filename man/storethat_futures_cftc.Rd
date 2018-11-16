@@ -47,7 +47,7 @@ Provided with a set of Bloomberg futures active contract tickers
 
     \item{"GFUT <GO>" on a Bloomberg terminal.}
 
-    \item{The \link[BBGsymbols]{tickers_CFTC} dataset in the
+    \item{The \link[BBGsymbols]{tickers_cftc} dataset in the
     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
     on the Bloomnerg position tickers used here.}

@@ -514,7 +514,7 @@ BBG_futures_aggregate <- function(active_contract_tickers, start, end, verbose, 
 #'
 #'     \item{"GFUT <GO>" on a Bloomberg terminal.}
 #'
-#'     \item{The \link[BBGsymbols]{tickers_CFTC} dataset in the
+#'     \item{The \link[BBGsymbols]{tickers_cftc} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
 #'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite)
 #'     for details on the Bloomnerg position tickers used here.}
@@ -539,7 +539,7 @@ BBG_futures_aggregate <- function(active_contract_tickers, start, end, verbose, 
 #' @export
 BBG_futures_CFTC <- function(active_contract_tickers, start, end, verbose = TRUE, ...){
 
-  utils::data(list = c("fields", "tickers_CFTC"), package = "BBGsymbols", envir = environment())
+  utils::data(list = c("fields", "tickers_cftc"), package = "BBGsymbols", envir = environment())
 
   if (! is.character(active_contract_tickers))
     stop("The parameter 'active_contract_tickers' must be supplied as a character vector of
@@ -553,7 +553,7 @@ BBG_futures_CFTC <- function(active_contract_tickers, start, end, verbose = TRUE
     stop("The parameter 'verbose' must be supplied as a scalar logical vector")
 
   data <- lapply(active_contract_tickers, function(x) {
-    tickers <- dplyr::filter(tickers_CFTC, `active contract ticker` == x) %>%
+    tickers <- dplyr::filter(tickers_cftc, `active contract ticker` == x) %>%
       dplyr::select(ticker) %>% purrr::flatten_chr()
     if (NROW(tickers) == 0L) stop(paste0("No CFTC data for ", x, "."))
     data <- BBG_pull_historical_market(tickers, fields = "PX_LAST", start, end, ...)
@@ -565,7 +565,7 @@ BBG_futures_CFTC <- function(active_contract_tickers, start, end, verbose = TRUE
 
     data %<>%
       dplyr::mutate(`active contract ticker` = x) %>%
-      dplyr::left_join(dplyr::select(tickers_CFTC, format, underlying, `unit` = unit,
+      dplyr::left_join(dplyr::select(tickers_cftc, format, underlying, `unit` = unit,
                                      participant, position, ticker), by = "ticker")
     if (verbose) done(x); data
   }) %>%
@@ -1713,7 +1713,7 @@ storethat_futures_aggregate <- function(file, active_contract_tickers, start, en
 #'
 #'     \item{"GFUT <GO>" on a Bloomberg terminal.}
 #'
-#'     \item{The \link[BBGsymbols]{tickers_CFTC} dataset in the
+#'     \item{The \link[BBGsymbols]{tickers_cftc} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
 #'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
 #'     on the Bloomnerg position tickers used here.}

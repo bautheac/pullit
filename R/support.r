@@ -531,7 +531,7 @@ db_snapshot_futures <- function(book, names, dates, con){
                              IN (", paste(names$id, collapse = ", "), ");")
            tickers <- RSQLite::dbGetQuery(con = con, tickers)
 
-           db_snapshot_futures_cftc(names, dates, con) %>%
+           db_snapshot_futures_CFTC(names, dates, con) %>%
              dplyr::left_join(tickers, by = "ticker_id") %>%
              dplyr::select(active_contract_ticker_id, ticker, field, start, end)
 
@@ -558,7 +558,7 @@ db_snapshot_futures <- function(book, names, dates, con){
                              IN (", paste(names$id, collapse = ", "), ");")
            tickers <- RSQLite::dbGetQuery(con = con, tickers)
 
-           CFTC <- db_snapshot_futures_cftc(names, dates, con) %>%
+           CFTC <- db_snapshot_futures_CFTC(names, dates, con) %>%
              dplyr::left_join(tickers, by = "ticker_id") %>%
              dplyr::select(active_contract_ticker_id, ticker, field, start, end)
 
@@ -634,7 +634,7 @@ db_snapshot_futures_aggregate <- function(names, dates, con){
 
 
 ### CFTC ####
-db_snapshot_futures_cftc <- function(names, dates, con){
+db_snapshot_futures_CFTC <- function(names, dates, con){
 
 
   tickers <- paste0("SELECT * FROM tickers_support_futures_cftc WHERE active_contract_ticker_id
@@ -914,7 +914,7 @@ setMethod("db_store", signature = c(object = "FuturesCFTC"), function(object, fi
 
   if (!all_tickers_exist(tickers = unique(object@cftc_tickers$ticker),
                          table_tickers = "tickers_support_futures_cftc", con))
-    update_cftc_tickers(tickers = object@cftc_tickers, con)
+    update_CFTC_tickers(tickers = object@cftc_tickers, con)
   cftc_tickers <- RSQLite::dbReadTable(con, "tickers_support_futures_cftc")
 
   dates <- paste0("SELECT * FROM support_dates WHERE date >= '", min(object@data$date), "' AND date <= '",  max(object@data$date), "';")
@@ -923,7 +923,7 @@ setMethod("db_store", signature = c(object = "FuturesCFTC"), function(object, fi
     dplyr::mutate(date = as.Date(date))
 
   for (i in unique(dates$period)){
-    update_data_cftc(data = dplyr::semi_join(object@data, dplyr::filter(dates, period == i), by = "date"),
+    update_data_CFTC(data = dplyr::semi_join(object@data, dplyr::filter(dates, period == i), by = "date"),
                      table_data = paste0("data_futures_cftc_", i), tickers = cftc_tickers,
                      dates = dplyr::filter(dates, period == i), con = con)
     if (verbose) done(paste0("Period ", data.table::first(dplyr::filter(dates, period == i)$date), "/",
