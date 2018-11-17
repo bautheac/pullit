@@ -1,7 +1,7 @@
 ---
 title: pullit!
 output: github_document
-bibliography: vignettes/BibTeX.bib
+bibliography: vignettes/REFERENCES.bib
 ---
 
 [![Travis-CI Build Status](https://travis-ci.org/bautheac/pullit.svg?branch=master)](https://travis-ci.org/bautheac/pullit)
@@ -13,7 +13,7 @@ bibliography: vignettes/BibTeX.bib
 
 ## pullit!
 
-Although pullit is self-contained with consumption value on its own, it is one of the workhorses of the [finRes](https://bautheac.github.io/finRes/) suite where it plays the very important role of interface to Bloomberg. Using carefully selected Bloomberg datafields from [BBGsymbols](https://bautheac.github.io/BBGsymbols/) in tandem with @Armstrong_Rblpapi_2018's Bloomberg interface it makes pulling financial data from Bloomberg rather easy for the R user. Install the development version from github with `devtools::install_github("bautheac/pullit")`. 
+Although self-contained with consumption value on its own, pullit is one of the workhorses of the [finRes](https://bautheac.github.io/finRes/) suite where it plays the very important role of interface to Bloomberg. Using carefully selected Bloomberg datafields from [BBGsymbols](https://bautheac.github.io/BBGsymbols/) in tandem with @Armstrong_Rblpapi_2018's Bloomberg interface it makes pulling financial data from Bloomberg rather easy for the R user. Install the development version from github with `devtools::install_github("bautheac/pullit")`. 
 
 ## finRes
 

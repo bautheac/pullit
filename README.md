@@ -11,11 +11,10 @@ Status](https://ci.appveyor.com/api/projects/status/github/bautheac/pullit?branc
 
 ## pullit\!
 
-Although pullit is self-contained with consumption value on its own, it
-is one of the workhorses of the
-[finRes](https://bautheac.github.io/finRes/) suite where it plays the
-very important role of interface to Bloomberg. Using carefully selected
-Bloomberg datafields from
+Although self-contained with consumption value on its own, pullit is one
+of the workhorses of the [finRes](https://bautheac.github.io/finRes/)
+suite where it plays the very important role of interface to Bloomberg.
+Using carefully selected Bloomberg datafields from
 [BBGsymbols](https://bautheac.github.io/BBGsymbols/) in tandem with
 Armstrong, Eddelbuettel, and Laing (2018)’s Bloomberg interface it makes
 pulling financial data from Bloomberg rather easy for the R user.
