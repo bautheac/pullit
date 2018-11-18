@@ -4,6 +4,12 @@
     <loc>https://bautheac.github.io/pullit/index.html</loc>
   </url>
   <url>
+    <loc>https://bautheac.github.io/pullit/reference/all_fields_exist.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/all_tickers_exist.html</loc>
+  </url>
+  <url>
     <loc>https://bautheac.github.io/pullit/reference/BBG_equity_book.html</loc>
   </url>
   <url>
@@ -167,6 +173,24 @@
   </url>
   <url>
     <loc>https://bautheac.github.io/pullit/reference/storethat_update.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/update_cftc_tickers.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/update_data.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/update_data_cftc.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/update_fields.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/update_term_structure_tickers.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/update_tickers.html</loc>
   </url>
   <url>
     <loc>https://bautheac.github.io/pullit/articles/pullit.html</loc>
