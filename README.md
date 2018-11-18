@@ -48,7 +48,7 @@ is fairly similar to retrieving it from Bloomberg. The corresponding
 functions only differ in name with their prefix refering to the data
 source (storethat vs. Bloomberg); the parameters are equal.
 
-## References
+## references
 
 <div id="refs" class="references">
 
