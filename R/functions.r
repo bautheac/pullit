@@ -352,8 +352,9 @@ BBG_futures_TS <- function(active_contract_tickers, start, end, TS_positions, ro
   data %<>%
     tidyr::gather(field, value, -c(`active contract ticker`, ticker, date)) %>%
     dplyr::select(`active contract ticker`, ticker, field, date, value) %>%
-    dplyr::arrange(`active contract ticker`, ticker, field, date) %>% dplyr::filter(stats::complete.cases(.)) %>%
-    dplyr::mutate(date = as.Date(date, origin = "1970-01-01"))
+    dplyr::arrange(`active contract ticker`, ticker, field, date) %>%
+    dplyr::filter(stats::complete.cases(.)) %>%
+    dplyr::mutate(date = as.Date(date, origin = "1970-01-01"), value = as.numeric(value))
 
   if (nrow(data) == 0L) warning("No term structure data found.")
 
@@ -456,7 +457,7 @@ BBG_futures_aggregate <- function(active_contract_tickers, start, end, verbose, 
     tidyr::gather(field, value, -c(`active contract ticker`, date)) %>%
     dplyr::filter(stats::complete.cases(.)) %>%
     dplyr::arrange(`active contract ticker`, field, date) %>%
-    dplyr::mutate(date = as.Date(date, origin = "1970-01-01")) %>%
+    dplyr::mutate(date = as.Date(date, origin = "1970-01-01"), value = as.numeric(value)) %>%
     dplyr::select(ticker = `active contract ticker`, field, date, value)
 
   active_contract_tickers <- dplyr::distinct(data, ticker)
@@ -573,7 +574,7 @@ BBG_futures_CFTC <- function(active_contract_tickers, start, end, verbose = TRUE
     dplyr::select(`active contract ticker`, ticker, format, underlying, `unit`,
                   participant, position, date, value = PX_LAST) %>%
     dplyr::filter(stats::complete.cases(.)) %>%
-    dplyr::mutate(field = "PX_LAST", date = as.Date(date, origin = "1970-01-01"))
+    dplyr::mutate(date = as.Date(date, origin = "1970-01-01"), value = as.numeric(value))
 
   if (nrow(data) == 0L) warning("No CFTC data found.")
 
@@ -754,7 +755,8 @@ BBG_equity_market <- function(tickers, start, end, verbose = TRUE, ...){
   data %<>%
     tidyr::gather(field, value, -c(ticker, date)) %>% dplyr::filter(stats::complete.cases(.)) %>%
     dplyr::select(ticker, field, date, value) %>%
-    dplyr::mutate(date = as.Date(date, origin = "1970-01-01")) %>% dplyr::arrange(ticker, field, date)
+    dplyr::mutate(date = as.Date(date, origin = "1970-01-01"), value = as.numeric(value)) %>%
+    dplyr::arrange(ticker, field, date)
 
   if (nrow(data) == 0L) warning("No market data found.")
 
@@ -889,7 +891,8 @@ BBG_equity_book <- function(book, tickers, start, end, verbose = TRUE, ...){
   }) %>%
     data.table::rbindlist(use.names = TRUE) %>% dplyr::filter(stats::complete.cases(.)) %>%
     dplyr::arrange(ticker, field, date) %>%
-    dplyr::select(ticker, field, date, value)
+    dplyr::select(ticker, field, date, value) %>%
+    dplyr::mutate(date = as.Date(date, origin = "1970-01-01"), value = as.numeric(value))
 
   if (nrow(data) == 0L) warning(paste("No", book, "data found.", sep = " "))
 
@@ -1081,7 +1084,7 @@ BBG_fund_market <- function(tickers, start, end, verbose = TRUE, ...){
     tidyr::gather(field, value, -c(ticker, date)) %>%
     dplyr::filter(stats::complete.cases(.)) %>%
     dplyr::select(ticker, field, date, value) %>%
-    dplyr::mutate(date = as.Date(date, origin = "1970-01-01")) %>%
+    dplyr::mutate(date = as.Date(date, origin = "1970-01-01"), value = as.numeric(value)) %>%
     dplyr::arrange(ticker, field, date)
 
   if (nrow(data) == 0L) warning("No market data found")
@@ -1524,7 +1527,9 @@ storethat_futures_TS <- function(file, active_contract_tickers, start, end, TS_p
                              by = c("ticker_id" = "id")) %>%
     dplyr::left_join(dplyr::select(dates, id, date), by = c("date_id" = "id")) %>%
     dplyr::left_join(fields, by = c("field_id" = "id")) %>%
-    dplyr::select(ticker, field = symbol, date, value) %>% dplyr::arrange(ticker, field, date)
+    dplyr::select(ticker, field = symbol, date, value) %>%
+    dplyr::mutate(date = as.Date(date), value = as.numeric(value)) %>%
+    dplyr::arrange(ticker, field, date)
 
 
   fields <- dplyr::left_join(dplyr::distinct(data, ticker, symbol = field),
@@ -1660,6 +1665,7 @@ storethat_futures_aggregate <- function(file, active_contract_tickers, start, en
     dplyr::left_join(dplyr::select(dates, id, date), by = c("date_id" = "id")) %>%
     dplyr::left_join(fields, by = c("field_id" = "id")) %>%
     dplyr::select(ticker, field = symbol, date, value) %>%
+    dplyr::mutate(date = as.Date(date), value = as.numeric(value)) %>%
     dplyr::arrange(ticker, field, date)
 
 
@@ -1802,6 +1808,7 @@ storethat_futures_CFTC <- function(active_contract_tickers, start, end, file = N
                      by = c("ticker_id" = "id")) %>%
     dplyr::left_join(dplyr::select(dates, id, date), by = c("date_id" = "id")) %>%
     dplyr::select(`active contract ticker`, ticker, field, date, value) %>%
+    dplyr::mutate(date = as.Date(date), value = as.numeric(value)) %>%
     dplyr::arrange(`active contract ticker`, ticker, field, date)
 
 
@@ -2026,6 +2033,7 @@ storethat_equity_market <- function(tickers, start, end, file = NULL, verbose = 
     dplyr::left_join(dplyr::select(dates, id, date), by = c("date_id" = "id")) %>%
     dplyr::left_join(fields, by = c("field_id" = "id")) %>%
     dplyr::select(ticker, field = symbol, date, value) %>%
+    dplyr::mutate(date = as.Date(date), value = as.numeric(value)) %>%
     dplyr::arrange(ticker, field, date)
 
 
@@ -2189,6 +2197,7 @@ storethat_equity_book <- function(book, tickers, start, end, file = NULL, verbos
     dplyr::left_join(dplyr::select(dates, id, date), by = c("date_id" = "id")) %>%
     dplyr::left_join(fields, by = c("field_id" = "id")) %>%
     dplyr::select(ticker, field = symbol, date, value) %>%
+    dplyr::mutate(date = as.Date(date), value = as.numeric(value)) %>%
     dplyr::arrange(ticker, field, date)
 
 
@@ -2427,6 +2436,7 @@ storethat_fund_market <- function(tickers, start, end, file = NULL, verbose = TR
     dplyr::left_join(dplyr::select(dates, id, date), by = c("date_id" = "id")) %>%
     dplyr::left_join(fields, by = c("field_id" = "id")) %>%
     dplyr::select(ticker, field = symbol, date, value) %>%
+    dplyr::mutate(date = as.Date(date), value = as.numeric(value)) %>%
     dplyr::arrange(ticker, field, date)
 
 
