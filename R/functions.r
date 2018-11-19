@@ -1470,15 +1470,13 @@ storethat_futures_TS <- function(file, active_contract_tickers, start, end, TS_p
   con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
 
 
-  term_structure_tickers <- sapply(active_contract_tickers,
-                                   function(y) sapply(TS_positions,
-                                                      function(x) {
-
-                                                        futures_ticker(y, TS_position = x,
-                                                                       roll_type, roll_days,
-                                                                       roll_months,
-                                                                       roll_adjustment)
-                                                      }))
+  term_structure_tickers <- sapply(
+    active_contract_tickers, function(y) sapply(
+      TS_positions, function(x) {
+        futures_ticker( y, TS_position = x, roll_type, roll_days, roll_months, roll_adjustment)
+      }
+    )
+  )
 
 
   term_structure_tickers <- paste0("SELECT * FROM tickers_support_futures_ts WHERE ticker IN ('",
@@ -1766,6 +1764,11 @@ storethat_futures_CFTC <- function(active_contract_tickers, start, end, file = N
          vector; one or more of '",
          paste(tickers$ticker, collapse = "', '"), "'")
 
+  tickers <- paste0("SELECT id, ticker FROM tickers_futures WHERE ticker IN ('",
+                    paste(active_contract_tickers, collapse = "', '"), "');")
+  tickers <- RSQLite::dbGetQuery(con, query)
+
+
   if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
     stop("The parameters 'start' and 'end' must be supplied as scalar character vectors
          of dates (yyyy-mm-dd)")
@@ -1883,6 +1886,10 @@ storethat_futures_info <- function(active_contract_tickers, file = NULL){
     stop("The parameter 'active_contract_tickers' must be supplied as a character vector; one or more of '",
          paste(tickers$ticker, collapse = "', '"), "'")
 
+  tickers <- paste0("SELECT id, ticker FROM tickers_futures WHERE ticker IN ('",
+                  paste(active_contract_tickers, collapse = "', '"), "');")
+  tickers <- RSQLite::dbGetQuery(con, query)
+
 
   data <- paste0("SELECT ticker_id, field_id, value FROM data_futures_info WHERE ticker_id IN (",
                  paste(tickers$id, collapse = ", "), ");")
@@ -1994,6 +2001,10 @@ storethat_equity_market <- function(tickers, start, end, file = NULL, verbose = 
     stop("The parameter 'tickers' must be supplied as a character vector; one or more of '",
          paste(query$ticker, collapse = "', '"), "'")
 
+  query <- paste0("SELECT id, ticker FROM tickers_equity WHERE ticker IN ('",
+                  paste(tickers, collapse = "', '"), "');")
+  tickers <- RSQLite::dbGetQuery(con, query)
+
   if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
     stop("The parameters 'start' and 'end' must be supplied as scalar character vectors of dates
          (yyyy-mm-dd)")
@@ -2002,7 +2013,6 @@ storethat_equity_market <- function(tickers, start, end, file = NULL, verbose = 
     stop("The parameter 'verbose' must be supplied as a scalar logical vector")
 
 
-  tickers <- query
   dates <- paste0("SELECT * FROM support_dates WHERE date >= '", start, "' AND date <= '",
                   end, "';")
   dates <- RSQLite::dbGetQuery(con, dates)
@@ -2160,6 +2170,10 @@ storethat_equity_book <- function(book, tickers, start, end, file = NULL, verbos
     stop("The parameter 'tickers' must be supplied as a character vector; one or more of '",
          paste(query$ticker, collapse = "', '"), "'")
 
+  query <- paste0("SELECT * FROM tickers_equity WHERE ticker IN ('",
+                  paste(tickers, collapse = "', '"), "');")
+  tickers <- RSQLite::dbGetQuery(con, query)
+
   if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
     stop("The parameters 'start' and 'end' must be supplied as scalar character vectors of
          dates (yyyy-mm-dd)")
@@ -2169,8 +2183,6 @@ storethat_equity_book <- function(book, tickers, start, end, file = NULL, verbos
 
 
   fields <- dplyr::filter(fields, book == !!book)
-
-  tickers <- query
 
   dates <- paste0("SELECT * FROM support_dates WHERE date >= '", start, "' AND date <= '",
                   end, "';")
@@ -2282,8 +2294,9 @@ storethat_equity_info <- function(tickers, file = NULL){
     stop("The parameter 'tickers' must be supplied as a character vector; one or more of '",
          paste(query$ticker, collapse = "', '"), "'")
 
-
-  tickers <- query
+  query <- paste0("SELECT id, ticker FROM tickers_equity WHERE ticker IN ('",
+                  paste(tickers, collapse = "', '"), "');")
+  tickers <- RSQLite::dbGetQuery(con, query)
 
   data <- paste0("SELECT ticker_id, field_id, value FROM data_equity_info WHERE ticker_id IN (",
                  paste(tickers$id, collapse = ", "), ");")
@@ -2396,6 +2409,10 @@ storethat_fund_market <- function(tickers, start, end, file = NULL, verbose = TR
     stop("The parameter 'tickers' must be supplied as a character vector; one or more of '",
          paste(query$ticker, collapse = "', '"), "'")
 
+  query <- paste0("SELECT id, ticker FROM tickers_fund WHERE ticker IN ('",
+                  paste(tickers, collapse = "', '"), "');")
+  tickers <- RSQLite::dbGetQuery(con, query)
+
   if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
     stop("The parameters 'start' and 'end' must be supplied as scalar character
          vectors of dates (yyyy-mm-dd)")
@@ -2403,8 +2420,6 @@ storethat_fund_market <- function(tickers, start, end, file = NULL, verbose = TR
   if (! rlang::is_scalar_logical(verbose))
     stop("The parameter 'verbose' must be supplied as a scalar logical vector")
 
-
-  tickers <- query
 
   dates <- paste0("SELECT * FROM support_dates WHERE date >= '", start, "' AND date <= '",
                   end, "';")
@@ -2516,13 +2531,16 @@ storethat_fund_info <- function(tickers, file = NULL){
   con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
 
 
-  query <- "SELECT id, ticker FROM tickers_fund;"
-  query <- RSQLite::dbGetQuery(con, query)
+  query <- "SELECT id, ticker FROM tickers_fund;"; query <- RSQLite::dbGetQuery(con, query)
   if (! all(tickers %in% query$ticker))
     stop("The parameter 'tickers' must be supplied as a character vector; one or more of '",
          paste(query$ticker, collapse = "', '"), "'")
 
-  tickers <- query
+  query <- paste0("SELECT id, ticker FROM tickers_fund WHERE ticker IN ('",
+                  paste(tickers, collapse = "', '"), "');")
+  tickers <- RSQLite::dbGetQuery(con, query)
+
+
   data <- paste0("SELECT ticker_id, field_id, value FROM data_fund_info WHERE ticker_id IN (",
                  paste(tickers$id, collapse = ", "), ");")
   data <- RSQLite::dbGetQuery(con, data)
