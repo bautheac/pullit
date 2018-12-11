@@ -31,6 +31,11 @@ setClass("EquityInfo", contains = "DataInfo")
 #' @export
 setClass("FundInfo", contains = "DataInfo")
 
+### index ####
+#' S4 class for futures info objects
+#' @export
+setClass("IndexInfo", contains = "DataInfo")
+
 
 # historical ####
 ## parent ####
@@ -90,10 +95,19 @@ setClass("EquityIS", contains = "EquityBook")
 setClass("EquityRatios", contains = "EquityBook")
 
 ### fund ####
-#' S4 class for Bloomberg futures historical data objects
+#' S4 class for Bloomberg fund historical data objects
 #'
 #' @export
 setClass("FundHistorical", contains = "DataHistorical", slots = c(fields = "data.table", tickers = "data.table"))
-#' S4 class for equity market objects
+#' S4 class for fund market objects
 #' @export
 setClass("FundMarket", contains = "FundHistorical")
+
+### index ####
+#' S4 class for Bloomberg index historical data objects
+#'
+#' @export
+setClass("IndexHistorical", contains = "DataHistorical", slots = c(fields = "data.table", tickers = "data.table"))
+#' S4 class for index market objects
+#' @export
+setClass("IndexMarket", contains = "IndexHistorical")

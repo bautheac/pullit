@@ -3,7 +3,7 @@
 \docType{class}
 \name{FundHistorical-class}
 \alias{FundHistorical-class}
-\title{S4 class for Bloomberg futures historical data objects}
+\title{S4 class for Bloomberg fund historical data objects}
 \description{
-S4 class for Bloomberg futures historical data objects
+S4 class for Bloomberg fund historical data objects
 }

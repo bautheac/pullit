@@ -3,7 +3,7 @@
 \docType{class}
 \name{FundMarket-class}
 \alias{FundMarket-class}
-\title{S4 class for equity market objects}
+\title{S4 class for fund market objects}
 \description{
-S4 class for equity market objects
+S4 class for fund market objects
 }

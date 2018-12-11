@@ -585,7 +585,7 @@ BBG_futures_CFTC <- function(active_contract_tickers, start, end, verbose = TRUE
   methods::new("FuturesCFTC",
                active_contract_tickers = data.table::as.data.table(dplyr::arrange(active_contract_tickers)),
                cftc_tickers = data.table::as.data.table(tickers),
-               data = data.table::as.data.table(dplyr::select(data, ticker, field, date, value)),
+               data = data.table::as.data.table(dplyr::select(data, ticker, date, value)),
                call = match.call())
 }
 
