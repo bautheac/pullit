@@ -2,13 +2,16 @@
 % Please edit documentation in R/functions.r
 \name{storethat_equity_book}
 \alias{storethat_equity_book}
-\title{Equity historical book data from a
-  \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database}
+\title{Retrieves equity historical book data from a
+  \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database.}
 \usage{
-storethat_equity_book(book, tickers, start, end, file = NULL,
-  verbose = TRUE)
+storethat_equity_book(file = NULL, book, tickers, start, end,
+  verbose = T)
 }
 \arguments{
+\item{file}{a scalar chatacter vector. Specifies the target \pkg{storethat}
+SQLite database file.}
+
 \item{book}{a scalar chatacter vector, 'key stats', 'income statement',
 'balance sheet', 'cash flow statement' or 'ratios'.}
 
@@ -20,9 +23,6 @@ in the following format: 'yyyy-mm-dd'.}
 
 \item{end}{a scalar character vector. Specifies the end date for the query in the
 following format: 'yyyy-mm-dd'.}
-
-\item{file}{a scalar chatacter vector. Specifies the target \pkg{storethat}
-SQLite database file.}
 
 \item{verbose}{a logical scalar vector. Should progression messages be printed?
 Defaults to TRUE.}
@@ -43,23 +43,23 @@ Retrieve equity historical book data previously stored in a
 \examples{
 \dontrun{
 
-    storethat_equity_books(book = 'key stats',
+    storethat_KS <- storethat_equity_books(book = 'key stats',
       tickers = c("BP/ LN Equity", "WEIR LN Equity"),
       start = "2010-01-01", end = as.character(Sys.Date()))
 
-    storethat_equity_books(book = 'income statement',
+    storethat_PL <- storethat_equity_books(book = 'income statement',
       tickers = c("BP/ LN Equity", "WEIR LN Equity"),
       start = "2010-01-01", end = as.character(Sys.Date()))
 
-    storethat_equity_books(book = 'balance sheet',
+    storethat_BS <- storethat_equity_books(book = 'balance sheet',
       tickers = c("BP/ LN Equity", "WEIR LN Equity"),
       start = "2010-01-01", end = as.character(Sys.Date()))
 
-    storethat_equity_books(book = 'cash flow statement',
+    storethat_CF <- storethat_equity_books(book = 'cash flow statement',
       tickers = c("BP/ LN Equity", "WEIR LN Equity"),
       start = "2010-01-01", end = as.character(Sys.Date()))
 
-    storethat_equity_books(book = 'ratios',
+    storethat_R <- storethat_equity_books(book = 'ratios',
       tickers = c("BP/ LN Equity", "WEIR LN Equity"),
       start = "2010-01-01", end = as.character(Sys.Date()))
 

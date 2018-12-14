@@ -2,9 +2,9 @@
 % Please edit documentation in R/functions.r
 \name{BBG_equity_market}
 \alias{BBG_equity_market}
-\title{Equity historical market data from Bloomberg}
+\title{Retrieves equity historical market data from Bloomberg.}
 \usage{
-BBG_equity_market(tickers, start, end, verbose = TRUE, ...)
+BBG_equity_market(tickers, start, end, verbose = T, ...)
 }
 \arguments{
 \item{tickers}{a chatacter vector. Specifies the equity Bloomberg tickers to query

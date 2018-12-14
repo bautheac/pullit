@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.r
 \name{futures_ticker}
 \alias{futures_ticker}
-\title{Bloomberg futures term structure ticker}
+\title{Constructs Bloomberg futures term structure tickers.}
 \usage{
 futures_ticker(active_contract_ticker = "C A Comdty", TS_position = 1L,
   roll_type = "A", roll_days = 0L, roll_months = 0L,

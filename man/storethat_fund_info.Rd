@@ -2,16 +2,17 @@
 % Please edit documentation in R/functions.r
 \name{storethat_fund_info}
 \alias{storethat_fund_info}
-\title{Fund qualitative information from a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
-  SQLite database}
+\title{Retrieves fund qualitative information from a
+  \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
+  SQLite database.}
 \usage{
-storethat_fund_info(tickers, file = NULL)
+storethat_fund_info(file = NULL, tickers)
 }
 \arguments{
+\item{file}{a scalar chatacter vector. Specifies the target \pkg{storethat} SQLite database file.}
+
 \item{tickers}{a chatacter vector. Specifies the futures active contract Bloomberg tickers to
 query data for.}
-
-\item{file}{a scalar chatacter vector. Specifies the target \pkg{storethat} SQLite database file.}
 }
 \value{
 An S4 object of class \linkS4class{FundInfo}.
@@ -27,8 +28,6 @@ Provided with a set of equity Bloomberg tickers retrieves qualitative informatio
     storethat_fund_info(tickers = c("SPY US Equity", "IVV US Equity"))
 
   }
-
-
 }
 \seealso{
 \itemize{

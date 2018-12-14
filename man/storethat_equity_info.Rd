@@ -2,8 +2,8 @@
 % Please edit documentation in R/functions.r
 \name{storethat_equity_info}
 \alias{storethat_equity_info}
-\title{Corporate qualitative information from a
-  \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database}
+\title{Retrieves Corporate qualitative information from a
+  \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database.}
 \usage{
 storethat_equity_info(tickers, file = NULL)
 }
@@ -23,10 +23,10 @@ Provided with a set of equity Bloomberg tickers retrieves qualitative informatio
 }
 \examples{
 \dontrun{
+
     storethat_equity_info(tickers = c("BP/ LN Equity", "WEIR LN Equity"))
+
   }
-
-
 }
 \seealso{
 \itemize{

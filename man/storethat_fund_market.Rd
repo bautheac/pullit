@@ -2,12 +2,15 @@
 % Please edit documentation in R/functions.r
 \name{storethat_fund_market}
 \alias{storethat_fund_market}
-\title{Fund historical market data from a
-  \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database}
+\title{Retrieves fund historical market data from a
+  \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database.}
 \usage{
-storethat_fund_market(tickers, start, end, file = NULL, verbose = TRUE)
+storethat_fund_market(file = NULL, tickers, start, end, verbose = T)
 }
 \arguments{
+\item{file}{a scalar chatacter vector. Specifies the target \pkg{storethat}
+SQLite database file.}
+
 \item{tickers}{a chatacter vector. Specifies the Bloomberg fund tickers to query
 data for.}
 
@@ -16,9 +19,6 @@ in the following format: 'yyyy-mm-dd'.}
 
 \item{end}{a scalar character vector. Specifies the end date for the query in the
 following format: 'yyyy-mm-dd'.}
-
-\item{file}{a scalar chatacter vector. Specifies the target \pkg{storethat}
-SQLite database file.}
 
 \item{verbose}{a logical scalar vector. Should progression messages be printed?
 Defaults to TRUE.}

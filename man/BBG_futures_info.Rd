@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.r
 \name{BBG_futures_info}
 \alias{BBG_futures_info}
-\title{Futures series qualitative information from Bloomberg.}
+\title{Retrieves futures series qualitative information from Bloomberg.}
 \usage{
 BBG_futures_info(active_contract_tickers, ...)
 }
@@ -27,8 +27,6 @@ Provided with a set of futures active contract Bloomberg tickers
     BBG_futures_info(active_contract_tickers = c("W A Comdty", "KWA Comdty"))
 
   }
-
-
 }
 \seealso{
 \itemize{

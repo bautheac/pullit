@@ -2,10 +2,9 @@
 % Please edit documentation in R/functions.r
 \name{BBG_futures_CFTC}
 \alias{BBG_futures_CFTC}
-\title{Futures CFTC reports historical data from Bloomberg}
+\title{Retrieves futures CFTC reports historical data from Bloomberg.}
 \usage{
-BBG_futures_CFTC(active_contract_tickers, start, end, verbose = TRUE,
-  ...)
+BBG_futures_CFTC(active_contract_tickers, start, end, verbose = T, ...)
 }
 \arguments{
 \item{active_contract_tickers}{a chatacter vector. Specifies the futures active
@@ -34,8 +33,10 @@ Provided with a set of futures active contract Bloomberg tickers and a
 }
 \examples{
 \dontrun{
+
     BBG_futures_CFTC(active_contract_tickers = c("W A Comdty", "KWA Comdty"),
       start = "2000-01-01", end = as.character(Sys.Date()))
+
   }
 
 

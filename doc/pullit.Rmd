@@ -33,15 +33,16 @@ Equity data comes in three major categories in pullit, market, book and info. Fo
 #### market
 Retrieve market data from Bloomberg for Archer-Daniels-Midland (ADM US Equity), Kraft-Heinz (KHC US Equity) and XPO Logistics (XPO US Equity) with:
 ```{r `equity market BBG`, eval = FALSE}
-equity_tickers <- c("ADM US Equity", "KHC US Equity", "XPO US Equity")
-equity_market <- BBG_equity_market(equity_tickers, start, end, verbose = FALSE)
+tickers <- c("ADM US Equity", "KHC US Equity", "XPO US Equity")
+equity_market <- pull_equity_market(source = "Bloomberg", tickers, start, end, verbose = F)
 ```
 
 ```{r `equity market storethat`, echo = FALSE}
 library(storethat)
 
-equity_tickers <- c("ADM US Equity", "KHC US Equity", "XPO US Equity")
-equity_market <- storethat_equity_market(file = "../data-raw/storethat.sqlite", tickers = equity_tickers, start = start, end = end, verbose = FALSE)
+tickers <- c("ADM US Equity", "KHC US Equity", "XPO US Equity")
+equity_market <- pull_equity_market(source = "storethat", tickers, start, end, verbose = F,
+                                    file = "../data-raw/storethat.sqlite")
 ```
 
 #### books
@@ -51,23 +52,23 @@ Retrieve the corresponding data for the abovementioned corporations with:
 
 ##### balance sheet
 ```{r `equity balance sheet`, eval = FALSE}
-equity_BS <- BBG_equity_book(book = "balance sheet", equity_tickers, start, end, verbose = FALSE)
+equity_BS <- pull_equity_book(source = "Bloomberg", book = "balance sheet", tickers, start, end, verbose = F)
 ```
 ##### cash flow statement
 ```{r `equity cash flow statement`, eval = FALSE}
-equity_CF <- BBG_equity_book(book = "cash flow statement", equity_tickers, start, end, verbose = FALSE)
+equity_CF <- pull_equity_book(source = "Bloomberg", book = "cash flow statement", tickers, start, end, verbose = F)
 ```
 ##### income statement
 ```{r `equity income statement`, eval = FALSE}
-equity_IS <- BBG_equity_book(book = "income statement", equity_tickers, start, end, verbose = FALSE)
+equity_IS <- pull_equity_book(source = "Bloomberg", book = "income statement", tickers, start, end, verbose = F)
 ```
 ##### key stats
 ```{r `equity key stats`, eval = FALSE}
-equity_KS <- BBG_equity_book(book = "key stats", equity_tickers, start, end, verbose = FALSE)
+equity_KS <- pull_equity_book(source = "Bloomberg", book = "key stats", tickers, start, end, verbose = F)
 ```
 ##### ratios
 ```{r `equity ratios`, eval = FALSE}
-equity_R <- BBG_equity_book(book = "ratios", equity_tickers, start, end, verbose = FALSE)
+equity_R <- pull_equity_book(source = "Bloomberg", book = "ratios", tickers, start, end, verbose = F)
 ```
 
 #### info
@@ -75,7 +76,7 @@ equity_R <- BBG_equity_book(book = "ratios", equity_tickers, start, end, verbose
 
 Retrieve the corresponding data for the abovementioned corporations with:
 ```{r `equity info`, eval = FALSE}
-equity_info <- BBG_equity_info(equity_tickers, verbose = FALSE)
+equity_info <- pull_equity_info(source = "Bloomberg", tickers, verbose = F)
 ```
 
 
@@ -85,21 +86,22 @@ Fund data only comes in two categories, market and info. For a given fund market
 #### market
 Retrieve market data from Bloomberg for the SPDR S&P 500 ETF Trust (SPY US Equity), the SPDR Gold Shares investment fund (GLD US Equity) and the iShares MSCI Emerging Markets ETF (EEM US Equity) with:
 ```{r `fund market BBG`, eval = FALSE}
-fund_tickers <- c("SPY US Equity", "GLD US Equity", "EEM US Equity")
+tickers <- c("SPY US Equity", "GLD US Equity", "EEM US Equity")
 
-fund_market <- BBG_fund_market(fund_tickers, start, end, verbose = FALSE)
+fund_market <- pull_fund_market(source = "Bloomberg", tickers, start, end, verbose = F)
 ```
 
 ```{r `fund market storethat`, echo = FALSE}
-fund_tickers <- c("SPY US Equity", "GLD US Equity", "EEM US Equity")
+tickers <- c("SPY US Equity", "GLD US Equity", "EEM US Equity")
 
-fund_market <- storethat_fund_market(file = "../data-raw/storethat.sqlite", tickers = fund_tickers, start = start, end = end, verbose = FALSE)
+fund_market <- pull_fund_market(source = "storethat", tickers, start, end, verbose = F, 
+                                file = "../data-raw/storethat.sqlite")
 ```
 
 #### info
 Retrieve the corresponding qualitative data for the abovementioned funds with:
 ```{r `fund info`, eval = FALSE}
-fund_info <- BBG_fund_info(fund_tickers, verbose = FALSE)
+fund_info <- pull_fund_info(source = "Bloomberg", tickers, verbose = F)
 ```
 
 
@@ -112,24 +114,26 @@ pullit helps retrieving both term structure as well as aggregated market data fo
 ##### term structure
 Retrieve market data from Bloomberg for the five first term structure contracts on the Corn - #2-yellow (C A Comdty), Eurodollar (EDA Comdty) and S&P500 - e-mini (ESA Index) futures series where the futures chains are constructed by rolling on liquidity (with active contract: "A") with no roll adjustment (none: "N") using:
 ```{r `futures term structure BBG`, eval = FALSE}
-futures_tickers <- c("C A Comdty", "EDA Comdty", "ESA Index")
+tickers <- c("C A Comdty", "EDA Comdty", "ESA Index")
 
-futures_TS <- BBG_futures_market(type = "term structure", active_contract_tickers = futures_tickers, 
+futures_TS <- pull_futures_market(source = "Bloomberg", type = "term structure", active_contract_tickers = tickers, 
                                  start, end, TS_positions = 1L:5L, roll_type = "A", roll_days = 0L, 
-                                 roll_months = 0L, roll_adjustment = "N", verbose = FALSE)
+                                 roll_months = 0L, roll_adjustment = "N", verbose = F)
 ```
 
 ```{r `futures term structure storethat`, echo = FALSE, warning = FALSE}
-futures_tickers <- c("C A Comdty", "EDA Comdty", "ESA Index")
+tickers <- c("C A Comdty", "EDA Comdty", "ESA Index")
 
-futures_TS <- storethat_futures_market(file = "../data-raw/storethat.sqlite", type = "term structure", active_contract_tickers = futures_tickers, start, end, TS_positions = 1L:5L, roll_type = "A", roll_days = 0L, roll_months = 0L, roll_adjustment = "N", verbose = FALSE)
+futures_TS <- pull_futures_market(source = "storethat", type = "term structure", active_contract_tickers = tickers, 
+                                  start, end, TS_positions = 1L:5L, roll_type = "A", roll_days = 0L, roll_months = 0L, 
+                                  roll_adjustment = "N", verbose = F, file = "../data-raw/storethat.sqlite")
 ```
 
 ##### aggregate
 Retrieve the corresponding aggregated futures market data with:
 ```{r `futures aggregated`, eval = FALSE}
-futures_agg <- BBG_futures_market(type = "aggregate", active_contract_tickers = futures_tickers,
-                                  start, end, verbose = FALSE)
+futures_agg <- pull_futures_market(source = "Bloomberg", type = "aggregate", active_contract_tickers = tickers,
+                                  start, end, verbose = F)
 ```
 
 #### CFTC
@@ -137,7 +141,8 @@ pullit helps retrieving CFTC futures market position data from Bloomberg. The Co
 
 Retrieve the corresponding futures market position data with:
 ```{r `futures CFTC`, eval = FALSE}
-futures_CFTC <- BBG_futures_CFTC(active_contract_tickers = futures_tickers, start, end, verbose = FALSE)
+futures_CFTC <- pull_futures_CFTC(source = "Bloomberg", active_contract_tickers = futures_tickers, 
+                                  start, end, verbose = F)
 ```
 
 
@@ -146,7 +151,7 @@ futures_CFTC <- BBG_futures_CFTC(active_contract_tickers = futures_tickers, star
 
 Retrieve the corresponding data for the abovementioned futures series with:
 ```{r `futures info`, eval = FALSE}
-futures_info <- BBG_futures_info(futures_tickers, verbose = FALSE)
+futures_info <- pull_futures_info(source = "Bloomberg", tickers, verbose = F)
 ```
 
 
@@ -189,24 +194,23 @@ library(storethat)
 
 db_create()
 
-db_store(object = futures_TS, file = "~/storethat.sqlite", verbose = FALSE)
-db_store(object = fund_market, file = "~/storethat.sqlite", verbose = FALSE)
+db_store(object = futures_TS, file = "~/storethat.sqlite", verbose = F)
+db_store(object = fund_market, file = "~/storethat.sqlite", verbose = F)
 ```
 
 Every function above has an equivalent for retrieving data from a storethat database that can be accessed by swapping the 'BBG' prefix for 'storethat'; i.e. 'BBG_futures_market' becomes 'storethat_futures_market'. Function parameters are identical for both data sources and the returned objects have alike characteristics:
 
 ```{r `storethat retrieve`, eval = FALSE}
-futures_TS <- storethat_futures_market(
-  type = "term structure", active_contract_tickers = futures_tickers,start, end, 
-  TS_positions = 1L:5L, roll_type = "A", roll_days = 0L,  
-  roll_months = 0L, roll_adjustment = "N", verbose = FALSE)
+futures_TS <- pull_futures_market(source = "storethat", type = "term structure", active_contract_tickers = tickers,
+                                  start, end, TS_positions = 1L:5L, roll_type = "A", roll_days = 0L,
+                                  roll_months = 0L, roll_adjustment = "N", verbose = F)
 
-fund_market <- storethat_fund_market(fund_tickers, start, end, verbose = FALSE)
+fund_market <- pull_fund_market(source = "storethat", tickers, start, end, verbose = F)
 ```
 
 Updating a storethat database is equally straightforward with pullit. Update the whole equity content of the database with:  
 ```{r `storethat update all`, eval = FALSE}
-storethat_update(instrument = "equity", verbose = FALSE)
+storethat_update(instrument = "equity", verbose = F)
 ```
 
 More refined updates are also allowed:
@@ -223,13 +227,13 @@ Plot a futures series term structure dynamics with:
 ```{r `plot term structure`, fig.fullwidth = TRUE}
 library(plotit)
 
-plot_term_structure(object = futures_TS, ticker = "C A Comdty")
+plot(object = futures_TS, ticker = "C A Comdty")
 ```
 
 ### fund market
 Plot historical fund performance with:
 ```{r `plot performance`, fig.fullwidth = TRUE}
-plot_performance(object = fund_market, ticker = "GLD US Equity")
+plot(object = fund_market, ticker = "GLD US Equity")
 ```
   
   

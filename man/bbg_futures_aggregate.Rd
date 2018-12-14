@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.r
 \name{BBG_futures_aggregate}
 \alias{BBG_futures_aggregate}
-\title{Futures aggregate historical data from Bloomberg}
+\title{Retrieves futures aggregate historical data from Bloomberg.}
 \usage{
 BBG_futures_aggregate(active_contract_tickers, start, end, verbose, ...)
 }

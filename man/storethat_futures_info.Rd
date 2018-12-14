@@ -2,8 +2,8 @@
 % Please edit documentation in R/functions.r
 \name{storethat_futures_info}
 \alias{storethat_futures_info}
-\title{Futures series qualitative information from a
-\href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database}
+\title{Retrieves futures series qualitative information from a
+\href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database.}
 \usage{
 storethat_futures_info(active_contract_tickers, file = NULL)
 }
@@ -24,9 +24,10 @@ Provided with a set of futures active contract Bloomberg tickers retrieves
 }
 \examples{
 \dontrun{
-    storethat_futures_info(active_contract_tickers = c("W A Comdty", "KWA Comdty"))
-  }
 
+    storethat_futures_info(active_contract_tickers = c("W A Comdty", "KWA Comdty"))
+
+  }
 }
 \seealso{
 \itemize{

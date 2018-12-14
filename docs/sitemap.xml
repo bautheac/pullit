@@ -40,6 +40,12 @@
     <loc>https://bautheac.github.io/pullit/reference/BBG_futures_TS.html</loc>
   </url>
   <url>
+    <loc>https://bautheac.github.io/pullit/reference/BBG_index_info.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/BBG_index_market.html</loc>
+  </url>
+  <url>
     <loc>https://bautheac.github.io/pullit/reference/BBG_pull_historical_books.html</loc>
   </url>
   <url>
@@ -136,7 +142,46 @@
     <loc>https://bautheac.github.io/pullit/reference/get_tickers-methods.html</loc>
   </url>
   <url>
+    <loc>https://bautheac.github.io/pullit/reference/IndexHistorical-class.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/IndexInfo-class.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/IndexMarket-class.html</loc>
+  </url>
+  <url>
     <loc>https://bautheac.github.io/pullit/reference/pipe.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/pull_equity_book.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/pull_equity_info.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/pull_equity_market.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/pull_fund_info.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/pull_fund_market.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/pull_futures_CFTC.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/pull_futures_info.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/pull_futures_market.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/pull_index_info.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/pull_index_market.html</loc>
   </url>
   <url>
     <loc>https://bautheac.github.io/pullit/reference/show-methods.html</loc>
@@ -170,6 +215,12 @@
   </url>
   <url>
     <loc>https://bautheac.github.io/pullit/reference/storethat_futures_TS.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/storethat_index_info.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/storethat_index_market.html</loc>
   </url>
   <url>
     <loc>https://bautheac.github.io/pullit/reference/storethat_update.html</loc>

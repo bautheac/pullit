@@ -2,9 +2,9 @@
 % Please edit documentation in R/functions.r
 \name{storethat_futures_TS}
 \alias{storethat_futures_TS}
-\title{Futures term structure historical data from a
+\title{Retrieves futures term structure historical data from a
   \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
-  SQLite database}
+  SQLite database.}
 \usage{
 storethat_futures_TS(file, active_contract_tickers, start, end,
   TS_positions, roll_type, roll_days, roll_months, roll_adjustment,

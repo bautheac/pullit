@@ -2,11 +2,10 @@
 % Please edit documentation in R/functions.r
 \name{BBG_futures_market}
 \alias{BBG_futures_market}
-\title{Futures market historical data from Bloomberg}
+\title{Retrieves futures market historical data from Bloomberg.}
 \usage{
-BBG_futures_market(type, active_contract_tickers, start, end,
-  TS_positions = NULL, roll_type = NULL, roll_days = NULL,
-  roll_months = NULL, roll_adjustment = NULL, verbose = TRUE, ...)
+BBG_futures_market(type, active_contract_tickers, start, end, TS_positions,
+  roll_type, roll_days, roll_months, roll_adjustment, verbose, ...)
 }
 \arguments{
 \item{type}{a scalar character vector, 'term sructure' or 'aggregate'.

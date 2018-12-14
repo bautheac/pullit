@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.r
 \name{BBG_fund_info}
 \alias{BBG_fund_info}
-\title{fund qualitative information from Bloomberg.}
+\title{Retrieves fund qualitative information from Bloomberg.}
 \usage{
 BBG_fund_info(tickers, ...)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.r
 \name{BBG_equity_info}
 \alias{BBG_equity_info}
-\title{Equity qualitative information from Bloomberg.}
+\title{Retrieves corporate qualitative information from Bloomberg.}
 \usage{
 BBG_equity_info(tickers, ...)
 }

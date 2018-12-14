@@ -2,11 +2,10 @@
 % Please edit documentation in R/functions.r
 \name{BBG_futures_TS}
 \alias{BBG_futures_TS}
-\title{Futures term structure historical data from Bloomberg}
+\title{Retrieves futures term structure historical data from Bloomberg.}
 \usage{
 BBG_futures_TS(active_contract_tickers, start, end, TS_positions,
-  roll_type, roll_days, roll_months, roll_adjustment, verbose = TRUE,
-  ...)
+  roll_type, roll_days, roll_months, roll_adjustment, verbose = T, ...)
 }
 \arguments{
 \item{active_contract_tickers}{a chatacter vector. Specifies the futures active

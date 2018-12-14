@@ -2,9 +2,9 @@
 % Please edit documentation in R/functions.r
 \name{BBG_fund_market}
 \alias{BBG_fund_market}
-\title{Fund historical market data from Bloomberg}
+\title{Retrieves fund historical market data from Bloomberg.}
 \usage{
-BBG_fund_market(tickers, start, end, verbose = TRUE, ...)
+BBG_fund_market(tickers, start, end, verbose = T, ...)
 }
 \arguments{
 \item{tickers}{a chatacter vector. Specifies the Bloomberg fund tickers to
@@ -32,8 +32,10 @@ Provided with a set of Bloomberg fund tickers and a time period,
 }
 \examples{
 \dontrun{
+
     BBG_fund_market(tickers = c("SPY US Equity", "IVV US Equity"),
       start = "2000-01-01", end = as.character(Sys.Date()))
+
   }
 
 

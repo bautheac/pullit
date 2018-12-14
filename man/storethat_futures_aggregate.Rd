@@ -2,8 +2,8 @@
 % Please edit documentation in R/functions.r
 \name{storethat_futures_aggregate}
 \alias{storethat_futures_aggregate}
-\title{Futures aggregate historical data from from a
-  \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database}
+\title{Retrieves futures aggregate historical data from from a
+  \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database.}
 \usage{
 storethat_futures_aggregate(file, active_contract_tickers, start, end,
   verbose)

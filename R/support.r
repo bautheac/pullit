@@ -66,22 +66,6 @@ BBG_pull_historical_books <- function(tickers, field, start, end, ...){
 
 
 
-# graphics ####
-bulletize <- function(line, bullet = "*") paste0(bullet, " ", line)
-
-done <- function(..., .envir = parent.frame()) {
-  out <- glue::glue(..., .envir = .envir)
-  cat(bulletize(out, bullet = done_bullet()), "\n", sep = "")
-}
-
-done_bullet <- function() crayon::green(clisymbols::symbol$tick)
-
-
-
-
-
-
-
 # storethat ####
 
 ## update ####
@@ -301,6 +285,38 @@ storethat_update_fund_market <- function(names, ...){
 
 
 
+### index ####
+storethat_update_index <- function(book, names, ...){
+
+  switch(book,
+
+         market = storethat_update_index_market(names, ...),
+
+         info = storethat_update_info(instrument = "index", names, ...),
+
+         all = {
+
+           storethat_update_index_market(names, ...)
+
+           storethat_update_info(instrument = "index", names, ...)
+
+         }
+  )
+}
+
+#### market ####
+storethat_update_index_market <- function(names, ...){
+
+
+  data <- lapply(names$ticker, function(x)
+    db_snapshot(file = list(...)[["file"]], instrument = "index", book = "market", name = x)
+  ) %>% data.table::rbindlist()
+
+
+  storethat_update_market(instrument = "index", tickers = unique(data$ticker), start = min(data$end), ...)
+}
+
+
 
 
 ### global ####
@@ -443,11 +459,15 @@ db_snapshot <- function(file = NULL, instrument, book = "all", name = "all"){
                                                dplyr::select(-instrument), dates, con) %>%
                    dplyr::left_join(dplyr::select(names, ticker_id = id, ticker),
                                     by = "ticker_id") %>%
+                   dplyr::select(ticker, field, start, end),
+
+                 index = db_snapshot_index(book, dplyr::filter(names, instrument == !! instrument) %>%
+                                             dplyr::select(-instrument), dates, con) %>%
+                   dplyr::left_join(dplyr::select(names, ticker_id = id, ticker),
+                                    by = "ticker_id") %>%
                    dplyr::select(ticker, field, start, end)
 
   )
-
-
   RSQLite::dbDisconnect(con); data
 }
 
@@ -500,9 +520,6 @@ db_snapshot_equity_book <- function(book, names, dates, con){
     dplyr::ungroup() %>% dplyr::select(ticker_id, field, start, end)
 
 }
-
-
-
 
 
 
@@ -699,6 +716,26 @@ db_snapshot_fund <- function(book, names, dates, con){
 
 
 
+## index ####
+
+db_snapshot_index <- function(book, names, dates, con){
+
+  switch(book,
+
+         market = db_snapshot_market(instrument = "index", names, dates, con),
+
+         info = db_snapshot_info(instrument = "index", names, dates, con),
+
+         all = rbind(db_snapshot_market(instrument = "index", names, dates, con),
+                     db_snapshot_info(instrument = "index", names, dates, con))
+
+  )
+
+}
+
+
+
+
 ## global ####
 
 ### historical ####
@@ -807,367 +844,6 @@ db_snapshot_info <- function(instrument, names, dates, con){
     dplyr::select(ticker_id, field, start, end = date)
 
 }
-
-
-
-# store ####
-
-setGeneric("db_store", function(object, file = NULL, verbose = TRUE) standardGeneric("db_store"))
-
-## futures ####
-
-### term structure ####
-setMethod("db_store", signature = c(object = "FuturesTS"), function(object, file, verbose){
-
-  if (is.null(file)) file <- file.choose()
-  else
-    if (! all(rlang::is_scalar_character(file), stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
-      stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite database file (ie. ~/storethat.sqlite)")
-
-  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
-
-  if (! all_fields_exist(fields = object@fields, con = con)) update_fields(fields = object@fields, con = con)
-  fields <- "SELECT id, instrument, book, type, symbol FROM support_fields WHERE instrument = 'futures' AND book = 'market' AND type = 'term structure';"
-  fields <- RSQLite::dbGetQuery(con = con, fields)
-
-  if (! all_tickers_exist(tickers = unique(object@active_contract_tickers$ticker),
-                          table_tickers = "tickers_futures", con))
-    update_tickers(tickers = unique(object@active_contract_tickers$ticker), table_tickers = "tickers_futures", con)
-  active_contract_tickers <- RSQLite::dbReadTable(con, "tickers_futures")
-
-  if (! all_tickers_exist(tickers = unique(object@term_structure_tickers$ticker),
-                          table_tickers = "tickers_support_futures_ts", con))
-    update_term_structure_tickers(tickers = unique(object@term_structure_tickers), con)
-  term_structure_tickers <- RSQLite::dbReadTable(con, "tickers_support_futures_ts")
-
-  dates <- paste0("SELECT * FROM support_dates WHERE date >= '", min(object@data$date), "' AND date <= '",  max(object@data$date), "';")
-  dates <- dplyr::semi_join(RSQLite::dbGetQuery(con, dates) %>% dplyr::mutate(date = as.Date(date)),
-                            dplyr::distinct(object@data, date), by = "date") %>%
-    dplyr::mutate(date = as.Date(date))
-
-  for (i in unique(dates$period)){
-    update_data(data = dplyr::semi_join(object@data, dplyr::filter(dates, period == i), by = "date"),
-                table_data = paste0("data_futures_ts_", i), tickers = term_structure_tickers, fields = fields,
-                dates = dplyr::filter(dates, period == i), con = con)
-    if (verbose) done(paste0("Period ", data.table::first(dplyr::filter(dates, period == i)$date), "/",
-                             data.table::last(dplyr::filter(dates, period == i)$date), " done."))
-  }
-
-  RSQLite::dbDisconnect(con)
-})
-
-
-### aggregate ####
-setMethod("db_store", signature = c(object = "FuturesAggregate"), function(object, file, verbose){
-
-  if (is.null(file)) file <- file.choose()
-  else
-    if (! all(rlang::is_scalar_character(file), stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
-      stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite database file (ie. ~/storethat.sqlite)")
-
-  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
-
-  if (! all_fields_exist(fields = object@fields, con = con)) update_fields(fields = object@fields, con = con)
-  fields <- "SELECT * FROM support_fields WHERE instrument = 'futures' AND book = 'market' AND type = 'aggregate';"
-  fields <- RSQLite::dbGetQuery(con = con, fields)
-
-  if (!all_tickers_exist(tickers = unique(object@active_contract_tickers$ticker),
-                         table_tickers = "tickers_futures", con))
-    update_tickers(tickers = unique(object@active_contract_tickers$ticker), table_tickers = "tickers_futures", con)
-  active_contract_tickers <- RSQLite::dbReadTable(con, "tickers_futures")
-
-  dates <- paste0("SELECT * FROM support_dates WHERE date >= '", min(object@data$date), "' AND date <= '",  max(object@data$date), "';")
-  dates <- dplyr::semi_join(RSQLite::dbGetQuery(con, dates) %>% dplyr::mutate(date = as.Date(date)),
-                            dplyr::distinct(object@data, date), by = "date") %>%
-    dplyr::mutate(date = as.Date(date))
-
-  for (i in unique(dates$period)){
-    update_data(data = dplyr::semi_join(object@data, dplyr::filter(dates, period == i), by = "date"),
-                table_data = paste0("data_futures_aggregate_", i), tickers = active_contract_tickers, fields = fields,
-                dates = dplyr::filter(dates, period == i), con = con)
-    if (verbose) done(paste0("Period ", data.table::first(dplyr::filter(dates, period == i)$date), "/",
-                             data.table::last(dplyr::filter(dates, period == i)$date), " done."))
-
-  }
-
-  RSQLite::dbDisconnect(con)
-})
-
-
-
-### CFTC ####
-setMethod("db_store", signature = c(object = "FuturesCFTC"), function(object, file, verbose){
-
-  if (is.null(file)) file <- file.choose()
-  else
-    if (! all(rlang::is_scalar_character(file), stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
-      stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite database file (ie. ~/storethat.sqlite)")
-
-  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
-
-  fields <- "SELECT * FROM support_fields WHERE instrument = 'futures' AND book = 'CFTC';"
-  fields <- RSQLite::dbGetQuery(con = con, fields)
-
-  if (!all_tickers_exist(tickers = unique(object@active_contract_tickers$ticker),
-                         table_tickers = "tickers_futures", con))
-    update_tickers(tickers = unique(object@active_contract_tickers$ticker), table_tickers = "tickers_futures", con)
-  active_contract_tickers <- RSQLite::dbReadTable(con, "tickers_futures")
-
-  if (!all_tickers_exist(tickers = unique(object@cftc_tickers$ticker),
-                         table_tickers = "tickers_support_futures_cftc", con))
-    update_CFTC_tickers(tickers = object@cftc_tickers, con)
-  cftc_tickers <- RSQLite::dbReadTable(con, "tickers_support_futures_cftc")
-
-  dates <- paste0("SELECT * FROM support_dates WHERE date >= '", min(object@data$date), "' AND date <= '",  max(object@data$date), "';")
-  dates <- dplyr::semi_join(RSQLite::dbGetQuery(con, dates) %>% dplyr::mutate(date = as.Date(date)),
-                            dplyr::distinct(object@data, date), by = "date") %>%
-    dplyr::mutate(date = as.Date(date))
-
-  for (i in unique(dates$period)){
-    update_data_CFTC(data = dplyr::semi_join(object@data, dplyr::filter(dates, period == i), by = "date"),
-                     table_data = paste0("data_futures_cftc_", i), tickers = cftc_tickers,
-                     dates = dplyr::filter(dates, period == i), con = con)
-    if (verbose) done(paste0("Period ", data.table::first(dplyr::filter(dates, period == i)$date), "/",
-                             data.table::last(dplyr::filter(dates, period == i)$date), " done."))
-  }
-
-  RSQLite::dbDisconnect(con)
-})
-
-
-
-### info ####
-setMethod("db_store", signature = c(object = "FuturesInfo"), function(object, file){
-
-  if (is.null(file)) file <- file.choose()
-  else
-    if (! all(rlang::is_scalar_character(file), stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
-      stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite database file (ie. ~/storethat.sqlite)")
-
-  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
-
-  if (! all_fields_exist(fields = object@fields, con = con)) update_fields(fields = object@fields, con = con)
-  fields <- "SELECT * FROM support_fields WHERE instrument = 'futures' AND book = 'info';"
-  fields <- RSQLite::dbGetQuery(con = con, fields)
-
-  if (!all_tickers_exist(tickers = unique(object@info$ticker),
-                         table_tickers = "tickers_futures", con))
-    update_tickers(tickers = unique(object@info$ticker), table_tickers = "tickers_futures", con)
-  tickers <- RSQLite::dbReadTable(con, "tickers_futures")
-
-  query <- paste0("DELETE FROM data_futures_info WHERE ticker_id IN (",
-                  paste(dplyr::filter(tickers, ticker %in% unique(object@info$ticker))$id, collapse = ", "),
-                  ");")
-  RSQLite::dbExecute(con = con, query)
-
-  date_id <- paste0("SELECT id from support_dates WHERE date = '", as.character(Sys.Date()), "';")
-  date_id <- RSQLite::dbGetQuery(con, date_id) %>% purrr::flatten_chr()
-
-  query <- dplyr::left_join(object@info, tickers, by = "ticker") %>% dplyr::select(ticker_id = id, field, value) %>%
-    dplyr::mutate(field = as.character(field)) %>%
-    dplyr::left_join(fields, by = c("field" = "symbol")) %>% dplyr::select(ticker_id, field_id = id, value) %>%
-    dplyr::mutate(date_id = !! date_id) %>% dplyr::select(ticker_id, field_id, date_id, value)
-
-  RSQLite::dbWriteTable(con = con, "data_futures_info", query, row.names = FALSE, overwrite = FALSE, append = TRUE)
-  RSQLite::dbDisconnect(con)
-})
-
-
-
-
-## equity ####
-
-### market ####
-setMethod("db_store", signature = c(object = "EquityMarket"), function(object, file, verbose){
-
-  if (is.null(file)) file <- file.choose()
-  else
-    if (! all(rlang::is_scalar_character(file), stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
-      stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite database file (ie. ~/storethat.sqlite)")
-
-  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
-
-  if (! all_fields_exist(fields = object@fields, con = con)) update_fields(fields = object@fields, con = con)
-  fields <- "SELECT * FROM support_fields WHERE instrument = 'equity' AND book = 'market';"
-  fields <- RSQLite::dbGetQuery(con = con, fields)
-
-  if (!all_tickers_exist(tickers = unique(object@tickers$ticker),
-                         table_tickers = "tickers_equity", con = con))
-    update_tickers(tickers = unique(object@tickers$ticker), table_tickers = "tickers_equity", con = con)
-  tickers <- RSQLite::dbReadTable(con, "tickers_equity")
-
-
-  dates <- paste0("SELECT * FROM support_dates WHERE date >= '", min(object@data$date), "' AND date <= '",  max(object@data$date), "';")
-  dates <- dplyr::semi_join(RSQLite::dbGetQuery(con, dates) %>% dplyr::mutate(date = as.Date(date)),
-                            dplyr::distinct(object@data, date), by = "date") %>%
-    dplyr::mutate(date = as.Date(date))
-
-  for (i in unique(dates$period)){
-    update_data(data = dplyr::semi_join(object@data, dplyr::filter(dates, period == i), by = "date"),
-                table_data = paste0("data_equity_market_", i), tickers = tickers, fields = fields,
-                dates = dplyr::filter(dates, period == i), con = con)
-    if (verbose) done(paste0("Period ", data.table::first(dplyr::filter(dates, period == i)$date), "/",
-                             data.table::last(dplyr::filter(dates, period == i)$date), " done."))
-  }
-
-  RSQLite::dbDisconnect(con)
-})
-
-
-### book ####
-setMethod("db_store", signature = c(object = "EquityBook"), function(object, file, verbose){
-
-  if (is.null(file)) file <- file.choose()
-  else
-    if (! all(rlang::is_scalar_character(file), stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
-      stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite database file (ie. ~/storethat.sqlite)")
-
-  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
-
-  book <- dplyr::case_when(class(object) == "EquityKS" ~ "key stats", class(object) == "EquityBS" ~ "balance sheet",
-                           class(object) == "EquityCF" ~ "cash flow statement", class(object) == "EquityIS" ~ "income statement",
-                           class(object) == "EquityRatios" ~ "ratios")
-
-  if (! all_fields_exist(fields = object@fields, con = con)) update_fields(fields = object@fields, con = con)
-  fields <- paste0("SELECT * FROM support_fields WHERE instrument = 'equity' AND book = '", book, "';")
-  fields <- RSQLite::dbGetQuery(con = con, fields)
-
-  if (!all_tickers_exist(tickers = unique(object@tickers$ticker), table_tickers = "tickers_equity", con = con))
-    update_tickers(tickers = unique(object@tickers$ticker), table_tickers = "tickers_equity", con = con)
-  tickers <- RSQLite::dbReadTable(con, "tickers_equity")
-
-  dates <- paste0("SELECT * FROM support_dates WHERE date >= '", min(object@data$date), "' AND date <= '",  max(object@data$date), "';")
-  dates <- dplyr::semi_join(RSQLite::dbGetQuery(con, dates) %>% dplyr::mutate(date = as.Date(date)),
-                            dplyr::distinct(object@data, date), by = "date") %>%
-    dplyr::mutate(date = as.Date(date))
-
-  for (i in unique(dates$period)){
-    update_data(data = dplyr::semi_join(object@data, dplyr::filter(dates, period == i), by = "date"),
-                table_data = paste0("data_equity_book_", i), tickers = tickers, fields = fields,
-                dates = dplyr::filter(dates, period == i), con = con)
-    if (verbose) done(paste0("Period ", data.table::first(dplyr::filter(dates, period == i)$date), "/",
-                             data.table::last(dplyr::filter(dates, period == i)$date), " done."))
-  }
-
-  RSQLite::dbDisconnect(con)
-})
-
-
-### info ####
-setMethod("db_store", signature = c(object = "EquityInfo"), function(object, file){
-
-  if (is.null(file)) file <- file.choose()
-  else
-    if (! all(rlang::is_scalar_character(file), stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
-      stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite database file (ie. ~/storethat.sqlite)")
-
-  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
-
-  if (! all_fields_exist(fields = object@fields, con = con)) update_fields(fields = object@fields, con = con)
-  fields <- "SELECT * FROM support_fields WHERE instrument = 'equity' AND book = 'info';"
-  fields <- RSQLite::dbGetQuery(con = con, fields)
-
-  if (!all_tickers_exist(tickers = unique(object@info$ticker), table_tickers = "tickers_equity", con))
-    update_tickers(tickers = unique(object@info$ticker), table_tickers = "tickers_equity", con)
-  tickers <- RSQLite::dbReadTable(con, "tickers_equity")
-
-  date_id <- paste0("SELECT id from support_dates WHERE date = '", as.character(Sys.Date()), "';")
-  date_id <- RSQLite::dbGetQuery(con, date_id) %>% purrr::flatten_chr()
-
-  query <- paste0("DELETE FROM data_equity_info WHERE ticker_id IN (",
-                  paste(dplyr::filter(tickers, ticker %in% unique(object@info$ticker))$id, collapse = ", "),
-                  ");")
-  RSQLite::dbExecute(con = con, query)
-
-  query <- dplyr::left_join(object@info, tickers, by = "ticker") %>% dplyr::select(ticker_id = id, field, value) %>%
-    dplyr::mutate(field = as.character(field)) %>%
-    dplyr::left_join(fields, by = c("field" = "symbol")) %>% dplyr::select(ticker_id, field_id = id, value) %>%
-    dplyr::mutate(date_id = !! date_id) %>% dplyr::select(ticker_id, field_id, date_id, value)
-
-  RSQLite::dbWriteTable(con = con, "data_equity_info", query, row.names = FALSE, overwrite = FALSE, append = TRUE)
-  RSQLite::dbDisconnect(con)
-})
-
-
-
-## fund ####
-
-### market ####
-setMethod("db_store", signature = c(object = "FundMarket"), function(object, file, verbose){
-
-  if (is.null(file)) file <- file.choose()
-  else
-    if (! all(rlang::is_scalar_character(file), stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
-      stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite database file (ie. ~/storethat.sqlite)")
-
-  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
-
-  if (! all_fields_exist(fields = object@fields, con = con)) update_fields(fields = object@fields, con = con)
-  fields <- "SELECT * FROM support_fields WHERE instrument = 'fund' AND book = 'market';"
-  fields <- RSQLite::dbGetQuery(con = con, fields)
-
-
-  if (!all_tickers_exist(tickers = unique(object@tickers$ticker), table_tickers = "tickers_fund", con = con))
-    update_tickers(tickers = unique(object@tickers$ticker), table_tickers = "tickers_fund", con = con)
-  tickers <- RSQLite::dbReadTable(con, "tickers_fund")
-
-
-  dates <- paste0("SELECT * FROM support_dates WHERE date >= '", min(object@data$date), "' AND date <= '",  max(object@data$date), "';")
-  dates <- dplyr::semi_join(RSQLite::dbGetQuery(con, dates) %>% dplyr::mutate(date = as.Date(date)),
-                            dplyr::distinct(object@data, date), by = "date") %>%
-    dplyr::mutate(date = as.Date(date))
-
-  for (i in unique(dates$period)){
-    update_data(data = dplyr::semi_join(object@data, dplyr::filter(dates, period == i), by = "date"),
-                table_data = paste0("data_fund_market_", i), tickers = tickers, fields = fields,
-                dates = dplyr::filter(dates, period == i), con = con)
-    if (verbose) done(paste0("Period ", data.table::first(dplyr::filter(dates, period == i)$date), "/",
-                             data.table::last(dplyr::filter(dates, period == i)$date), " done."))
-  }
-
-  RSQLite::dbDisconnect(con)
-})
-
-### info ####
-setMethod("db_store", signature = c(object = "FundInfo"), function(object, file){
-
-  if (is.null(file)) file <- file.choose()
-  else
-    if (! all(rlang::is_scalar_character(file), stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
-      stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite database file (ie. ~/storethat.sqlite)")
-
-  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
-
-  if (! all_fields_exist(fields = object@fields, con = con)) update_fields(fields = object@fields, con = con)
-  fields <- "SELECT * FROM support_fields WHERE instrument = 'fund' AND book = 'info';"
-  fields <- RSQLite::dbGetQuery(con = con, fields)
-
-
-  if (!all_tickers_exist(tickers = unique(object@info$ticker), table_tickers = "tickers_fund", con))
-    update_tickers(tickers = unique(object@info$ticker), table_tickers = "tickers_fund", con)
-  tickers <- RSQLite::dbReadTable(con, "tickers_fund")
-
-
-  date_id <- paste0("SELECT id from support_dates WHERE date = '", as.character(Sys.Date()), "';")
-  date_id <- RSQLite::dbGetQuery(con, date_id) %>% purrr::flatten_chr()
-
-  query <- paste0("DELETE FROM data_fund_info WHERE ticker_id IN (",
-                  paste(dplyr::filter(tickers, ticker %in% unique(object@info$ticker))$id, collapse = ", "),
-                  ");")
-  RSQLite::dbExecute(con = con, query)
-
-  query <- dplyr::left_join(object@info, tickers, by = "ticker") %>% dplyr::select(ticker_id = id, field, value) %>%
-    dplyr::mutate(field = as.character(field)) %>%
-    dplyr::left_join(fields, by = c("field" = "symbol")) %>% dplyr::select(ticker_id, field_id = id, value) %>%
-    dplyr::mutate(date_id = !! date_id) %>% dplyr::select(ticker_id, field_id, date_id, value)
-
-  RSQLite::dbWriteTable(con = con, "data_fund_info", query, row.names = FALSE, overwrite = FALSE, append = TRUE)
-  RSQLite::dbDisconnect(con)
-})
-
-
-
-
 
 
 
@@ -1377,3 +1053,18 @@ update_data_cftc <- function(data, table_data, tickers, dates, con){
 
 }
 
+
+
+
+
+
+
+# graphics ####
+bulletize <- function(line, bullet = "*") paste0(bullet, " ", line)
+
+done <- function(..., .envir = parent.frame()) {
+  out <- glue::glue(..., .envir = .envir)
+  cat(bulletize(out, bullet = done_bullet()), "\n", sep = "")
+}
+
+done_bullet <- function() crayon::green(clisymbols::symbol$tick)

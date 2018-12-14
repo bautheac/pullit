@@ -3,6 +3,8 @@
 \docType{methods}
 \name{get_tickers}
 \alias{get_tickers}
+\alias{get_tickers,DataHistorical-method}
+\alias{get_tickers,DataHistorical}
 \alias{get_tickers,EquityHistorical-method}
 \alias{get_tickers,EquityHistorical}
 \alias{get_tickers,FundHistorical-method}
@@ -11,6 +13,8 @@
   \href{https://github.com/bautheac/pullit/}{\pkg{pullit}}.}
 \usage{
 get_tickers(object)
+
+\S4method{get_tickers}{DataHistorical}(object)
 
 \S4method{get_tickers}{EquityHistorical}(object)
 

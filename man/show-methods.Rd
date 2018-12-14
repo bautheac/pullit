@@ -14,6 +14,8 @@
 \alias{show,FuturesTS}
 \alias{show,FuturesCFTC-method}
 \alias{show,FuturesCFTC}
+\alias{show,IndexHistorical-method}
+\alias{show,IndexHistorical}
 \title{Show method for pullit S4 objects.}
 \usage{
 \S4method{show}{DataInfo}(object)
@@ -27,6 +29,8 @@
 \S4method{show}{FuturesTS}(object)
 
 \S4method{show}{FuturesCFTC}(object)
+
+\S4method{show}{IndexHistorical}(object)
 }
 \arguments{
 \item{object}{an S4 object from \href{https://bautheac.github.io/pullit/}{\pkg{pullit}}

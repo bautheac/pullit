@@ -2,9 +2,9 @@
 % Please edit documentation in R/functions.r
 \name{BBG_equity_book}
 \alias{BBG_equity_book}
-\title{Equity historical book data from Bloomberg}
+\title{Retrieves equity historical book data from Bloomberg.}
 \usage{
-BBG_equity_book(book, tickers, start, end, verbose = TRUE, ...)
+BBG_equity_book(book, tickers, start, end, verbose = T, ...)
 }
 \arguments{
 \item{book}{a scalar chatacter vector, 'key stats', 'income statement', 'balance sheet',
@@ -38,23 +38,23 @@ Retrieves equity historical book data from Bloomberg. Books include
 \examples{
 \dontrun{
 
-    BBG_equity_books(book = 'key stats',
+    BBG_KS <- BBG_equity_books(book = 'key stats',
       tickers = c("BP/ LN Equity", "WEIR LN Equity"),
       start = "2000-01-01", end = as.character(Sys.Date()))
 
-    BBG_equity_books(book = 'income statement',
+    BBG_PL<- BBG_equity_books(book = 'income statement',
       tickers = c("BP/ LN Equity", "WEIR LN Equity"),
       start = "2000-01-01", end = as.character(Sys.Date()))
 
-    BBG_equity_books(book = 'balance sheet',
+    BBG_BS <- BBG_equity_books(book = 'balance sheet',
       tickers = c("BP/ LN Equity", "WEIR LN Equity"),
       start = "2000-01-01", end = as.character(Sys.Date()))
 
-    BBG_equity_books(book = 'cash flow statement',
+    BBG_CF <- BBG_equity_books(book = 'cash flow statement',
       tickers = c("BP/ LN Equity", "WEIR LN Equity"),
       start = "2000-01-01", end = as.character(Sys.Date()))
 
-    BBG_equity_books(book = 'ratios',
+    BBG_R <- BBG_equity_books(book = 'ratios',
       tickers = c("BP/ LN Equity", "WEIR LN Equity"),
       start = "2000-01-01", end = as.character(Sys.Date()))
 

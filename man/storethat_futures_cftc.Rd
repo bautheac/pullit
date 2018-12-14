@@ -2,11 +2,11 @@
 % Please edit documentation in R/functions.r
 \name{storethat_futures_CFTC}
 \alias{storethat_futures_CFTC}
-\title{Futures CFTC position historical data from from a
-  \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database}
+\title{Retrieves futures CFTC position historical data from from a
+  \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database.}
 \usage{
 storethat_futures_CFTC(active_contract_tickers, start, end, file = NULL,
-  verbose = TRUE)
+  verbose = T)
 }
 \arguments{
 \item{active_contract_tickers}{a chatacter vector. Specifies the futures active
@@ -38,6 +38,7 @@ Provided with a set of Bloomberg futures active contract tickers
 
     storethat_futures_CFTC(active_contract_tickers = c("W A Comdty", "KWA Comdty"),
       start = "2000-01-01", end = as.character(Sys.Date()))
+
   }
 
 
