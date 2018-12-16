@@ -155,6 +155,24 @@ futures_info <- pull_futures_info(source = "Bloomberg", tickers, verbose = F)
 ```
 
 
+### index
+Index data, similar to fund data, comes in two categories, market and info. For a given index market data records 
+historical time series values while info data records contemporaneous qualitative information that includes a wide range of index characteristics. See the 'fields' dataset in BBGsymbols for a detailed list of the Bloomberg datafields available.  
+
+#### market
+Retrieve market data from Bloomberg for the Société Générale CTA index (NEIXCTA Index) and the Barclay Hedge CTA index (BARCCTA Index) with:
+```{r `index market BBG`, eval = FALSE}
+tickers <- c("NEIXCTA Index", "BARCCTA Index")
+
+fund_market <- pull_index_market(source = "Bloomberg", tickers, start, end, verbose = F)
+```
+
+#### info
+Retrieve the corresponding qualitative data for the abovementioned funds with:
+```{r `index info`, eval = FALSE}
+fund_info <- pull_index_info(source = "Bloomberg", tickers, verbose = F)
+```
+
 
 ## accessors
 The functions above return objects that not only carry the retrieved financial data but also complementary information that can be accessed using the @ operator or more formaly using bespoke accessor methods. Historical data functions for example return objects that carry a 'tickers' dataframe that indicates the tickers for which some data have been found, a 'fields' dataframe that indicates the data fields for which data has been found, a 'data' dataframe that hosts the retrieved data as well as a character vector hosting the original call to the function. A `get_periods()` method complements the accessor methods by indicating the start and end dates between which data have been found for each ticker and data field:
@@ -198,12 +216,12 @@ db_store(object = futures_TS, file = "~/storethat.sqlite", verbose = F)
 db_store(object = fund_market, file = "~/storethat.sqlite", verbose = F)
 ```
 
-Every function above has an equivalent for retrieving data from a storethat database that can be accessed by swapping the 'BBG' prefix for 'storethat'; i.e. 'BBG_futures_market' becomes 'storethat_futures_market'. Function parameters are identical for both data sources and the returned objects have alike characteristics:
+The functions above can also be used for retrieving data from a storethat database;  this is done by switching the source parameter from "Bloomberg" to "storethat". Function parameters are identical for both data sources and the returned objects have alike characteristics:
 
 ```{r `storethat retrieve`, eval = FALSE}
 futures_TS <- pull_futures_market(source = "storethat", type = "term structure", active_contract_tickers = tickers,
-                                  start, end, TS_positions = 1L:5L, roll_type = "A", roll_days = 0L,
-                                  roll_months = 0L, roll_adjustment = "N", verbose = F)
+                                  start, end, TS_positions = 1L:5L, roll_type = "A", roll_days = 0L, roll_months = 0L,
+                                  roll_adjustment = "N", verbose = F)
 
 fund_market <- pull_fund_market(source = "storethat", tickers, start, end, verbose = F)
 ```
