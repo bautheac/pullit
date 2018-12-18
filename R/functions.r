@@ -213,7 +213,7 @@ futures_ticker <- function(active_contract_ticker = "C A Comdty", TS_position = 
 #'
 #'
 #' @export
-pull_futures_market <- function(source = "Bloomberg", type = "term sructure", active_contract_tickers,
+pull_futures_market <- function(source = "Bloomberg", type = "term structure", active_contract_tickers,
                                 start, end, TS_positions = 1L:5L, roll_type = "A", roll_days = 0L,
                                 roll_months = 0L, roll_adjustment = "N", file = NULL, verbose = T, ...){
 
@@ -239,7 +239,7 @@ pull_futures_market <- function(source = "Bloomberg", type = "term sructure", ac
 #'   for the corresponding futures historical market data.
 #'
 #'
-#' @param type a scalar character vector, 'term sructure' or 'aggregate'.
+#' @param type a scalar character vector, 'term structure' or 'aggregate'.
 #'   'term structure' returns individual futures chain data for a selected portion
 #'   of the term structure (specify desired positions in \code{TS_positions}) while
 #'   'aggregate' returns aggregated data over the whole term structure for the
@@ -391,7 +391,7 @@ BBG_futures_market <- function(type, active_contract_tickers, start, end, TS_pos
 #' @param file a scalar chatacter vector. Specifies the target
 #'   \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database file.
 #'
-#' @param type a scalar character vector, 'term sructure' or 'aggregate'. 'term structure'
+#' @param type a scalar character vector, 'term structure' or 'aggregate'. 'term structure'
 #'   returns individual futures chain data for a selected portion of the term structure
 #'   (specify desired positions in \code{TS_positions}) while 'aggregate' returns aggregated data
 #'   over the whole term structure for the corresponding names (\code{active_contract_tickers}).
@@ -650,9 +650,14 @@ BBG_futures_TS <- function(active_contract_tickers, start, end, TS_positions, ro
                                        start, end, ...)
 
     data <- if (! is.data.frame(data)) {
-      lapply(names(data), function(x) { if (nrow(data[[x]]) > 0L) { data[[x]]$ticker <- x; data[[x]] } else NULL }) %>%
-        data.table::rbindlist(use.names = TRUE)
-    } else { if(nrow(data) < 1L) NULL else { data$ticker <- tickers; data } }
+      lapply(names(data), function(x) {
+        if (nrow(data[[x]]) > 0L) { data[[x]]$ticker <- x; data[[x]] }
+        else NULL
+        }) %>% data.table::rbindlist(use.names = TRUE)
+    } else {
+      if(nrow(data) < 1L) NULL
+      else { data$ticker <- tickers; data }
+    }
     data$`active contract ticker` <- y
     if (verbose) done(y); data
   }) %>%
@@ -3316,7 +3321,6 @@ storethat_fund_info <- function(file = NULL, tickers){
 #'   for the query (\code{options} parameter).
 #'
 #'
-#' @return An S4 object of class \linkS4class{indexMarket}.
 #'
 #'
 #' @seealso
@@ -3395,7 +3399,7 @@ pull_index_market <- function(source = "Bloomberg", tickers, start, end,
 #'   for the query (\code{options} parameter).
 #'
 #'
-#' @return An S4 object of class \linkS4class{indexMarket}.
+#' @return An S4 object of class \linkS4class{IndexMarket}.
 #'
 #'
 #' @seealso
@@ -3464,7 +3468,7 @@ BBG_index_market <- function(tickers, start, end, verbose = T, ...){
                                                                       by = c("field" = "symbol")) %>%
     dplyr::select(ticker, instrument, book, symbol = field) %>% dplyr::arrange(ticker, instrument, book)
 
-  methods::new("indexMarket", tickers = data.table::as.data.table(dplyr::arrange(tickers)),
+  methods::new("IndexMarket", tickers = data.table::as.data.table(dplyr::arrange(tickers)),
                fields = data.table::as.data.table(fields), data = data.table::as.data.table(data),
                call = match.call())
 }
@@ -3497,7 +3501,7 @@ BBG_index_market <- function(tickers, start, end, verbose = T, ...){
 #'   Defaults to TRUE.
 #'
 #'
-#' @return An S4 object of class \linkS4class{indexMarket}.
+#' @return An S4 object of class \linkS4class{IndexMarket}.
 #'
 #'
 #' @seealso
@@ -3599,7 +3603,7 @@ storethat_index_market <- function(file = NULL, tickers, start, end, verbose = T
                              by = "symbol") %>%
     dplyr::select(ticker, instrument, book, symbol) %>% dplyr::arrange(ticker, instrument, book)
 
-  methods::new("indexMarket", tickers = data.table::as.data.table(dplyr::select(tickers, -id)),
+  methods::new("IndexMarket", tickers = data.table::as.data.table(dplyr::select(tickers, -id)),
                fields = data.table::as.data.table(fields), data = data.table::as.data.table(data),
                call = match.call())
 }

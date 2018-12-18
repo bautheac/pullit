@@ -24,7 +24,7 @@ following format: 'yyyy-mm-dd'.}
 Defaults to TRUE.}
 }
 \value{
-An S4 object of class \linkS4class{indexMarket}.
+An S4 object of class \linkS4class{IndexMarket}.
 }
 \description{
 Provided with a set of Bloomberg index tickers and a time period,

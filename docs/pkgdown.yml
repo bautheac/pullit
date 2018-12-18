@@ -2,7 +2,7 @@ pandoc: 2.3.1
 pkgdown: 1.2.0
 pkgdown_sha: ~
 articles:
-  pullit: pullit.html
+  pullit: ../../../../../Code/R/Packages/pullit/vignettes/pullit.html
 urls:
   reference: https://bautheac.github.io/pullit/reference
   article: https://bautheac.github.io/pullit/articles

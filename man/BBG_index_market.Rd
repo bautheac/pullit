@@ -24,7 +24,7 @@ Defaults to TRUE.}
   for the query (\code{options} parameter).}
 }
 \value{
-An S4 object of class \linkS4class{indexMarket}.
+An S4 object of class \linkS4class{IndexMarket}.
 }
 \description{
 Provided with a set of Bloomberg index tickers and a time period,

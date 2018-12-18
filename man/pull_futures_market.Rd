@@ -4,7 +4,7 @@
 \alias{pull_futures_market}
 \title{Retrieves futures market historical data.}
 \usage{
-pull_futures_market(source = "Bloomberg", type = "term sructure",
+pull_futures_market(source = "Bloomberg", type = "term structure",
   active_contract_tickers, start, end, TS_positions = 1L:5L,
   roll_type = "A", roll_days = 0L, roll_months = 0L,
   roll_adjustment = "N", file = NULL, verbose = T, ...)

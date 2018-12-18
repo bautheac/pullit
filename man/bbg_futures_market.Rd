@@ -8,7 +8,7 @@ BBG_futures_market(type, active_contract_tickers, start, end, TS_positions,
   roll_type, roll_days, roll_months, roll_adjustment, verbose, ...)
 }
 \arguments{
-\item{type}{a scalar character vector, 'term sructure' or 'aggregate'.
+\item{type}{a scalar character vector, 'term structure' or 'aggregate'.
 'term structure' returns individual futures chain data for a selected portion
 of the term structure (specify desired positions in \code{TS_positions}) while
 'aggregate' returns aggregated data over the whole term structure for the

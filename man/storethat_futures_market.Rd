@@ -13,7 +13,7 @@ storethat_futures_market(file, type, active_contract_tickers, start, end,
 \item{file}{a scalar chatacter vector. Specifies the target
 \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database file.}
 
-\item{type}{a scalar character vector, 'term sructure' or 'aggregate'. 'term structure'
+\item{type}{a scalar character vector, 'term structure' or 'aggregate'. 'term structure'
 returns individual futures chain data for a selected portion of the term structure
 (specify desired positions in \code{TS_positions}) while 'aggregate' returns aggregated data
 over the whole term structure for the corresponding names (\code{active_contract_tickers}).}

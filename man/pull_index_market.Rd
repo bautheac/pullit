@@ -31,9 +31,6 @@ database file to retrieve data from.}
 \href{http://dirk.eddelbuettel.com/code/rblpapi.html}{\pkg{Rblpapi}} package used
   for the query (\code{options} parameter).}
 }
-\value{
-An S4 object of class \linkS4class{indexMarket}.
-}
 \description{
 Provided with a set of Bloomberg index tickers and a time period,
   queries Bloomberg for the corresponding index historical market data or
