@@ -1390,7 +1390,7 @@ storethat_futures_CFTC <- function(active_contract_tickers, start, end, file = N
 
   tickers <- paste0("SELECT id, ticker FROM tickers_futures WHERE ticker IN ('",
                     paste(active_contract_tickers, collapse = "', '"), "');")
-  tickers <- RSQLite::dbGetQuery(con, query)
+  tickers <- RSQLite::dbGetQuery(con, tickers)
 
 
   if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
