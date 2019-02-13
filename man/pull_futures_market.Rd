@@ -13,6 +13,12 @@ pull_futures_market(source = "Bloomberg", type = "term structure",
 \item{source}{a scalar character vector. Specifies the data source for the query:
 "Bloomberg" or "storethat". Defaults to "Bloomberg".}
 
+\item{type}{a scalar character vector, 'term structure' or 'aggregate'.
+'term structure' returns individual futures chain data for a selected portion
+of the term structure (specify desired positions in \code{TS_positions}) while
+'aggregate' returns aggregated data over the whole term structure for the
+corresponding names (\code{active_contract_tickers}).}
+
 \item{active_contract_tickers}{a chatacter vector. Specifies the futures active
 contract Bloomberg tickers to query data for.}
 
