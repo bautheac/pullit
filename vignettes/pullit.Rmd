@@ -242,7 +242,7 @@ The [plotit](https://bautheac.github.io/plotit/) package, also part of the finRe
 
 ### futures term structure
 Plot a futures series term structure dynamics with:
-```{r `plot term structure`, fig.fullwidth = TRUE}
+```{r `plot term structure`, fig.fullwidth = TRUE, eval = F}
 library(plotit)
 
 plot(object = futures_TS, ticker = "C A Comdty")
@@ -250,7 +250,7 @@ plot(object = futures_TS, ticker = "C A Comdty")
 
 ### fund market
 Plot historical fund performance with:
-```{r `plot performance`, fig.fullwidth = TRUE}
+```{r `plot performance`, fig.fullwidth = TRUE, eval = F}
 plot(object = fund_market, ticker = "GLD US Equity")
 ```
   

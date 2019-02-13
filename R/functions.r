@@ -117,6 +117,12 @@ futures_ticker <- function(active_contract_ticker = "C A Comdty", TS_position = 
 #' @param source a scalar character vector. Specifies the data source for the query:
 #'   "Bloomberg" or "storethat". Defaults to "Bloomberg".
 #'
+#' @param type a scalar character vector, 'term structure' or 'aggregate'.
+#'   'term structure' returns individual futures chain data for a selected portion
+#'   of the term structure (specify desired positions in \code{TS_positions}) while
+#'   'aggregate' returns aggregated data over the whole term structure for the
+#'   corresponding names (\code{active_contract_tickers}).
+#'
 #' @param file a scalar chatacter vector. Optional parameter that specifies the
 #'   target \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite
 #'   database file to retrieve data from.
@@ -1183,7 +1189,7 @@ pull_futures_CFTC <- function(source = "Bloomberg", active_contract_tickers, sta
 
   switch(source,
          Bloomberg = BBG_futures_CFTC(active_contract_tickers, start, end, verbose, ...),
-         storethat = storethat_futures_CFTC(file, active_contract_tickers, start, end, verbose),
+         storethat = storethat_futures_CFTC(active_contract_tickers, start, end, file, verbose),
          stop("The parameters 'source' must be supplied as a scalar character vector:
               'Bloomberg' or 'storethat'.")
          )
@@ -1369,8 +1375,8 @@ storethat_futures_CFTC <- function(active_contract_tickers, start, end, file = N
   else
     if (! all(rlang::is_scalar_character(file),
               stringr::str_detect(file, pattern = ".+storethat\\.sqlite$")))
-      stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite database
-           file (ie. ~/storethat.sqlite)")
+      stop("Parameter 'file' must be supplied as a valid 'storethat' SQLite
+           database file (ie. ~/storethat.sqlite)")
 
 
   con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
