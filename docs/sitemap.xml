@@ -4,12 +4,6 @@
     <loc>https://bautheac.github.io/pullit/index.html</loc>
   </url>
   <url>
-    <loc>https://bautheac.github.io/pullit/reference/all_fields_exist.html</loc>
-  </url>
-  <url>
-    <loc>https://bautheac.github.io/pullit/reference/all_tickers_exist.html</loc>
-  </url>
-  <url>
     <loc>https://bautheac.github.io/pullit/reference/BBG_equity_book.html</loc>
   </url>
   <url>
@@ -25,19 +19,19 @@
     <loc>https://bautheac.github.io/pullit/reference/BBG_fund_market.html</loc>
   </url>
   <url>
-    <loc>https://bautheac.github.io/pullit/reference/BBG_futures_aggregate.html</loc>
+    <loc>https://bautheac.github.io/pullit/reference/BBG_futures_CFTC.html</loc>
   </url>
   <url>
-    <loc>https://bautheac.github.io/pullit/reference/BBG_futures_CFTC.html</loc>
+    <loc>https://bautheac.github.io/pullit/reference/BBG_futures_TS.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/BBG_futures_aggregate.html</loc>
   </url>
   <url>
     <loc>https://bautheac.github.io/pullit/reference/BBG_futures_info.html</loc>
   </url>
   <url>
     <loc>https://bautheac.github.io/pullit/reference/BBG_futures_market.html</loc>
-  </url>
-  <url>
-    <loc>https://bautheac.github.io/pullit/reference/BBG_futures_TS.html</loc>
   </url>
   <url>
     <loc>https://bautheac.github.io/pullit/reference/BBG_index_info.html</loc>
@@ -58,10 +52,10 @@
     <loc>https://bautheac.github.io/pullit/reference/DataInfo-class.html</loc>
   </url>
   <url>
-    <loc>https://bautheac.github.io/pullit/reference/EquityBook-class.html</loc>
+    <loc>https://bautheac.github.io/pullit/reference/EquityBS-class.html</loc>
   </url>
   <url>
-    <loc>https://bautheac.github.io/pullit/reference/EquityBS-class.html</loc>
+    <loc>https://bautheac.github.io/pullit/reference/EquityBook-class.html</loc>
   </url>
   <url>
     <loc>https://bautheac.github.io/pullit/reference/EquityCF-class.html</loc>
@@ -70,10 +64,10 @@
     <loc>https://bautheac.github.io/pullit/reference/EquityHistorical-class.html</loc>
   </url>
   <url>
-    <loc>https://bautheac.github.io/pullit/reference/EquityInfo-class.html</loc>
+    <loc>https://bautheac.github.io/pullit/reference/EquityIS-class.html</loc>
   </url>
   <url>
-    <loc>https://bautheac.github.io/pullit/reference/EquityIS-class.html</loc>
+    <loc>https://bautheac.github.io/pullit/reference/EquityInfo-class.html</loc>
   </url>
   <url>
     <loc>https://bautheac.github.io/pullit/reference/EquityKS-class.html</loc>
@@ -112,16 +106,31 @@
     <loc>https://bautheac.github.io/pullit/reference/FuturesTS-class.html</loc>
   </url>
   <url>
+    <loc>https://bautheac.github.io/pullit/reference/IndexHistorical-class.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/IndexInfo-class.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/IndexMarket-class.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/all_fields_exist.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/all_tickers_exist.html</loc>
+  </url>
+  <url>
     <loc>https://bautheac.github.io/pullit/reference/futures_ticker.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/get_CFTC_tickers-methods.html</loc>
   </url>
   <url>
     <loc>https://bautheac.github.io/pullit/reference/get_active_contract_tickers-methods.html</loc>
   </url>
   <url>
     <loc>https://bautheac.github.io/pullit/reference/get_call-methods.html</loc>
-  </url>
-  <url>
-    <loc>https://bautheac.github.io/pullit/reference/get_CFTC_tickers-methods.html</loc>
   </url>
   <url>
     <loc>https://bautheac.github.io/pullit/reference/get_data-methods.html</loc>
@@ -140,15 +149,6 @@
   </url>
   <url>
     <loc>https://bautheac.github.io/pullit/reference/get_tickers-methods.html</loc>
-  </url>
-  <url>
-    <loc>https://bautheac.github.io/pullit/reference/IndexHistorical-class.html</loc>
-  </url>
-  <url>
-    <loc>https://bautheac.github.io/pullit/reference/IndexInfo-class.html</loc>
-  </url>
-  <url>
-    <loc>https://bautheac.github.io/pullit/reference/IndexMarket-class.html</loc>
   </url>
   <url>
     <loc>https://bautheac.github.io/pullit/reference/pipe.html</loc>
@@ -202,19 +202,19 @@
     <loc>https://bautheac.github.io/pullit/reference/storethat_fund_market.html</loc>
   </url>
   <url>
-    <loc>https://bautheac.github.io/pullit/reference/storethat_futures_aggregate.html</loc>
+    <loc>https://bautheac.github.io/pullit/reference/storethat_futures_CFTC.html</loc>
   </url>
   <url>
-    <loc>https://bautheac.github.io/pullit/reference/storethat_futures_CFTC.html</loc>
+    <loc>https://bautheac.github.io/pullit/reference/storethat_futures_TS.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/storethat_futures_aggregate.html</loc>
   </url>
   <url>
     <loc>https://bautheac.github.io/pullit/reference/storethat_futures_info.html</loc>
   </url>
   <url>
     <loc>https://bautheac.github.io/pullit/reference/storethat_futures_market.html</loc>
-  </url>
-  <url>
-    <loc>https://bautheac.github.io/pullit/reference/storethat_futures_TS.html</loc>
   </url>
   <url>
     <loc>https://bautheac.github.io/pullit/reference/storethat_index_info.html</loc>

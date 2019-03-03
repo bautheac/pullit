@@ -226,8 +226,10 @@ pull_futures_market <- function(source = "Bloomberg", type = "term structure", a
   switch(source,
          Bloomberg = BBG_futures_market(type, active_contract_tickers, start, end, TS_positions, roll_type,
                                         roll_days, roll_months, roll_adjustment, verbose, ...),
-         storethat = storethat_futures_market(file, type, active_contract_tickers, start, end, TS_positions,
-                                              roll_type, roll_days, roll_months, roll_adjustment, verbose),
+         storethat = storethat_futures_market(file = file, type = type, active_contract_tickers = active_contract_tickers,
+                                              start = start, end = end, TS_positions = TS_positions, roll_type = roll_type,
+                                              roll_days = roll_days, roll_months = roll_months,
+                                              roll_adjustment = roll_adjustment, verbose = verbose),
          stop("The parameters 'source' must be supplied as a scalar character vector:
               'Bloomberg' or 'storethat'.")
          )
@@ -1079,7 +1081,6 @@ storethat_futures_aggregate <- function(file, active_contract_tickers, start, en
 
   }) %>% data.table::rbindlist()
 
-
   fields <- paste0("SELECT id, instrument, book, type, symbol FROM support_fields WHERE id IN (",
                    paste(unique(data$field_id), collapse = ", "), ");")
   fields <- RSQLite::dbGetQuery(con, fields)
@@ -1100,8 +1101,9 @@ storethat_futures_aggregate <- function(file, active_contract_tickers, start, en
     dplyr::left_join(dplyr::select(active_contract_tickers, ticker), by = "ticker") %>%
     dplyr::select(ticker, instrument, book, type, symbol)
 
+  active_contract_tickers <- dplyr::distinct(data, ticker)
 
-  methods::new("FuturesAggregate", active_contract_tickers = data.table::as.data.table(tickers),
+  methods::new("FuturesAggregate", active_contract_tickers = data.table::as.data.table(active_contract_tickers),
                fields = data.table::as.data.table(fields), data = data.table::as.data.table(data),
                call = match.call())
 }
@@ -1154,7 +1156,7 @@ storethat_futures_aggregate <- function(file, active_contract_tickers, start, en
 #'
 #'     \item{"GFUT <GO>" on a Bloomberg terminal.}
 #'
-#'     \item{The \link[BBGsymbols]{tickers_CFTC} dataset in the
+#'     \item{The \link[BBGsymbols]{tickers_cftc} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
 #'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite)
 #'     for details on the Bloomnerg position tickers used here.}
@@ -1234,7 +1236,7 @@ pull_futures_CFTC <- function(source = "Bloomberg", active_contract_tickers, sta
 #'
 #'     \item{"GFUT <GO>" on a Bloomberg terminal.}
 #'
-#'     \item{The \link[BBGsymbols]{tickers_CFTC} dataset in the
+#'     \item{The \link[BBGsymbols]{tickers_cftc} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
 #'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite)
 #'     for details on the Bloomnerg position tickers used here.}
@@ -1258,7 +1260,7 @@ pull_futures_CFTC <- function(source = "Bloomberg", active_contract_tickers, sta
 #' @importFrom magrittr "%<>%"
 BBG_futures_CFTC <- function(active_contract_tickers, start, end, verbose = T, ...){
 
-  utils::data(list = c("fields", "tickers_CFTC"), package = "BBGsymbols", envir = environment())
+  utils::data(list = c("fields", "tickers_cftc"), package = "BBGsymbols", envir = environment())
 
   if (! is.character(active_contract_tickers))
     stop("The parameter 'active_contract_tickers' must be supplied as a character vector of
@@ -1272,7 +1274,7 @@ BBG_futures_CFTC <- function(active_contract_tickers, start, end, verbose = T, .
     stop("The parameter 'verbose' must be supplied as a scalar logical vector")
 
   data <- lapply(active_contract_tickers, function(x) {
-    tickers <- dplyr::filter(tickers_CFTC, `active contract ticker` == x) %>%
+    tickers <- dplyr::filter(tickers_cftc, `active contract ticker` == x) %>%
       dplyr::select(ticker) %>% purrr::flatten_chr()
     if (NROW(tickers) == 0L) stop(paste0("No CFTC data for ", x, "."))
     data <- BBG_pull_historical_market(tickers, fields = "PX_LAST", start, end, ...)
@@ -1284,7 +1286,7 @@ BBG_futures_CFTC <- function(active_contract_tickers, start, end, verbose = T, .
 
     data %<>%
       dplyr::mutate(`active contract ticker` = x) %>%
-      dplyr::left_join(dplyr::select(tickers_CFTC, format, underlying, `unit` = unit,
+      dplyr::left_join(dplyr::select(tickers_cftc, format, underlying, `unit` = unit,
                                      participant, position, ticker), by = "ticker")
     if (verbose) done(x); data
   }) %>%
@@ -1344,7 +1346,7 @@ BBG_futures_CFTC <- function(active_contract_tickers, start, end, verbose = T, .
 #'
 #'     \item{"GFUT <GO>" on a Bloomberg terminal.}
 #'
-#'     \item{The \link[BBGsymbols]{tickers_CFTC} dataset in the
+#'     \item{The \link[BBGsymbols]{tickers_cftc} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
 #'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
 #'     on the Bloomnerg position tickers used here.}
@@ -1518,7 +1520,7 @@ pull_futures_info <- function(source = "Bloomberg", active_contract_tickers, fil
 
   switch(source,
          Bloomberg = BBG_futures_info(active_contract_tickers, ...),
-         storethat = storethat_futures_info(file, active_contract_tickers),
+         storethat = storethat_futures_info(active_contract_tickers, file),
          stop("The parameters 'source' must be supplied as a scalar character vector:
               'Bloomberg' or 'storethat'.")
   )
@@ -1658,7 +1660,7 @@ storethat_futures_info <- function(active_contract_tickers, file = NULL){
 
   tickers <- paste0("SELECT id, ticker FROM tickers_futures WHERE ticker IN ('",
                     paste(active_contract_tickers, collapse = "', '"), "');")
-  tickers <- RSQLite::dbGetQuery(con, query)
+  tickers <- RSQLite::dbGetQuery(con, tickers)
 
 
   data <- paste0("SELECT ticker_id, field_id, value FROM data_futures_info WHERE ticker_id IN (",

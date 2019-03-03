@@ -11,7 +11,7 @@ vignette: >
 ---
 <style> body {text-align: justify} </style>
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+knitr::opts_chunk$set(collapse = TRUE, eval = FALSE, comment = "#>")
 ```
 
 [pullit](https://bautheac.github.io/pullit/) together with [storethat](https://bautheac.github.io/storethat/) are the two workhorses of the [finRes](https://bautheac.github.io/finRes/) suite. Install the development version with `devtools::install_github("bautheac/pullit")`.  
@@ -40,9 +40,8 @@ equity_market <- pull_equity_market(source = "Bloomberg", tickers, start, end, v
 ```{r `equity market storethat`, echo = FALSE}
 library(storethat)
 
-tickers <- c("ADM US Equity", "KHC US Equity", "XPO US Equity")
-equity_market <- pull_equity_market(source = "storethat", tickers, start, end, verbose = F,
-                                    file = "../data-raw/storethat.sqlite")
+tickers <- c("ADM US Equity", "KHC US Equity", "XPO US Equity"); storethat <- "../data-raw/storethat.sqlite"
+equity_market <- pull_equity_market(source = "storethat", tickers, start, end, verbose = F, file = storethat)
 ```
 
 #### books
@@ -94,8 +93,7 @@ fund_market <- pull_fund_market(source = "Bloomberg", tickers, start, end, verbo
 ```{r `fund market storethat`, echo = FALSE}
 tickers <- c("SPY US Equity", "GLD US Equity", "EEM US Equity")
 
-fund_market <- pull_fund_market(source = "storethat", tickers, start, end, verbose = F, 
-                                file = "../data-raw/storethat.sqlite")
+fund_market <- pull_fund_market(source = "storethat", tickers, start, end, verbose = F, file = storethat)
 ```
 
 #### info
@@ -126,7 +124,7 @@ tickers <- c("C A Comdty", "EDA Comdty", "ESA Index")
 
 futures_TS <- pull_futures_market(source = "storethat", type = "term structure", active_contract_tickers = tickers, 
                                   start, end, TS_positions = 1L:5L, roll_type = "A", roll_days = 0L, roll_months = 0L, 
-                                  roll_adjustment = "N", verbose = F, file = "../data-raw/storethat.sqlite")
+                                  roll_adjustment = "N", verbose = F, file = storethat)
 ```
 
 ##### aggregate

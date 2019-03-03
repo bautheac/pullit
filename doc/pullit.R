@@ -74,6 +74,14 @@ futures_TS <- pull_futures_market(source = "storethat", type = "term structure",
 ## ----`futures info`, eval = FALSE----------------------------------------
 #  futures_info <- pull_futures_info(source = "Bloomberg", tickers, verbose = F)
 
+## ----`index market BBG`, eval = FALSE------------------------------------
+#  tickers <- c("NEIXCTA Index", "BARCCTA Index")
+#  
+#  fund_market <- pull_index_market(source = "Bloomberg", tickers, start, end, verbose = F)
+
+## ----`index info`, eval = FALSE------------------------------------------
+#  fund_info <- pull_index_info(source = "Bloomberg", tickers, verbose = F)
+
 ## ----`equity show`-------------------------------------------------------
 equity_market
 
@@ -102,8 +110,8 @@ get_periods(equity_market)
 
 ## ----`storethat retrieve`, eval = FALSE----------------------------------
 #  futures_TS <- pull_futures_market(source = "storethat", type = "term structure", active_contract_tickers = tickers,
-#                                    start, end, TS_positions = 1L:5L, roll_type = "A", roll_days = 0L,
-#                                    roll_months = 0L, roll_adjustment = "N", verbose = F)
+#                                    start, end, TS_positions = 1L:5L, roll_type = "A", roll_days = 0L, roll_months = 0L,
+#                                    roll_adjustment = "N", verbose = F)
 #  
 #  fund_market <- pull_fund_market(source = "storethat", tickers, start, end, verbose = F)
 
@@ -113,11 +121,11 @@ get_periods(equity_market)
 ## ----`storethat update some`, eval = FALSE-------------------------------
 #  storethat_update(instrument = "equity", book = "market")
 
-## ----`plot term structure`, fig.fullwidth = TRUE-------------------------
-library(plotit)
+## ----`plot term structure`, fig.fullwidth = TRUE, eval = F---------------
+#  library(plotit)
+#  
+#  plot(object = futures_TS, ticker = "C A Comdty")
 
-plot(object = futures_TS, ticker = "C A Comdty")
-
-## ----`plot performance`, fig.fullwidth = TRUE----------------------------
-plot(object = fund_market, ticker = "GLD US Equity")
+## ----`plot performance`, fig.fullwidth = TRUE, eval = F------------------
+#  plot(object = fund_market, ticker = "GLD US Equity")
 

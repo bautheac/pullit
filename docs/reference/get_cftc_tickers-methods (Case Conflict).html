@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Updates the 'tickers_support_futures_ts' table with provided term structure tickers. — update_term_structure_tickers • pullit</title>
+<title>Accesses the <code>cftc_tickers</code> slot S4 objects of class <a href='FuturesCFTC-class.html'>FuturesCFTC</a>
+  (<a href='https://github.com/bautheac/pullit/'><span class="pkg">pullit</span></a>). — get_CFTC_tickers • pullit</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +31,11 @@
 
 
 
-<meta property="og:title" content="Updates the 'tickers_support_futures_ts' table with provided term structure tickers. — update_term_structure_tickers" />
+<meta property="og:title" content="Accesses the <code>cftc_tickers</code> slot S4 objects of class <a href='FuturesCFTC-class.html'>FuturesCFTC</a>
+  (<a href='https://github.com/bautheac/pullit/'><span class="pkg">pullit</span></a>). — get_CFTC_tickers" />
 
-<meta property="og:description" content="Updates the 'tickers_support_futures_ts' table with provided term structure tickers." />
+<meta property="og:description" content="Access method for the cftc_tickers slot of FuturesCFTC
+  S4 objects from the pullit package." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -94,31 +97,37 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Updates the 'tickers_support_futures_ts' table with provided term structure tickers.</h1>
+    <h1>Accesses the <code>cftc_tickers</code> slot S4 objects of class <a href='FuturesCFTC-class.html'>FuturesCFTC</a>
+  (<a href='https://github.com/bautheac/pullit/'><span class="pkg">pullit</span></a>).</h1>
     
-    <div class="hidden name"><code>update_term_structure_tickers.Rd</code></div>
+    <div class="hidden name"><code>get_CFTC_tickers-methods.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Updates the 'tickers_support_futures_ts' table with provided term structure tickers.</p>
+    <p>Access method for the <code>cftc_tickers</code> slot of <a href='FuturesCFTC-class.html'>FuturesCFTC</a>
+  S4 objects from the <a href='https://github.com/bautheac/pullit/'><span class="pkg">pullit</span></a> package.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>update_term_structure_tickers</span>(<span class='no'>tickers</span>, <span class='no'>con</span>)</pre>
+    <pre class="usage"><span class='fu'>get_CFTC_tickers</span>(<span class='no'>object</span>)
+
+<span class='co'># S4 method for FuturesCFTC</span>
+<span class='fu'>get_CFTC_tickers</span>(<span class='no'>object</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>tickers</th>
-      <td><p>A character vector. Existing tickers in the object.</p></td>
-    </tr>
-    <tr>
-      <th>con</th>
-      <td><p>A connection object to the relevant database.</p></td>
+      <th>object</th>
+      <td><p>an S4 object of class <a href='FuturesCFTC-class.html'>FuturesCFTC</a>.</p></td>
     </tr>
     </table>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A <a href='https://www.rdocumentation.org/packages/data.table/topics/data.table'>data.table</a> showing the futures position
+  Bloomberg tickers for which the <code>object</code> provided contains data.</p>
     
 
   </div>
@@ -126,7 +135,9 @@
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-                </ul>
+      
+      <li><a href="#value">Value</a></li>
+          </ul>
 
   </div>
 </div>
