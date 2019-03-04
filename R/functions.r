@@ -349,7 +349,7 @@ BBG_futures_market <- function(type, active_contract_tickers, start, end, TS_pos
          paste((dplyr::distinct(dplyr::filter(fields, instrument == "futures", book == "market"), type) %>%
                   purrr::flatten_chr()), collapse = "', '"), "'")
 
-  if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
+  if (! all(NROW(c(start, end)) == 2L, stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
     stop("The parameters 'start' and 'end' must be supplied as scalar character vectors of dates (yyyy-mm-dd)")
 
   if (! is.null(TS_positions))
@@ -516,7 +516,7 @@ storethat_futures_market <- function(file, type, active_contract_tickers, start,
          vector; one or more of '",
          paste(tickers$ticker, collapse = "', '"), "'")
 
-  if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
+  if (! all(NROW(c(start, end)) == 2L, stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
     stop("The parameters 'start' and 'end' must be supplied as scalar character
          vectors of dates (yyyy-mm-dd)")
 
@@ -1266,7 +1266,7 @@ BBG_futures_CFTC <- function(active_contract_tickers, start, end, verbose = T, .
     stop("The parameter 'active_contract_tickers' must be supplied as a character vector of
          futures active contract Bloomberg tickers")
 
-  if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
+  if (! all(NROW(c(start, end)) == 2L, stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
     stop("The parameters 'start' and 'end' must be supplied as scalar character vectors of
          dates (yyyy-mm-dd)")
 
@@ -1395,7 +1395,7 @@ storethat_futures_CFTC <- function(active_contract_tickers, start, end, file = N
   tickers <- RSQLite::dbGetQuery(con, tickers)
 
 
-  if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
+  if (! all(NROW(c(start, end)) == 2L, stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
     stop("The parameters 'start' and 'end' must be supplied as scalar character vectors
          of dates (yyyy-mm-dd)")
 
@@ -1844,7 +1844,7 @@ BBG_equity_market <- function(tickers, start, end, verbose = T, ...){
     stop("The parameter 'tickers' must be supplied as a character vector of
          equity Bloomberg tickers")
 
-  if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
+  if (! all(NROW(c(start, end)) == 2L, stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
     stop("The parameters 'start' and 'end' must be supplied as scalar character
          vectors of dates (yyyy-mm-dd)")
 
@@ -1960,7 +1960,7 @@ storethat_equity_market <- function(file, tickers, start, end, verbose){
                   paste(tickers, collapse = "', '"), "');")
   tickers <- RSQLite::dbGetQuery(con, query)
 
-  if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
+  if (! all(NROW(c(start, end)) == 2L, stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
     stop("The parameters 'start' and 'end' must be supplied as scalar character vectors of dates
          (yyyy-mm-dd)")
 
@@ -2238,7 +2238,7 @@ BBG_equity_book <- function(book, tickers, start, end, verbose = T, ...){
     stop("The parameter 'tickers' must be supplied as a character vector of equity
          Bloomberg tickers")
 
-  if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
+  if (! all(NROW(c(start, end)) == 2L, stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
     stop("The parameters 'start' and 'end' must be supplied as scalar character
          vectors of dates (yyyy-mm-dd)")
 
@@ -2392,7 +2392,7 @@ storethat_equity_book <- function(file = NULL, book, tickers, start, end, verbos
   query <- paste0("SELECT * FROM tickers_equity WHERE ticker IN ('", paste(tickers, collapse = "', '"), "');")
   tickers <- RSQLite::dbGetQuery(con, query)
 
-  if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
+  if (! all(NROW(c(start, end)) == 2L, stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
     stop("The parameters 'start' and 'end' must be supplied as scalar character vectors of dates (yyyy-mm-dd)")
 
   if (! rlang::is_scalar_logical(verbose))
@@ -2861,7 +2861,7 @@ BBG_fund_market <- function(tickers, start, end, verbose = T, ...){
   if (! is.character(tickers))
     stop("The parameter 'tickers' must be supplied as a character vector of equity Bloomberg tickers")
 
-  if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
+  if (! all(NROW(c(start, end)) == 2L, stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
     stop("The parameters 'start' and 'end' must be supplied as scalar character vectors of dates (yyyy-mm-dd)")
 
   if (! rlang::is_scalar_logical(verbose))
@@ -2979,7 +2979,7 @@ storethat_fund_market <- function(file = NULL, tickers, start, end, verbose = T)
   query <- paste0("SELECT id, ticker FROM tickers_fund WHERE ticker IN ('", paste(tickers, collapse = "', '"), "');")
   tickers <- RSQLite::dbGetQuery(con, query)
 
-  if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
+  if (! all(NROW(c(start, end)) == 2L, stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
     stop("The parameters 'start' and 'end' must be supplied as scalar character vectors of dates (yyyy-mm-dd)")
 
   if (! rlang::is_scalar_logical(verbose))
@@ -3444,7 +3444,7 @@ BBG_index_market <- function(tickers, start, end, verbose = T, ...){
   if (! is.character(tickers))
     stop("The parameter 'tickers' must be supplied as a character vector of equity Bloomberg tickers")
 
-  if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
+  if (! all(NROW(c(start, end)) == 2L, stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
     stop("The parameters 'start' and 'end' must be supplied as scalar character
          vectors of dates (yyyy-mm-dd)")
 
@@ -3565,7 +3565,7 @@ storethat_index_market <- function(file = NULL, tickers, start, end, verbose = T
                   paste(tickers, collapse = "', '"), "');")
   tickers <- RSQLite::dbGetQuery(con, query)
 
-  if (! all(stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
+  if (! all(NROW(c(start, end)) == 2L, stringr::str_detect(c(start, end), "^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))
     stop("The parameters 'start' and 'end' must be supplied as scalar character
          vectors of dates (yyyy-mm-dd)")
 
