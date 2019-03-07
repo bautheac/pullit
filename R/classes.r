@@ -63,6 +63,10 @@ setClass("FuturesTS", contains = "FuturesMarket", slots = c(term_structure_ticke
 #' S4 class for futures aggregate objects
 #' @export
 setClass("FuturesAggregate", contains = "FuturesMarket")
+#' S4 class for futures spot objects
+#' @export
+setClass("FuturesSpot", contains = "FuturesMarket")
+
 #' S4 class for futures CFTC objects
 #' @export
 setClass("FuturesCFTC", contains = "FuturesHistorical", slots = c(cftc_tickers = "data.table"))
