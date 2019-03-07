@@ -549,8 +549,10 @@ storethat_futures_market <- function(file, type, active_contract_tickers, start,
                                                  verbose = verbose, file = file),
          `aggregate` = storethat_futures_aggregate(active_contract_tickers = active_contract_tickers, start = start,
                                                    end = end, verbose = verbose, file = file),
+         `spot` = storethat_futures_spot(active_contract_tickers = active_contract_tickers, start = start,
+                                         end = end, verbose = verbose, file = file),
          stop("The parameters 'type' must be supplied as a scalar character vector:
-              'term structure' or 'aggregate'.")
+              'term structure', 'aggregate' or 'spot'.")
          )
 }
 
@@ -1104,6 +1106,158 @@ storethat_futures_aggregate <- function(file, active_contract_tickers, start, en
   active_contract_tickers <- dplyr::distinct(data, ticker)
 
   methods::new("FuturesAggregate", active_contract_tickers = data.table::as.data.table(active_contract_tickers),
+               fields = data.table::as.data.table(fields), data = data.table::as.data.table(data),
+               call = match.call())
+}
+
+
+### spot ####
+
+#### random source ####
+#' Creates a FuturesSpot object from futures spot data.
+#'
+#' @description Futures spot data refers to data on the corresponding cash market. Futures spot/cash data
+#'   is not avaiable on Bloomberg at the time of writing. Should spot data be retrieved from other data
+#'   source(s), this function would creates a FuturesSpot data object from it in order to facilitates
+#'   storage in a \href{https://bautheac.github.io/storethat/}{\pkg{storethat}} database.
+#'
+#'
+#' @param data a dataframe containing futures spot data. Columns should include:
+#'
+#'   \itemize{
+#'     \item{ticker: futures active contract Bloomberg tickers.}
+#'     \item{field: field Bloomberg symbols. See \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} for a list of accepted
+#'     symbols.}
+#'     \item{date: observation date (YYYY-MM-DD).}
+#'     \item{value: observation value.}
+#'   }
+#'
+#' @return An S4 object of class \linkS4class{FuturesSpot}.
+#'
+#' @import BBGsymbols
+#' @importFrom magrittr "%<>%"
+random_futures_spot <- function(data){
+
+  utils::data(list = c("fields"), package = "BBGsymbols", envir = environment())
+  fields <- dplyr::filter(fields, instrument == "futures", book == "market", type == "aggregate")
+
+  stopifnot(is.data.frame(data), all.equal(names(data), c(ticker, "field", "date", "value")), unique(data$field) %in% fields$symbol)
+
+  data %<>%
+    dplyr::filter(stats::complete.cases(.)) %>%
+    dplyr::arrange(ticker, field, date) %>%
+    dplyr::mutate(date = as.Date(date, origin = "1970-01-01"), value = as.numeric(value))
+
+  active_contract_tickers <- dplyr::distinct(data, ticker)
+
+  fields <- dplyr::distinct(data, ticker, field) %>%
+    dplyr::left_join(dplyr::select(fields, instrument, book, type, symbol),
+                     by = c("field" = "symbol")) %>%
+    dplyr::select(ticker, instrument, book, type, symbol = field) %>%
+    dplyr::arrange(ticker, instrument, book, type)
+
+  methods::new("FuturesSpot",
+               active_contract_tickers = data.table::as.data.table(dplyr::arrange(active_contract_tickers)),
+               fields = data.table::as.data.table(fields), data = data.table::as.data.table(data),
+               call = match.call())
+}
+
+
+
+#### storethat ####
+
+#' Retrieves futures spot historical data from from a
+#'   \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database.
+#'
+#'
+#' @description Provided with a set of Bloomberg futures active contract tickers and
+#'   a time period, retrieves the corresponding futures historical spot data previously
+#'   stored in a \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite
+#'   database. Futures spot data refers to the corresponding cash market.
+#'
+#'
+#' @param file a scalar chatacter vector. Specifies the target
+#'   \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database file.
+#'
+#' @param active_contract_tickers a chatacter vector. Specifies the futures active contract
+#'   Bloomberg tickers to query data for.
+#'
+#' @param start a scalar character vector. Specifies the starting date for the query in the
+#'   following format: 'yyyy-mm-dd'.
+#'
+#' @param end a scalar character vector. Specifies the end date for the query in the
+#'   following format: 'yyyy-mm-dd'.
+#'
+#' @param verbose a logical scalar vector. Should progression messages be printed?
+#'   Defaults to TRUE.
+#'
+#'
+#' @return An S4 object of class \linkS4class{FuturesSpot}.
+#'
+#'
+#' @examples \dontrun{
+#'
+#'     storethat_futures_market(type = "spot",
+#'       active_contract_tickers = c("W A Comdty", "KWA Comdty"),
+#'       start = "2000-01-01", end = as.character(Sys.Date()))
+#'
+#'   }
+#'
+#'
+#' @importFrom magrittr "%<>%"
+storethat_futures_spot <- function(file, active_contract_tickers, start, end, verbose){
+
+
+  con <- RSQLite::dbConnect(RSQLite::SQLite(), file)
+
+
+  active_contract_tickers <- paste0("SELECT * FROM tickers_futures WHERE ticker IN ('",
+                                    paste(active_contract_tickers, collapse = "', '"), "');")
+  active_contract_tickers <- RSQLite::dbGetQuery(con, active_contract_tickers)
+
+
+  dates <- paste0("SELECT * FROM support_dates WHERE date >= '", start, "' AND date <= '",
+                  end, "';")
+  dates <- RSQLite::dbGetQuery(con, dates)
+
+
+  data <- lapply(unique(dates$period), function(z){
+
+    query <- paste0("SELECT * FROM data_futures_spot_", z, " WHERE ticker_id IN (",
+                    paste(active_contract_tickers$id, collapse = ", "),
+                    ") AND date_id >= ", min(dates$id), " AND date_id <= ", max(dates$id), ";")
+    query <- RSQLite::dbGetQuery(con, query)
+
+    if (verbose) done(paste0("Period ", data.table::first(dplyr::filter(dates, period == z)$date),
+                             "/", data.table::last(dplyr::filter(dates, period == z)$date)))
+
+    query
+
+  }) %>% data.table::rbindlist()
+
+  fields <- paste0("SELECT id, instrument, book, type, symbol FROM support_fields WHERE id IN (",
+                   paste(unique(data$field_id), collapse = ", "), ");")
+  fields <- RSQLite::dbGetQuery(con, fields)
+
+
+  RSQLite::dbDisconnect(con)
+
+
+  data %<>% dplyr::left_join(dplyr::select(active_contract_tickers, id, ticker), by = c("ticker_id" = "id")) %>%
+    dplyr::left_join(dplyr::select(dates, id, date), by = c("date_id" = "id")) %>%
+    dplyr::left_join(fields, by = c("field_id" = "id")) %>% dplyr::select(ticker, field = symbol, date, value) %>%
+    dplyr::mutate(date = as.Date(date), value = as.numeric(value)) %>% dplyr::arrange(ticker, field, date)
+
+
+  fields <- dplyr::left_join(dplyr::distinct(data, ticker, symbol = field),
+                             dplyr::select(fields, instrument, book, type, symbol),
+                             by = "symbol") %>%
+    dplyr::left_join(dplyr::select(active_contract_tickers, ticker), by = "ticker") %>%
+    dplyr::select(ticker, instrument, book, type, symbol)
+
+  active_contract_tickers <- dplyr::distinct(data, ticker)
+
+  methods::new("FuturesSpot", active_contract_tickers = data.table::as.data.table(active_contract_tickers),
                fields = data.table::as.data.table(fields), data = data.table::as.data.table(data),
                call = match.call())
 }

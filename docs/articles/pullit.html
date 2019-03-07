@@ -61,7 +61,7 @@
       <h1>pullit!</h1>
                         <h4 class="author">Olivier Bauthéac</h4>
             
-            <h4 class="date">2019-03-03</h4>
+            <h4 class="date">2019-03-07</h4>
       
       
       <div class="hidden name"><code>pullit.Rmd</code></div>
@@ -215,104 +215,13 @@ fund_market &lt;-<span class="st"> </span><span class="kw"><a href="../reference
 <h2 class="hasAnchor">
 <a href="#accessors" class="anchor"></a>accessors</h2>
 <p>The functions above return objects that not only carry the retrieved financial data but also complementary information that can be accessed using the @ operator or more formaly using bespoke accessor methods. Historical data functions for example return objects that carry a ‘tickers’ dataframe that indicates the tickers for which some data have been found, a ‘fields’ dataframe that indicates the data fields for which data has been found, a ‘data’ dataframe that hosts the retrieved data as well as a character vector hosting the original call to the function. A <code><a href="../reference/get_periods-methods.html">get_periods()</a></code> method complements the accessor methods by indicating the start and end dates between which data have been found for each ticker and data field:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">equity_market
-<span class="co">#&gt; S4 object of class EquityMarket </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Slots inlude</span>
-<span class="co">#&gt;    tickers: access with get_tickers()</span>
-<span class="co">#&gt;    fields: access with get_fields()</span>
-<span class="co">#&gt;    data: access with get_data()</span>
-<span class="co">#&gt;    call: access with get_call()</span>
-<span class="co">#&gt;  </span>
-<span class="co">#&gt; See also: get_periods()</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">equity_market</code></pre></div>
 <p>Access each slot using the appropriate accessor:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/get_tickers-methods.html">get_tickers</a></span>(equity_market)
-<span class="co">#&gt;           ticker</span>
-<span class="co">#&gt; 1: ADM US Equity</span>
-<span class="co">#&gt; 2: KHC US Equity</span>
-<span class="co">#&gt; 3: XPO US Equity</span></code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/get_fields-methods.html">get_fields</a></span>(equity_market)
-<span class="co">#&gt;            ticker instrument   book      symbol</span>
-<span class="co">#&gt;  1: ADM US Equity     equity market CUR_MKT_CAP</span>
-<span class="co">#&gt;  2: ADM US Equity     equity market  EQY_SH_OUT</span>
-<span class="co">#&gt;  3: ADM US Equity     equity market      PX_ASK</span>
-<span class="co">#&gt;  4: ADM US Equity     equity market      PX_BID</span>
-<span class="co">#&gt;  5: ADM US Equity     equity market     PX_HIGH</span>
-<span class="co">#&gt;  6: ADM US Equity     equity market     PX_LAST</span>
-<span class="co">#&gt;  7: ADM US Equity     equity market      PX_LOW</span>
-<span class="co">#&gt;  8: ADM US Equity     equity market      PX_MID</span>
-<span class="co">#&gt;  9: ADM US Equity     equity market     PX_OPEN</span>
-<span class="co">#&gt; 10: ADM US Equity     equity market   PX_VOLUME</span>
-<span class="co">#&gt; 11: KHC US Equity     equity market CUR_MKT_CAP</span>
-<span class="co">#&gt; 12: KHC US Equity     equity market  EQY_SH_OUT</span>
-<span class="co">#&gt; 13: KHC US Equity     equity market      PX_ASK</span>
-<span class="co">#&gt; 14: KHC US Equity     equity market      PX_BID</span>
-<span class="co">#&gt; 15: KHC US Equity     equity market     PX_HIGH</span>
-<span class="co">#&gt; 16: KHC US Equity     equity market     PX_LAST</span>
-<span class="co">#&gt; 17: KHC US Equity     equity market      PX_LOW</span>
-<span class="co">#&gt; 18: KHC US Equity     equity market      PX_MID</span>
-<span class="co">#&gt; 19: KHC US Equity     equity market     PX_OPEN</span>
-<span class="co">#&gt; 20: KHC US Equity     equity market   PX_VOLUME</span>
-<span class="co">#&gt; 21: XPO US Equity     equity market CUR_MKT_CAP</span>
-<span class="co">#&gt; 22: XPO US Equity     equity market  EQY_SH_OUT</span>
-<span class="co">#&gt; 23: XPO US Equity     equity market      PX_ASK</span>
-<span class="co">#&gt; 24: XPO US Equity     equity market      PX_BID</span>
-<span class="co">#&gt; 25: XPO US Equity     equity market     PX_HIGH</span>
-<span class="co">#&gt; 26: XPO US Equity     equity market     PX_LAST</span>
-<span class="co">#&gt; 27: XPO US Equity     equity market      PX_LOW</span>
-<span class="co">#&gt; 28: XPO US Equity     equity market      PX_MID</span>
-<span class="co">#&gt; 29: XPO US Equity     equity market     PX_OPEN</span>
-<span class="co">#&gt; 30: XPO US Equity     equity market   PX_VOLUME</span>
-<span class="co">#&gt;            ticker instrument   book      symbol</span></code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/get_data-methods.html">get_data</a></span>(equity_market)
-<span class="co">#&gt;               ticker       field       date      value</span>
-<span class="co">#&gt;     1: ADM US Equity CUR_MKT_CAP 2016-10-31   25347.42</span>
-<span class="co">#&gt;     2: ADM US Equity CUR_MKT_CAP 2016-11-01   26899.93</span>
-<span class="co">#&gt;     3: ADM US Equity CUR_MKT_CAP 2016-11-02   27193.39</span>
-<span class="co">#&gt;     4: ADM US Equity CUR_MKT_CAP 2016-11-03   27291.21</span>
-<span class="co">#&gt;     5: ADM US Equity CUR_MKT_CAP 2016-11-04   26997.75</span>
-<span class="co">#&gt;    ---                                                </span>
-<span class="co">#&gt; 10076: XPO US Equity   PX_VOLUME 2018-02-26 1584513.00</span>
-<span class="co">#&gt; 10077: XPO US Equity   PX_VOLUME 2018-02-27 1206203.00</span>
-<span class="co">#&gt; 10078: XPO US Equity   PX_VOLUME 2018-02-28 1536802.00</span>
-<span class="co">#&gt; 10079: XPO US Equity   PX_VOLUME 2018-03-01 2317776.00</span>
-<span class="co">#&gt; 10080: XPO US Equity   PX_VOLUME 2018-03-02 1673324.00</span></code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/get_call-methods.html">get_call</a></span>(equity_market)
-<span class="co">#&gt; storethat_equity_market(file = file, tickers = tickers, start = start, </span>
-<span class="co">#&gt;     end = end, verbose = verbose)</span></code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/get_periods-methods.html">get_periods</a></span>(equity_market)
-<span class="co">#&gt;            ticker       field      start        end</span>
-<span class="co">#&gt;  1: ADM US Equity CUR_MKT_CAP 2016-10-31 2018-03-02</span>
-<span class="co">#&gt;  2: ADM US Equity  EQY_SH_OUT 2016-10-31 2018-03-02</span>
-<span class="co">#&gt;  3: ADM US Equity      PX_ASK 2016-10-31 2018-03-02</span>
-<span class="co">#&gt;  4: ADM US Equity      PX_BID 2016-10-31 2018-03-02</span>
-<span class="co">#&gt;  5: ADM US Equity     PX_HIGH 2016-10-31 2018-03-02</span>
-<span class="co">#&gt;  6: ADM US Equity     PX_LAST 2016-10-31 2018-03-02</span>
-<span class="co">#&gt;  7: ADM US Equity      PX_LOW 2016-10-31 2018-03-02</span>
-<span class="co">#&gt;  8: ADM US Equity      PX_MID 2016-10-31 2018-03-02</span>
-<span class="co">#&gt;  9: ADM US Equity     PX_OPEN 2016-10-31 2018-03-02</span>
-<span class="co">#&gt; 10: ADM US Equity   PX_VOLUME 2016-10-31 2018-03-02</span>
-<span class="co">#&gt; 11: KHC US Equity CUR_MKT_CAP 2016-10-31 2018-03-02</span>
-<span class="co">#&gt; 12: KHC US Equity  EQY_SH_OUT 2016-10-31 2018-03-02</span>
-<span class="co">#&gt; 13: KHC US Equity      PX_ASK 2016-10-31 2018-03-02</span>
-<span class="co">#&gt; 14: KHC US Equity      PX_BID 2016-10-31 2018-03-02</span>
-<span class="co">#&gt; 15: KHC US Equity     PX_HIGH 2016-10-31 2018-03-02</span>
-<span class="co">#&gt; 16: KHC US Equity     PX_LAST 2016-10-31 2018-03-02</span>
-<span class="co">#&gt; 17: KHC US Equity      PX_LOW 2016-10-31 2018-03-02</span>
-<span class="co">#&gt; 18: KHC US Equity      PX_MID 2016-10-31 2018-03-02</span>
-<span class="co">#&gt; 19: KHC US Equity     PX_OPEN 2016-10-31 2018-03-02</span>
-<span class="co">#&gt; 20: KHC US Equity   PX_VOLUME 2016-10-31 2018-03-02</span>
-<span class="co">#&gt; 21: XPO US Equity CUR_MKT_CAP 2016-10-31 2018-03-02</span>
-<span class="co">#&gt; 22: XPO US Equity  EQY_SH_OUT 2016-10-31 2018-03-02</span>
-<span class="co">#&gt; 23: XPO US Equity      PX_ASK 2016-10-31 2018-03-02</span>
-<span class="co">#&gt; 24: XPO US Equity      PX_BID 2016-10-31 2018-03-02</span>
-<span class="co">#&gt; 25: XPO US Equity     PX_HIGH 2016-10-31 2018-03-02</span>
-<span class="co">#&gt; 26: XPO US Equity     PX_LAST 2016-10-31 2018-03-02</span>
-<span class="co">#&gt; 27: XPO US Equity      PX_LOW 2016-10-31 2018-03-02</span>
-<span class="co">#&gt; 28: XPO US Equity      PX_MID 2016-10-31 2018-03-02</span>
-<span class="co">#&gt; 29: XPO US Equity     PX_OPEN 2016-10-31 2018-03-02</span>
-<span class="co">#&gt; 30: XPO US Equity   PX_VOLUME 2016-10-31 2018-03-02</span>
-<span class="co">#&gt;            ticker       field      start        end</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/get_tickers-methods.html">get_tickers</a></span>(equity_market)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/get_fields-methods.html">get_fields</a></span>(equity_market)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/get_data-methods.html">get_data</a></span>(equity_market)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/get_call-methods.html">get_call</a></span>(equity_market)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/get_periods-methods.html">get_periods</a></span>(equity_market)</code></pre></div>
 </div>
 <div id="storethat" class="section level2">
 <h2 class="hasAnchor">

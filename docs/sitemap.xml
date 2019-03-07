@@ -103,6 +103,9 @@
     <loc>https://bautheac.github.io/pullit/reference/FuturesMarket-class.html</loc>
   </url>
   <url>
+    <loc>https://bautheac.github.io/pullit/reference/FuturesSpot-class.html</loc>
+  </url>
+  <url>
     <loc>https://bautheac.github.io/pullit/reference/FuturesTS-class.html</loc>
   </url>
   <url>
@@ -184,6 +187,9 @@
     <loc>https://bautheac.github.io/pullit/reference/pull_index_market.html</loc>
   </url>
   <url>
+    <loc>https://bautheac.github.io/pullit/reference/random_futures_spot.html</loc>
+  </url>
+  <url>
     <loc>https://bautheac.github.io/pullit/reference/show-methods.html</loc>
   </url>
   <url>
@@ -215,6 +221,9 @@
   </url>
   <url>
     <loc>https://bautheac.github.io/pullit/reference/storethat_futures_market.html</loc>
+  </url>
+  <url>
+    <loc>https://bautheac.github.io/pullit/reference/storethat_futures_spot.html</loc>
   </url>
   <url>
     <loc>https://bautheac.github.io/pullit/reference/storethat_index_info.html</loc>
