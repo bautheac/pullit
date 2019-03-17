@@ -11,8 +11,9 @@ random_futures_spot(data)
 
   \itemize{
     \item{ticker: futures active contract Bloomberg tickers.}
-    \item{field: field Bloomberg symbols. See \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} for a list of accepted
-    symbols.}
+    \item{field: field Bloomberg symbols.
+      See \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} for a list
+      of accepted symbols.}
     \item{date: observation date (YYYY-MM-DD).}
     \item{value: observation value.}
   }}

@@ -1126,8 +1126,9 @@ storethat_futures_aggregate <- function(file, active_contract_tickers, start, en
 #'
 #'   \itemize{
 #'     \item{ticker: futures active contract Bloomberg tickers.}
-#'     \item{field: field Bloomberg symbols. See \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} for a list of accepted
-#'     symbols.}
+#'     \item{field: field Bloomberg symbols.
+#'       See \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} for a list
+#'       of accepted symbols.}
 #'     \item{date: observation date (YYYY-MM-DD).}
 #'     \item{value: observation value.}
 #'   }
@@ -1136,12 +1137,14 @@ storethat_futures_aggregate <- function(file, active_contract_tickers, start, en
 #'
 #' @import BBGsymbols
 #' @importFrom magrittr "%<>%"
+#'
+#' @export
 random_futures_spot <- function(data){
 
   utils::data(list = c("fields"), package = "BBGsymbols", envir = environment())
-  fields <- dplyr::filter(fields, instrument == "futures", book == "market", type == "aggregate")
+  fields <- dplyr::filter(fields, instrument == "futures", book == "market", type == "spot")
 
-  stopifnot(is.data.frame(data), all.equal(names(data), c(ticker, "field", "date", "value")), unique(data$field) %in% fields$symbol)
+  stopifnot(is.data.frame(data), all.equal(names(data), c("ticker", "field", "date", "value")), unique(data$field) %in% fields$symbol)
 
   data %<>%
     dplyr::filter(stats::complete.cases(.)) %>%
@@ -3770,6 +3773,58 @@ storethat_index_market <- function(file = NULL, tickers, start, end, verbose = T
                call = match.call())
 }
 
+
+
+### random source ####
+
+#' Creates an IndexMarket object from index market data contained in a dataframe.
+#'
+#' @description Should index data be retrieved from other source(s) than Bloomberg,
+#'   this function creates a IndexMarket data object from it in order to facilitates
+#'   storage in a \href{https://bautheac.github.io/storethat/}{\pkg{storethat}} database.
+#'
+#'
+#' @param data a dataframe containing index market data. Columns should include:
+#'
+#'   \itemize{
+#'     \item{ticker: index Bloomberg tickers.}
+#'     \item{field: field Bloomberg symbols.
+#'       See \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} for a list
+#'       of accepted symbols.}
+#'     \item{date: observation date (YYYY-MM-DD).}
+#'     \item{value: observation value.}
+#'   }
+#'
+#' @return An S4 object of class \linkS4class{IndexMarket}.
+#'
+#' @import BBGsymbols
+#' @importFrom magrittr "%<>%"
+#'
+#' @export
+random_index_market <- function(data){
+
+  utils::data(list = c("fields"), package = "BBGsymbols", envir = environment())
+  fields <- dplyr::filter(fields, instrument == "index", book == "market")
+
+  stopifnot(is.data.frame(data), all.equal(names(data), c("ticker", "field", "date", "value")),
+            unique(data$field) %in% fields$symbol)
+
+  data %<>% dplyr::filter(stats::complete.cases(.)) %>%
+    dplyr::arrange(ticker, field, date) %>%
+    dplyr::mutate(date = as.Date(date, origin = "1970-01-01"), value = as.numeric(value))
+
+  tickers <- dplyr::distinct(data, ticker)
+
+  fields <- dplyr::distinct(data, ticker, field) %>%
+    dplyr::left_join(dplyr::select(fields, instrument, book, symbol),
+                     by = c("field" = "symbol")) %>%
+    dplyr::select(ticker, instrument, book, symbol = field) %>%
+    dplyr::arrange(ticker, instrument, book)
+
+  methods::new("IndexMarket", tickers = data.table::as.data.table(tickers),
+               fields = data.table::as.data.table(fields), data = data.table::as.data.table(data),
+               call = match.call())
+}
 
 
 

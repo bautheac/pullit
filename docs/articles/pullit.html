@@ -229,10 +229,10 @@ fund_market &lt;-<span class="st"> </span><span class="kw"><a href="../reference
 <p>All the objects above can be stored in a bespoke database for later off-Bloomberg consumption. The storethat package makes the process seamless by providing befitted storing methods:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(storethat)
 
-<span class="kw"><a href="https://bautheac.github.io/storethat/reference/db_create.html">db_create</a></span>()
+<span class="kw"><a href="https://www.rdocumentation.org/packages/storethat/topics/db_create">db_create</a></span>()
 
-<span class="kw"><a href="https://bautheac.github.io/storethat/reference/db_store-methods.html">db_store</a></span>(<span class="dt">object =</span> futures_TS, <span class="dt">file =</span> <span class="st">"~/storethat.sqlite"</span>, <span class="dt">verbose =</span> F)
-<span class="kw"><a href="https://bautheac.github.io/storethat/reference/db_store-methods.html">db_store</a></span>(<span class="dt">object =</span> fund_market, <span class="dt">file =</span> <span class="st">"~/storethat.sqlite"</span>, <span class="dt">verbose =</span> F)</code></pre></div>
+<span class="kw"><a href="https://www.rdocumentation.org/packages/storethat/topics/db_store-methods">db_store</a></span>(<span class="dt">object =</span> futures_TS, <span class="dt">file =</span> <span class="st">"~/storethat.sqlite"</span>, <span class="dt">verbose =</span> F)
+<span class="kw"><a href="https://www.rdocumentation.org/packages/storethat/topics/db_store-methods">db_store</a></span>(<span class="dt">object =</span> fund_market, <span class="dt">file =</span> <span class="st">"~/storethat.sqlite"</span>, <span class="dt">verbose =</span> F)</code></pre></div>
 <p>The functions above can also be used for retrieving data from a storethat database; this is done by switching the source parameter from “Bloomberg” to “storethat”. Function parameters are identical for both data sources and the returned objects have alike characteristics:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">futures_TS &lt;-<span class="st"> </span><span class="kw"><a href="../reference/pull_futures_market.html">pull_futures_market</a></span>(<span class="dt">source =</span> <span class="st">"storethat"</span>, <span class="dt">type =</span> <span class="st">"term structure"</span>, <span class="dt">active_contract_tickers =</span> tickers,
                                   start, end, <span class="dt">TS_positions =</span> 1L<span class="op">:</span>5L, <span class="dt">roll_type =</span> <span class="st">"A"</span>, <span class="dt">roll_days =</span> 0L, <span class="dt">roll_months =</span> 0L,
@@ -254,13 +254,13 @@ fund_market &lt;-<span class="st"> </span><span class="kw"><a href="../reference
 <p>Plot a futures series term structure dynamics with:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(plotit)
 
-<span class="kw"><a href="https://bautheac.github.io/plotit/reference/plot-methods.html">plot</a></span>(<span class="dt">object =</span> futures_TS, <span class="dt">ticker =</span> <span class="st">"C A Comdty"</span>)</code></pre></div>
+<span class="kw"><a href="https://www.rdocumentation.org/packages/plotit/topics/plot-methods">plot</a></span>(<span class="dt">object =</span> futures_TS, <span class="dt">ticker =</span> <span class="st">"C A Comdty"</span>)</code></pre></div>
 </div>
 <div id="fund-market" class="section level3">
 <h3 class="hasAnchor">
 <a href="#fund-market" class="anchor"></a>fund market</h3>
 <p>Plot historical fund performance with:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://bautheac.github.io/plotit/reference/plot-methods.html">plot</a></span>(<span class="dt">object =</span> fund_market, <span class="dt">ticker =</span> <span class="st">"GLD US Equity"</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/plotit/topics/plot-methods">plot</a></span>(<span class="dt">object =</span> fund_market, <span class="dt">ticker =</span> <span class="st">"GLD US Equity"</span>)</code></pre></div>
 </div>
 </div>
 <div id="references" class="section level2 unnumbered">
