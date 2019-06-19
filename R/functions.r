@@ -1116,10 +1116,11 @@ storethat_futures_aggregate <- function(file, active_contract_tickers, start, en
 #### random source ####
 #' Creates a FuturesSpot object from futures spot data.
 #'
-#' @description Futures spot data refers to data on the corresponding cash market. Futures spot/cash data
-#'   is not avaiable on Bloomberg at the time of writing. Should spot data be retrieved from other data
-#'   source(s), this function would creates a FuturesSpot data object from it in order to facilitates
-#'   storage in a \href{https://bautheac.github.io/storethat/}{\pkg{storethat}} database.
+#' @description Futures spot data refers to data on the corresponding cash market.
+#'   Should spot data be retrieved from other data source(s), This function creates
+#'   a FuturesSpot data object out of input data retrieved from any data source.
+#'   The returned FuturesSpot object facilitates storage in a
+#'   \href{https://bautheac.github.io/storethat/}{\pkg{storethat}} database.
 #'
 #'
 #' @param data a dataframe containing futures spot data. Columns should include:
@@ -1139,12 +1140,13 @@ storethat_futures_aggregate <- function(file, active_contract_tickers, start, en
 #' @importFrom magrittr "%<>%"
 #'
 #' @export
-random_futures_spot <- function(data){
+create_futures_spot <- function(data){
 
   utils::data(list = c("fields"), package = "BBGsymbols", envir = environment())
   fields <- dplyr::filter(fields, instrument == "futures", book == "market", type == "spot")
 
-  stopifnot(is.data.frame(data), all.equal(names(data), c("ticker", "field", "date", "value")), unique(data$field) %in% fields$symbol)
+  stopifnot(is.data.frame(data), all.equal(names(data), c("ticker", "field", "date", "value")),
+            unique(data$field) %in% fields$symbol)
 
   data %<>%
     dplyr::filter(stats::complete.cases(.)) %>%
