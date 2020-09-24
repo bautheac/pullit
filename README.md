@@ -3,13 +3,7 @@ pullit\!
 
 <style> body {text-align: justify} </style>
 
-[![Travis-CI Build
-Status](https://travis-ci.org/bautheac/pullit.svg?branch=master)](https://travis-ci.org/bautheac/pullit)
-[![AppVeyor Build
-Status](https://ci.appveyor.com/api/projects/status/github/bautheac/pullit?branch=master&svg=true)](https://ci.appveyor.com/project/bautheac/pullit)
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-
-## pullit\!
 
 Although self-contained with consumption value on its own, pullit is one
 of the workhorses of the [finRes](https://bautheac.github.io/finRes/)
@@ -40,15 +34,15 @@ visualization tools.
 
 Financial data retrieved using pullit can be stored using
 [storethat](https://bautheac.github.io/storethat/) for subsequent access
-whith no active Bloomberg connection needed. storethat uses a bespoke
+with no active Bloomberg connection needed. storethat uses a bespoke
 database design for easy and fast access where the data can be stored
 locally or remotely for global access, in a cloud for example.
 Retrieving previously stored data from a storethat database using pullit
 is fairly similar to retrieving it from Bloomberg. The corresponding
-functions only differ in name with their prefix refering to the data
+functions only differ in name with their prefix referring to the data
 source (storethat vs. Bloomberg); the parameters are equal.
 
-## references
+## References
 
 <div id="refs" class="references">
 

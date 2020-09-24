@@ -6,9 +6,18 @@
   \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
   SQLite database.}
 \usage{
-storethat_futures_TS(file, active_contract_tickers, start, end,
-  TS_positions, roll_type, roll_days, roll_months, roll_adjustment,
-  verbose)
+storethat_futures_TS(
+  file,
+  active_contract_tickers,
+  start,
+  end,
+  TS_positions,
+  roll_type,
+  roll_days,
+  roll_months,
+  roll_adjustment,
+  verbose
+)
 }
 \arguments{
 \item{file}{a scalar chatacter vector. Specifies the target

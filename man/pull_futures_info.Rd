@@ -4,8 +4,12 @@
 \alias{pull_futures_info}
 \title{Retrieves futures series qualitative information.}
 \usage{
-pull_futures_info(source = "Bloomberg", active_contract_tickers,
-  file = NULL, ...)
+pull_futures_info(
+  source = "Bloomberg",
+  active_contract_tickers,
+  file = NULL,
+  ...
+)
 }
 \arguments{
 \item{source}{a scalar character vector. Specifies the data source for the query:

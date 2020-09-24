@@ -4,8 +4,15 @@
 \alias{pull_fund_market}
 \title{Retrieves fund historical market data.}
 \usage{
-pull_fund_market(source = "Bloomberg", tickers, start, end,
-  verbose = T, file = NULL, ...)
+pull_fund_market(
+  source = "Bloomberg",
+  tickers,
+  start,
+  end,
+  verbose = T,
+  file = NULL,
+  ...
+)
 }
 \arguments{
 \item{source}{a scalar character vector. Specifies the data source for the query:

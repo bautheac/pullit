@@ -5,8 +5,13 @@
 \title{Retrieves futures CFTC position historical data from from a
   \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database.}
 \usage{
-storethat_futures_CFTC(active_contract_tickers, start, end, file = NULL,
-  verbose = T)
+storethat_futures_CFTC(
+  active_contract_tickers,
+  start,
+  end,
+  file = NULL,
+  verbose = T
+)
 }
 \arguments{
 \item{active_contract_tickers}{a chatacter vector. Specifies the futures active

@@ -4,8 +4,16 @@
 \alias{pull_equity_book}
 \title{Retrieves equity historical book data.}
 \usage{
-pull_equity_book(source = "Bloomberg", book, tickers, start, end,
-  verbose = T, file = NULL, ...)
+pull_equity_book(
+  source = "Bloomberg",
+  book,
+  tickers,
+  start,
+  end,
+  verbose = T,
+  file = NULL,
+  ...
+)
 }
 \arguments{
 \item{source}{a scalar character vector. Specifies the data source for the query:

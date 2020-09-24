@@ -5,8 +5,13 @@
 \title{Update your \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite
   database.}
 \usage{
-storethat_update(instrument = "all", book = "all", name = "all",
-  file = NULL, verbose = T)
+storethat_update(
+  instrument = "all",
+  book = "all",
+  name = "all",
+  file = NULL,
+  verbose = T
+)
 }
 \arguments{
 \item{instrument}{a scalar character vector. Specifies the financial instruments to get a

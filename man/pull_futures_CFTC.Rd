@@ -4,8 +4,15 @@
 \alias{pull_futures_CFTC}
 \title{Retrieves futures CFTC reports historical data.}
 \usage{
-pull_futures_CFTC(source = "Bloomberg", active_contract_tickers, start,
-  end, verbose = T, file = NULL, ...)
+pull_futures_CFTC(
+  source = "Bloomberg",
+  active_contract_tickers,
+  start,
+  end,
+  verbose = T,
+  file = NULL,
+  ...
+)
 }
 \arguments{
 \item{source}{a scalar character vector. Specifies the data source for the query:

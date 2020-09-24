@@ -5,8 +5,7 @@
 \title{Retrieves equity historical book data from a
   \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database.}
 \usage{
-storethat_equity_book(file = NULL, book, tickers, start, end,
-  verbose = T)
+storethat_equity_book(file = NULL, book, tickers, start, end, verbose = T)
 }
 \arguments{
 \item{file}{a scalar chatacter vector. Specifies the target \pkg{storethat}

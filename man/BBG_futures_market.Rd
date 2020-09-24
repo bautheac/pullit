@@ -4,8 +4,19 @@
 \alias{BBG_futures_market}
 \title{Retrieves futures market historical data from Bloomberg.}
 \usage{
-BBG_futures_market(type, active_contract_tickers, start, end, TS_positions,
-  roll_type, roll_days, roll_months, roll_adjustment, verbose, ...)
+BBG_futures_market(
+  type,
+  active_contract_tickers,
+  start,
+  end,
+  TS_positions,
+  roll_type,
+  roll_days,
+  roll_months,
+  roll_adjustment,
+  verbose,
+  ...
+)
 }
 \arguments{
 \item{type}{a scalar character vector, 'term structure' or 'aggregate'.

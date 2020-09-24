@@ -5,8 +5,7 @@
 \title{Retrieves futures aggregate historical data from from a
   \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} SQLite database.}
 \usage{
-storethat_futures_aggregate(file, active_contract_tickers, start, end,
-  verbose)
+storethat_futures_aggregate(file, active_contract_tickers, start, end, verbose)
 }
 \arguments{
 \item{file}{a scalar chatacter vector. Specifies the target

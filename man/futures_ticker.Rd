@@ -4,9 +4,14 @@
 \alias{futures_ticker}
 \title{Constructs Bloomberg futures term structure tickers.}
 \usage{
-futures_ticker(active_contract_ticker = "C A Comdty", TS_position = 1L,
-  roll_type = "A", roll_days = 0L, roll_months = 0L,
-  roll_adjustment = "N")
+futures_ticker(
+  active_contract_ticker = "C A Comdty",
+  TS_position = 1L,
+  roll_type = "A",
+  roll_days = 0L,
+  roll_months = 0L,
+  roll_adjustment = "N"
+)
 }
 \arguments{
 \item{active_contract_ticker}{a scalar chatacter vector. Specifies the
