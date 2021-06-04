@@ -491,7 +491,7 @@ db_store(object = futures_TS, file = "~/storethat.sqlite", verbose = F)
 db_store(object = fund_market, file = "~/storethat.sqlite", verbose = F)
 ```
 
-The functions above can also be used for retrieving data from a [storethat](https://bautheac.github.io/storethat/) database; this is done by switching the source parameter from "Bloomberg" to "storethat". Function parameters are identical for both data sources and the returned objects have alike characteristics:
+The functions above can also be used for retrieving data from a [storethat](https://bautheac.github.io/storethat/) database; this is done by switching the `source` parameter from "Bloomberg" to "storethat". Function parameters are identical for both data sources and providing the path to the database as a string in the `file` parameter. If omitted a pop-up window allows to browse the file system and select the database file. The other function parameters are identical for both data sources and the returned objects are identical in all aspects other than the source of the data they contain:
 
 ```{r `storethat retrieve echo`, eval = F, echo = T}
 ticker <- "C A Comdty"
