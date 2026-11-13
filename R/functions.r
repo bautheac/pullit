@@ -1754,7 +1754,7 @@ BBG_futures_info <- function(active_contract_tickers, ...){
 
   Rblpapi::blpDisconnect(con)
 
-  methods::new("FuturesInfo", info = tibble::as.tibble(query),
+  methods::new("FuturesInfo", info = tibble::as.tibble(dplyr::rename(query, symbol = field)),
                fields = data.table::as.data.table(fields), call = match.call())
 }
 
@@ -2765,7 +2765,7 @@ BBG_equity_info <- function(tickers, ...){
 
   Rblpapi::blpDisconnect(con)
 
-  methods::new("EquityInfo", info = tibble::as.tibble(query),
+  methods::new("EquityInfo", info = tibble::as.tibble(dplyr::rename(query, symbol = field)),
                fields = data.table::as.data.table(fields), call = match.call())
 }
 
@@ -3344,7 +3344,7 @@ BBG_fund_info <- function(tickers, ...){
   Rblpapi::blpDisconnect(con)
 
 
-  methods::new("FundInfo", info = tibble::as.tibble(query),
+  methods::new("FundInfo", info = tibble::as.tibble(dplyr::rename(query, symbol = field)),
                fields = data.table::as.data.table(fields), call = match.call())
 }
 
@@ -3984,7 +3984,7 @@ BBG_index_info <- function(tickers, ...){
   Rblpapi::blpDisconnect(con)
 
 
-  methods::new("IndexInfo", info = tibble::as.tibble(query),
+  methods::new("IndexInfo", info = tibble::as.tibble(dplyr::rename(query, symbol = field)),
                fields = data.table::as.data.table(fields), call = match.call())
 }
 
