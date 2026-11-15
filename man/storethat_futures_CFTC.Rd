@@ -55,14 +55,14 @@ Provided with a set of Bloomberg futures active contract tickers
 
     \item{The \link[BBGsymbols]{tickers_cftc} dataset in the
     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-    (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
+    (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for details
     on the Bloomnerg position tickers used here.}
 
     \item{Helper datasets in the
     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
-    (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+    (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 
-    \item{The \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite,
+    \item{The \href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite,
     in particular the \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
     package.}
 

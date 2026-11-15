@@ -67,13 +67,13 @@ Retrieves equity historical book data from Bloomberg. Books include
 
     \item{The \link[BBGsymbols]{fields} dataset in the
     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for
+     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for
      details on the Bloomnerg fields used here.}
 
     \item{Helper datasets in the
     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
-    (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+    (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 
   }
 }

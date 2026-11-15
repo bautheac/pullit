@@ -85,7 +85,7 @@ term structure positions, roll parameters and a time period,
 
     \item{The \link[BBGsymbols]{rolls} dataset in the
     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-    (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
+    (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for details
     regarding the \code{roll_type} & \code{roll_adjustment} parameters.}
 
     \item{The \link[BBGsymbols]{fields} dataset in the
@@ -94,9 +94,9 @@ term structure positions, roll parameters and a time period,
 
     \item{Helper datasets in the
     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
-    (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+    (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 
-    \item{The \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite,
+    \item{The \href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite,
     in particular the \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
     package.}
 

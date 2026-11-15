@@ -4,7 +4,7 @@
 #' Show method for pullit S4 objects.
 #'
 #'
-#' @param object an S4 object from \href{https://bautheac.github.io/pullit/}{\pkg{pullit}}
+#' @param object an S4 object from \href{https://dev.bautheac.net/pullit/}{\pkg{pullit}}
 #'   suite.
 #'
 #'

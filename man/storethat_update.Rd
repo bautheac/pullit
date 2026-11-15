@@ -42,7 +42,7 @@ For a given financial instrument, updates the database by book and name.
 
 }
 \seealso{
-The \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite,
+The \href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite,
   in particular the \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} &
   \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} packages.
 }
