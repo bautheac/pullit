@@ -37,7 +37,7 @@ Provided with a set of futures active contract Bloomberg tickers retrieves
 
     \item{Helper datasets in the \pkg{fewISOs} and \pkg{GICS} packages (\pkg{finRes} suite).}
 
-    \item{The \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite,
+    \item{The \href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite,
     in particular the \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
     package.}
 

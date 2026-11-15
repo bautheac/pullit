@@ -74,8 +74,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 
-<p><a href="https://bautheac.github.io/pullit/">pullit</a> together with <a href="https://bautheac.github.io/storethat/">storethat</a> are the two workhorses of the <a href="https://bautheac.github.io/finRes/">finRes</a> suite. Install the development version with <code>devtools::install_github(&quot;bautheac/pullit&quot;)</code>.<br />
-pullit works in tandem with <a href="https://bautheac.github.io/BBGsymbols/">BBGsymbols</a> to provide the R user with easy access to Bloomberg financial data for a collection of financial instruments that at the time of writting includes equity and equity-like securities, funds with the category encompassing any money-managing entity, as well as futures series and individual contracts.<br />
+<p><a href="https://dev.bautheac.net/pullit/">pullit</a> together with <a href="https://dev.bautheac.net/storethat/">storethat</a> are the two workhorses of the <a href="https://dev.bautheac.net/finRes/">finRes</a> suite. Install the development version with <code>devtools::install_github(&quot;bautheac/pullit&quot;)</code>.<br />
+pullit works in tandem with <a href="https://dev.bautheac.net/BBGsymbols/">BBGsymbols</a> to provide the R user with easy access to Bloomberg financial data for a collection of financial instruments that at the time of writting includes equity and equity-like securities, funds with the category encompassing any money-managing entity, as well as futures series and individual contracts.<br />
 For each instrument category, pullit allows data retrieval for a corresponding category specific set of data types.</p>
 <p>Load package &amp; assign global variables:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(pullit)
@@ -88,7 +88,7 @@ start &lt;-<span class="st"> </span><span class="kw">Sys.Date</span>() <span cla
 <h3>equity</h3>
 <p>Assign equity variables:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">equity_tickers &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;ADM US Equity&quot;</span>, <span class="st">&quot;KHC US Equity&quot;</span>, <span class="st">&quot;XPO US Equity&quot;</span>)</code></pre></div>
-<p>Equity data comes in two major categories, market and book. For a given corporation market data records stock market activity while book data records business activity in the form of financial statements commonly refered to as ‘books’. See the ‘fields’ dataset in <a href="https://bautheac.github.io/BBGsymbols/">BBGsymbols</a> for a detailled list of the Bloomberg fields available for data retrieval in pullit.</p>
+<p>Equity data comes in two major categories, market and book. For a given corporation market data records stock market activity while book data records business activity in the form of financial statements commonly refered to as ‘books’. See the ‘fields’ dataset in <a href="https://dev.bautheac.net/BBGsymbols/">BBGsymbols</a> for a detailled list of the Bloomberg fields available for data retrieval in pullit.</p>
 <div id="market" class="section level4">
 <h4>market</h4>
 <p>Retrieve market data from Bloomberg for Archer-Daniels-Midland (ADM US Equity), Kraft-Heinz (KHC US Equity) and XPO Logistics (XPO US Equity) with:</p>
@@ -107,7 +107,7 @@ start &lt;-<span class="st"> </span><span class="kw">Sys.Date</span>() <span cla
 <span class="co">#&gt;    call: access with get_call()</span>
 <span class="co">#&gt;  </span>
 <span class="co">#&gt; See also: get_periods()</span></code></pre></div>
-<p>The object carries a ‘tickers’ dataframe that indicates the tickers for which some data have been found, a ‘fields’ dataframe that indicates the data fields for which data has been found, a ‘data’ dataframe that hosts the retrieved data as well as a character vector hosting the original call to the function. All these can be accessed using the ‘@’ operator or more formaly using accessor methods provided by <a href="https://bautheac.github.io/finRes/">finRes</a>. A get_periods() method complements the accessor methods by indicating the start and end dates between which data have been found for each ticker and data field.</p>
+<p>The object carries a ‘tickers’ dataframe that indicates the tickers for which some data have been found, a ‘fields’ dataframe that indicates the data fields for which data has been found, a ‘data’ dataframe that hosts the retrieved data as well as a character vector hosting the original call to the function. All these can be accessed using the ‘@’ operator or more formaly using accessor methods provided by <a href="https://dev.bautheac.net/finRes/">finRes</a>. A get_periods() method complements the accessor methods by indicating the start and end dates between which data have been found for each ticker and data field.</p>
 </div>
 </div>
 </div>

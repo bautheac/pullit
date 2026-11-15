@@ -32,7 +32,7 @@
 \S4method{show}{IndexHistorical}(object)
 }
 \arguments{
-\item{object}{an S4 object from \href{https://bautheac.github.io/pullit/}{\pkg{pullit}}
+\item{object}{an S4 object from \href{https://dev.bautheac.net/pullit/}{\pkg{pullit}}
 suite.}
 }
 \description{

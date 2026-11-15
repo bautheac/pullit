@@ -24,5 +24,5 @@ An S4 object of class \linkS4class{IndexMarket}.
 \description{
 Should index data be retrieved from other source(s) than Bloomberg,
   this function creates a IndexMarket data object from it in order to facilitates
-  storage in a \href{https://bautheac.github.io/storethat/}{\pkg{storethat}} database.
+  storage in a \href{https://dev.bautheac.net/storethat/}{\pkg{storethat}} database.
 }

@@ -64,7 +64,7 @@ futures_ticker(active_contract_ticker = "C A Comdty", TS_position = 5L,
 
     \item{The \link[BBGsymbols]{rolls} dataset in the
     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}}.}
+     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}}.}
 
   }
 }

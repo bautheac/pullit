@@ -50,7 +50,7 @@
 #'
 #'     \item{The \link[BBGsymbols]{rolls} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}}.}
+#'      (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}}.}
 #'
 #'   }
 #'
@@ -176,7 +176,7 @@ futures_ticker <- function(active_contract_ticker = "C A Comdty", TS_position = 
 #'
 #'     \item{The \link[BBGsymbols]{rolls} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite)
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite)
 #'     for details regarding the \code{roll_type} & \code{roll_adjustment} parameters.}
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
@@ -185,7 +185,7 @@ futures_ticker <- function(active_contract_ticker = "C A Comdty", TS_position = 
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
 #'   }
 #'
@@ -302,7 +302,7 @@ pull_futures_market <- function(source = "Bloomberg", type = "term structure", a
 #'
 #'     \item{The \link[BBGsymbols]{rolls} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite)
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite)
 #'     for details regarding the \code{roll_type} & \code{roll_adjustment} parameters.}
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
@@ -311,7 +311,7 @@ pull_futures_market <- function(source = "Bloomberg", type = "term structure", a
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
 #'   }
 #'
@@ -447,7 +447,7 @@ BBG_futures_market <- function(type, active_contract_tickers, start, end, TS_pos
 #'
 #'     \item{The \link[BBGsymbols]{rolls} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for details
 #'     regarding the \code{roll_type} & \code{roll_adjustment} parameters.}
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
@@ -456,9 +456,9 @@ BBG_futures_market <- function(type, active_contract_tickers, start, end, TS_pos
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
-#'     \item{The \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite,
+#'     \item{The \href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite,
 #'     in particular the \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
 #'     package.}
 #'
@@ -619,7 +619,7 @@ storethat_futures_market <- function(file, type, active_contract_tickers, start,
 #'
 #'     \item{The \link[BBGsymbols]{rolls} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for details
 #'     regarding the \code{roll_type} & \code{roll_adjustment} parameters.}
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
@@ -627,7 +627,7 @@ storethat_futures_market <- function(file, type, active_contract_tickers, start,
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
 #'   }
 #'
@@ -767,7 +767,7 @@ BBG_futures_TS <- function(active_contract_tickers, start, end, TS_positions, ro
 #'
 #'     \item{The \link[BBGsymbols]{rolls} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for details
 #'     regarding the \code{roll_type} & \code{roll_adjustment} parameters.}
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
@@ -776,9 +776,9 @@ BBG_futures_TS <- function(active_contract_tickers, start, end, TS_positions, ro
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
-#'     \item{The \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite,
+#'     \item{The \href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite,
 #'     in particular the \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
 #'     package.}
 #'
@@ -924,7 +924,7 @@ storethat_futures_TS <- function(file, active_contract_tickers, start, end, TS_p
 #'
 #'     \item{The \link[BBGsymbols]{rolls} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for details
 #'     regarding the \code{roll_type} & \code{roll_adjustment} parameters.}
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
@@ -932,7 +932,7 @@ storethat_futures_TS <- function(file, active_contract_tickers, start, end, TS_p
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
 #'   }
 #'
@@ -1025,7 +1025,7 @@ BBG_futures_aggregate <- function(active_contract_tickers, start, end, verbose, 
 #'
 #'     \item{The \link[BBGsymbols]{rolls} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for details
 #'     regarding the \code{roll_type} & \code{roll_adjustment} parameters.}
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
@@ -1034,9 +1034,9 @@ BBG_futures_aggregate <- function(active_contract_tickers, start, end, verbose, 
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
-#'     \item{The \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite,
+#'     \item{The \href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite,
 #'     in particular the \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
 #'     package.}
 #'
@@ -1120,7 +1120,7 @@ storethat_futures_aggregate <- function(file, active_contract_tickers, start, en
 #'   Should spot data be retrieved from other data source(s), This function creates
 #'   a FuturesSpot data object out of input data retrieved from any data source.
 #'   The returned FuturesSpot object facilitates storage in a
-#'   \href{https://bautheac.github.io/storethat/}{\pkg{storethat}} database.
+#'   \href{https://dev.bautheac.net/storethat/}{\pkg{storethat}} database.
 #'
 #'
 #' @param data a dataframe containing futures spot data. Columns should include:
@@ -1317,12 +1317,12 @@ storethat_futures_spot <- function(file, active_contract_tickers, start, end, ve
 #'
 #'     \item{The \link[BBGsymbols]{tickers_cftc} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite)
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite)
 #'     for details on the Bloomnerg position tickers used here.}
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
 #'   }
 #'
@@ -1397,12 +1397,12 @@ pull_futures_CFTC <- function(source = "Bloomberg", active_contract_tickers, sta
 #'
 #'     \item{The \link[BBGsymbols]{tickers_cftc} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite)
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite)
 #'     for details on the Bloomnerg position tickers used here.}
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
 #'   }
 #'
@@ -1507,14 +1507,14 @@ BBG_futures_CFTC <- function(active_contract_tickers, start, end, verbose = T, .
 #'
 #'     \item{The \link[BBGsymbols]{tickers_cftc} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for details
 #'     on the Bloomnerg position tickers used here.}
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} package
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
-#'     \item{The \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite,
+#'     \item{The \href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite,
 #'     in particular the \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
 #'     package.}
 #'
@@ -1652,13 +1652,13 @@ storethat_futures_CFTC <- function(active_contract_tickers, start, end, file = N
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for
+#'      (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for
 #'      details on the Bloomnerg fields used here.}
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
 #'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
 #'   }
 #'
@@ -1713,13 +1713,13 @@ pull_futures_info <- function(source = "Bloomberg", active_contract_tickers, fil
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for
+#'      (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for
 #'      details on the Bloomnerg fields used here.}
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
 #'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
 #'   }
 #'
@@ -1789,7 +1789,7 @@ BBG_futures_info <- function(active_contract_tickers, ...){
 #'
 #'     \item{Helper datasets in the \pkg{fewISOs} and \pkg{GICS} packages (\pkg{finRes} suite).}
 #'
-#'     \item{The \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite,
+#'     \item{The \href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite,
 #'     in particular the \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
 #'     package.}
 #'
@@ -1898,13 +1898,13 @@ storethat_futures_info <- function(active_contract_tickers, file = NULL){
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite)
+#'      (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite)
 #'      for details on the Bloomnerg fields used here.}
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
 #'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
 #'   }
 #'
@@ -1974,13 +1974,13 @@ pull_equity_market <- function(source = "Bloomberg", tickers, start, end,
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite)
+#'      (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite)
 #'      for details on the Bloomnerg fields used here.}
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
 #'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
 #'   }
 #'
@@ -2073,14 +2073,14 @@ BBG_equity_market <- function(tickers, start, end, verbose = T, ...){
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the
+#'      (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for details on the
 #'      Bloomnerg fields used here.}
 #'
 #'     \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
 #'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
-#'     \item{The \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite,
+#'     \item{The \href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite,
 #'     in particular the \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
 #'     package.}
 #'
@@ -2228,13 +2228,13 @@ storethat_equity_market <- function(file, tickers, start, end, verbose){
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for
+#'      (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for
 #'      details on the Bloomnerg fields used here.}
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
 #'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
 #'   }
 #'
@@ -2342,13 +2342,13 @@ pull_equity_book <- function(source = "Bloomberg", book, tickers, start, end,
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for
+#'      (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for
 #'      details on the Bloomnerg fields used here.}
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
 #'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
 #'   }
 #'
@@ -2484,15 +2484,15 @@ BBG_equity_book <- function(book, tickers, start, end, verbose = T, ...){
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for details
 #'     on the Bloomnerg fields used here.}
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
 #'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
-#'     \item{The \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite,
+#'     \item{The \href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite,
 #'     in particular the \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
 #'     package.}
 #'
@@ -2649,13 +2649,13 @@ storethat_equity_book <- function(file = NULL, book, tickers, start, end, verbos
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
+#'      (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for details
 #'      on the Bloomnerg fields used here.}
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
 #'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
 #'
 #'   }
@@ -2718,13 +2718,13 @@ pull_equity_info <- function(source = "Bloomberg", tickers, file = NULL, ...){
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
+#'      (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for details
 #'      on the Bloomnerg fields used here.}
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
 #'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
 #'
 #'   }
@@ -2796,14 +2796,14 @@ BBG_equity_info <- function(tickers, ...){
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the Bloomnerg
+#'      (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for details on the Bloomnerg
 #'      fields used here.}
 #'
 #'     \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
 #'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
-#'     \item{The \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite,
+#'     \item{The \href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite,
 #'     in particular the \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
 #'     package.}
 #'
@@ -2913,13 +2913,13 @@ storethat_equity_info <- function(tickers, file = NULL){
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
+#'      (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for details
 #'      on the Bloomnerg fields used here.}
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
 #'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
 #'   }
 #'
@@ -2992,13 +2992,13 @@ pull_fund_market <- function(source = "Bloomberg", tickers, start, end,
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
+#'      (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for details
 #'      on the Bloomnerg fields used here.}
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
 #'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
 #'   }
 #'
@@ -3094,15 +3094,15 @@ BBG_fund_market <- function(tickers, start, end, verbose = T, ...){
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the
+#'      (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for details on the
 #'      Bloomnerg fields used here.}
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
 #'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
-#'     \item{The \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite,
+#'     \item{The \href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite,
 #'     in particular the \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
 #'     package.}
 #'
@@ -3230,13 +3230,13 @@ storethat_fund_market <- function(file = NULL, tickers, start, end, verbose = T)
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
+#'      (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for details
 #'      on the Bloomnerg fields used here.}
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
 #'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
 #'
 #'   }
@@ -3296,13 +3296,13 @@ pull_fund_info <- function(source = "Bloomberg", tickers, file = NULL, ...){
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
+#'      (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for details
 #'      on the Bloomnerg fields used here.}
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
 #'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
 #'
 #'   }
@@ -3376,14 +3376,14 @@ BBG_fund_info <- function(tickers, ...){
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the Bloomnerg
+#'      (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for details on the Bloomnerg
 #'      fields used here.}
 #'
 #'     \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
 #'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
-#'     \item{The \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite,
+#'     \item{The \href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite,
 #'     in particular the \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
 #'     package.}
 #'
@@ -3496,13 +3496,13 @@ storethat_fund_info <- function(file = NULL, tickers){
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
+#'      (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for details
 #'      on the Bloomnerg fields used here.}
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
 #'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
 #'   }
 #'
@@ -3575,13 +3575,13 @@ pull_index_market <- function(source = "Bloomberg", tickers, start, end,
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
+#'      (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for details
 #'      on the Bloomnerg fields used here.}
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
 #'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
 #'   }
 #'
@@ -3677,15 +3677,15 @@ BBG_index_market <- function(tickers, start, end, verbose = T, ...){
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the
+#'      (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for details on the
 #'      Bloomnerg fields used here.}
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
 #'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
-#'     \item{The \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite,
+#'     \item{The \href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite,
 #'     in particular the \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
 #'     package.}
 #'
@@ -3783,7 +3783,7 @@ storethat_index_market <- function(file = NULL, tickers, start, end, verbose = T
 #'
 #' @description Should index data be retrieved from other source(s) than Bloomberg,
 #'   this function creates a IndexMarket data object from it in order to facilitates
-#'   storage in a \href{https://bautheac.github.io/storethat/}{\pkg{storethat}} database.
+#'   storage in a \href{https://dev.bautheac.net/storethat/}{\pkg{storethat}} database.
 #'
 #'
 #' @param data a dataframe containing index market data. Columns should include:
@@ -3867,13 +3867,13 @@ random_index_market <- function(data){
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
+#'      (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for details
 #'      on the Bloomnerg fields used here.}
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
 #'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
 #'
 #'   }
@@ -3933,13 +3933,13 @@ pull_index_info <- function(source = "Bloomberg", tickers, file = NULL, ...){
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
+#'      (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for details
 #'      on the Bloomnerg fields used here.}
 #'
 #'     \item{Helper datasets in the
 #'     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
 #'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
 #'
 #'   }
@@ -4016,14 +4016,14 @@ BBG_index_info <- function(tickers, ...){
 #'
 #'     \item{The \link[BBGsymbols]{fields} dataset in the
 #'     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-#'      (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details on the Bloomnerg
+#'      (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for details on the Bloomnerg
 #'      fields used here.}
 #'
 #'     \item{Helper datasets in the \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
 #'     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
-#'     (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+#'     (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 #'
-#'     \item{The \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite,
+#'     \item{The \href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite,
 #'     in particular the \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
 #'     package.}
 #'
@@ -4115,7 +4115,7 @@ storethat_index_info <- function(file = NULL, tickers){
 #' @details For a given financial instrument, updates the database by book and name.
 #'
 #'
-#' @seealso The \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite,
+#' @seealso The \href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite,
 #'   in particular the \href{https://github.com/bautheac/storethat/}{\pkg{storethat}} &
 #'   \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} packages.
 #'

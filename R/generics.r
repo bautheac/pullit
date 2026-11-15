@@ -205,12 +205,12 @@ setGeneric("get_data", function(object) standardGeneric("get_data"))
 # call ####
 
 #' Accesses the \code{call} slot of various S4 objects in the
-#'   \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite.
+#'   \href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite.
 #'
 #'
 #' @description Access method for the \code{call} slot of various S4
 #'   objects in the
-#'   \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite.
+#'   \href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite.
 #'
 #'
 #' @param object an S4 object of classes \linkS4class{DataInfo} or

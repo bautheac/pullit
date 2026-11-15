@@ -8,7 +8,7 @@
 \alias{get_call,DataHistorical-method}
 \alias{get_call,DataHistorical}
 \title{Accesses the \code{call} slot of various S4 objects in the
-  \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite.}
+  \href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite.}
 \usage{
 get_call(object)
 
@@ -26,5 +26,5 @@ The original call to the constructor function.
 \description{
 Access method for the \code{call} slot of various S4
   objects in the
-  \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite.
+  \href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite.
 }

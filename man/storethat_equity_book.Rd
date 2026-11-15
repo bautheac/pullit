@@ -70,15 +70,15 @@ Retrieve equity historical book data previously stored in a
 
     \item{The \link[BBGsymbols]{fields} dataset in the
     \href{https://github.com/bautheac/BBGsymbols/}{\pkg{BBGsymbols}} package
-    (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite) for details
+    (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite) for details
     on the Bloomnerg fields used here.}
 
     \item{Helper datasets in the
     \href{https://github.com/bautheac/fewISOs/}{\pkg{fewISOs}} and
     \href{https://github.com/bautheac/GICS/}{\pkg{GICS}} packages
-    (\href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite).}
+    (\href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite).}
 
-    \item{The \href{https://bautheac.github.io/finRes/}{\pkg{finRes}} suite,
+    \item{The \href{https://dev.bautheac.net/finRes/}{\pkg{finRes}} suite,
     in particular the \href{https://github.com/bautheac/storethat/}{\pkg{storethat}}
     package.}
 

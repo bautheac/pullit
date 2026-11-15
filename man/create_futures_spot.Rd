@@ -26,5 +26,5 @@ Futures spot data refers to data on the corresponding cash market.
   Should spot data be retrieved from other data source(s), This function creates
   a FuturesSpot data object out of input data retrieved from any data source.
   The returned FuturesSpot object facilitates storage in a
-  \href{https://bautheac.github.io/storethat/}{\pkg{storethat}} database.
+  \href{https://dev.bautheac.net/storethat/}{\pkg{storethat}} database.
 }
