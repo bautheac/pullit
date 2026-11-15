@@ -1,6 +1,6 @@
 Package: pullit
 Title: Pulling financial data from Bloomberg made easy
-Version: 0.0.1.0
+Version: 0.0.1.1
 Authors@R: person("Olivier", "Bauthéac", email = "o.bautheac@gmail.com", role = c("aut", "cre"))
 Description: Bloomberg financial data collection in R made easy.
 Depends: R (>= 3.4.0)
