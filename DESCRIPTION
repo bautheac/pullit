@@ -25,12 +25,14 @@ Imports:
     tibble (>= 1.4.2),
     tidyr (>= 0.8.1)
 Suggests:
+    fewISOs,
     knitr,
     plotit,
     rmarkdown,
     storethat
 Remotes:
     bautheac/BBGsymbols,
+    bautheac/fewISOs,
     bautheac/finRes,
     bautheac/plotit,
     bautheac/storethat
