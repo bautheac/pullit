@@ -452,8 +452,11 @@ simulate_cftc <- function(f, date, spot, oi) {
 
   # Legacy format only: the commercial hedging pressure factor (factorem::CHP_factor)
   # is the one consumer, and it uses the legacy commercial / non-commercial split.
-  # Some active contracts have a retired series next to the current one (XBWA:
-  # unleaded and RBOB gasoline); keep the first of each kind.
+  # XBWA has two series per kind: RBOB gasoline (X, from the October 2006
+  # contract on) and the NY unleaded gasoline it replaced (U, up to September
+  # 2006; see the ticker's description in BBGsymbols::tickers_futures). The
+  # window starts after the switch, so Bloomberg would return nothing for U.
+  # Keep the first series of each kind, which is the current one.
   rows <- dplyr::filter(tickers_cftc, `active contract ticker` == f$ticker, format == "legacy") %>%
     dplyr::distinct(format, underlying, unit, participant, position, .keep_all = TRUE)
   series <- lapply(seq_len(nrow(rows)), function(j) {
