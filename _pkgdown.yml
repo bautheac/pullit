@@ -35,7 +35,7 @@ reference:
       - get_tickers
       - get_active_contract_tickers
       - get_term_structure_tickers
-      - get_cftc_tickers
+      - get_CFTC_tickers
       - get_fields
       - get_data
       - get_info
