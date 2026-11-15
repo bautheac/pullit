@@ -41,6 +41,11 @@ jobs:
           extra-packages: any::pkgdown, any::pkgload
           needs: website
 
+      - name: Install the package
+        # The articles call library(pullit) and read its synthetic database
+        # with system.file(), so the package itself must be installed.
+        run: R CMD INSTALL .
+
       - name: Build pkgdown site
         # The articles read the synthetic database in inst/extdata, so they
         # render without Bloomberg.

@@ -12,9 +12,9 @@ vignette: >
 <style> body {text-align: justify} </style>
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, eval = TRUE, echo = FALSE, comment = "#>", warning = FALSE, message = FALSE)
-folder <- "literature_files"; dir.create(folder)
-download.file("https://www.dropbox.com/s/htnd7o9nnkk8ng8/references.bib?dl=1", paste(folder, "references.bib", sep = "/"))
-path <- here::here("development", "storethat.sqlite")
+path <- system.file("extdata", "storethat.sqlite", package = "pullit")
+# pkgdown renders articles in a session where pullit is not installed.
+if (! nzchar(path)) path <- here::here("inst", "extdata", "storethat.sqlite")
 ```
 
 [pullit](https://dev.bautheac.net/pullit/) together with [storethat](https://dev.bautheac.net/storethat/) are the two workhorses for data ETL (extract, transform, load) work in the [finRes](https://dev.bautheac.net/finRes/) suite. Install the development version with `devtools::install_github("bautheac/pullit")`.  
@@ -27,7 +27,7 @@ An active Bloomberg connection is required to retrieve Bloomberg financial data 
 ```{r `globals`, message = FALSE, echo = T}
 library(pullit); library(lubridate)
 
-start <- "2016-01-01"; end <- "2017-01-01"
+start <- "2024-11-01"; end <- "2026-11-13"
 ```
 
 ### equity
@@ -505,7 +505,6 @@ ticker <- "SPY US Equity"
 fund_market <- pull_fund_market(source = "storethat", tickers, start, end, verbose = F)
 ```
 ```{r `storethat retrieve eval`, eval = T, echo = F}
-path = here::here("development", "storethat.sqlite")
 ticker <- "C A Comdty"
 futures_TS <- pull_futures_market(source = "storethat", type = "term structure", active_contract_tickers = ticker,
                                   start, end, TS_positions = 1L:5L, roll_type = "A", roll_days = 0L, roll_months = 0L,

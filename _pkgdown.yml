@@ -4,30 +4,31 @@ url: https://dev.bautheac.net/pullit
 
 
 reference:
+  - title: Pull
+    desc: >
+        Retrieve data from Bloomberg or from a storethat database:
+    contents:
+      - starts_with("pull_")
   - title: Bloomberg
     desc: >
         Retrieve data from Bloomberg:
     contents:
-      - BBG_equity_market
-      - BBG_equity_book
-      - BBG_equity_info
-      - BBG_futures_market
-      - BBG_futures_CFTC
-      - BBG_futures_info
-      - BBG_fund_market
-      - BBG_fund_info
+      - starts_with("BBG_")
   - title: storethat
     desc: >
         Retrieve data from a storethat database:
     contents:
-      - storethat_equity_market
-      - storethat_equity_book
-      - storethat_equity_info
-      - storethat_futures_market
-      - storethat_futures_CFTC
-      - storethat_futures_info
-      - storethat_fund_market
-      - storethat_fund_info
+      - starts_with("storethat_")
+  - title: Update
+    desc: >
+        Update the data of a storethat database:
+    contents:
+      - starts_with("update_")
+  - title: Classes
+    desc: >
+        Objects returned by the pull functions:
+    contents:
+      - ends_with("-class")
   - title: accessors
     desc: >
       Access returned data:
@@ -41,6 +42,14 @@ reference:
       - get_info
       - get_call
       - get_periods
+      - "`show,DataInfo-method`"
+  - title: Helpers
+    contents:
+      - all_fields_exist
+      - all_tickers_exist
+      - create_futures_spot
+      - futures_ticker
+      - random_index_market
 
 articles:
   - title: pullit!
