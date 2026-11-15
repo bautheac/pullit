@@ -38,6 +38,6 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
-URL: https://bautheac.github.io/pullit
+URL: https://dev.bautheac.net/pullit
 BugReports: https://github.com/bautheac/pullit/issues
 VignetteBuilder: knitr
