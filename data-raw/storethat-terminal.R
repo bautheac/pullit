@@ -456,8 +456,9 @@ simulate_cftc <- function(f, date, spot, oi) {
   # contract on) and the NY unleaded gasoline it replaced (U, up to September
   # 2006; see the ticker's description in BBGsymbols::tickers_futures). The
   # window starts after the switch, so Bloomberg would return nothing for U.
-  # Keep the first series of each kind, which is the current one.
-  rows <- dplyr::filter(tickers_cftc, `active contract ticker` == f$ticker, format == "legacy") %>%
+  # Drop the retired series by name and keep the first of each remaining kind.
+  rows <- dplyr::filter(tickers_cftc, `active contract ticker` == f$ticker, format == "legacy",
+                        ! grepl("^XBWA.U", ticker)) %>%
     dplyr::distinct(format, underlying, unit, participant, position, .keep_all = TRUE)
   series <- lapply(seq_len(nrow(rows)), function(j) {
     x <- rows[j, ]
