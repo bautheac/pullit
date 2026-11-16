@@ -60,9 +60,12 @@ The `fields` helper dataset from [BBGsymbols](https://dev.bautheac.net/BBGsymbol
 library(BBGsymbols)
 data("fields", package = "BBGsymbols")
 
-dplyr::left_join(
-  get_fields(equity_market), dplyr::select(fields, name, symbol), by = "symbol"
-) %>% dplyr::select(ticker, instrument, book, field = name)
+equity_market_fields <- fields %>%
+  dplyr::filter(instrument == "equity", book == "market") %>%
+  dplyr::distinct(name, symbol)
+
+dplyr::left_join(get_fields(equity_market), equity_market_fields, by = "symbol") %>%
+  dplyr::select(ticker, instrument, book, field = name)
 ```
 
 * Market data:
@@ -72,7 +75,7 @@ get_data(equity_market)
 With [BBGsymbols](https://dev.bautheac.net/BBGsymbols/):
 ```{r `equity market data BBGsymbols`}
 dplyr::left_join(
-  get_data(equity_market), dplyr::select(fields, name, symbol), by = c("field" = "symbol")
+  get_data(equity_market), equity_market_fields, by = c("field" = "symbol")
 ) %>% dplyr::select(ticker, field = name, date, value)
 ```
 * Original function call:
@@ -342,7 +345,12 @@ dplyr::left_join(
     by = c("active contract ticker" = "ticker")
   ) %>%
   dplyr::rename(symbol = field) %>%
-  dplyr::left_join(dplyr::select(fields, symbol, field = name), by = "symbol") %>% 
+  dplyr::left_join(
+    fields %>%
+      dplyr::filter(instrument == "futures", book == "market") %>%
+      dplyr::distinct(symbol, field = name),
+    by = "symbol"
+  ) %>% 
   dplyr::select(asset = name, `TS position`, field, date, value) %>% head()
 ```
 
