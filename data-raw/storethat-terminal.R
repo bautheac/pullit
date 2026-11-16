@@ -2,7 +2,7 @@
 #
 # Every number served here is synthetic. Names, tickers, exchange codes, GICS
 # codes and futures contract specifications are public reference data; the
-# tickers and contract specifications come from BBGsymbols. Price levels and
+# tickers and contract specifications come from BBGsymbols. Price levels (late 2024) and
 # company sizes are set to plausible orders of magnitude and everything else
 # is simulated:
 #
@@ -101,25 +101,25 @@ volume <- function(returns, base) {
 
 equity <- tibble::tribble(
   ~ticker,           ~name,                         ~country, ~mic,   ~crncy, ~gics,      ~price, ~shares, ~revenue, ~fx,  ~vol, ~beta, ~gross, ~oper,  ~payout, ~turnover, ~ppe, ~lev, ~volume,  ~listed,
-  "BP/ LN Equity",   "BP PLC",                      "GB",     "XLON", "GBp",  "10102010", 350,    18400,   180000,   1.35, 0.28, 1.1,   0.14,   0.03,   0.95,    0.70,      0.55, 0.22, 40e6,     NA,
-  "WEIR LN Equity",  "Weir Group PLC/The",          "GB",     "XLON", "GBp",  "20106020", 1000,   218,     1950,     1.00, 0.38, 1.3,   0.32,   0.10,   0.45,    0.75,      0.20, 0.28, 0.9e6,    NA,
-  "AAPL US Equity",  "Apple Inc",                   "US",     "XNGS", "USD",  "45202030", 105,    5500,    220000,   1.00, 0.23, 1.1,   0.385,  0.27,   0.25,    0.70,      0.10, 0.25, 35e6,     NA,
-  "LZB US Equity",   "La-Z-Boy Inc",                "US",     "XNYS", "USD",  "25201020", 24,     50,      1550,     1.00, 0.28, 1.2,   0.42,   0.08,   0.25,    1.60,      0.20, 0.05, 0.5e6,    NA,
-  "SGA US Equity",   "Saga Communications Inc",     "US",     "XNGS", "USD",  "25401020", 42,     5.9,     140,      1.00, 0.25, 0.8,   0.35,   0.18,   0.50,    0.65,      0.25, 0.10, 0.02e6,   NA,
-  "AGCO US Equity",  "AGCO Corp",                   "US",     "XNYS", "USD",  "20106015", 45,     87,      7400,     1.00, 0.25, 1.3,   0.20,   0.05,   0.25,    1.00,      0.20, 0.25, 0.9e6,    NA,
-  "CLR US Equity",   "Continental Resources Inc/OK","US",     "XNYS", "USD",  "10102020", 22,     372,     2000,     1.00, 0.55, 1.8,   0.55,   0.05,   0.00,    0.14,      0.85, 0.45, 3e6,      NA,
-  "GHC US Equity",   "Graham Holdings Co",          "US",     "XNYS", "USD",  "25302010", 480,    5.7,     2500,     1.00, 0.22, 0.9,   0.40,   0.06,   0.15,    0.45,      0.20, 0.12, 0.03e6,   NA,
-  "MAN US Equity",   "ManpowerGroup Inc",           "US",     "XNYS", "USD",  "20202010", 82,     72,      19500,    1.00, 0.25, 1.3,   0.17,   0.04,   0.25,    2.40,      0.03, 0.12, 0.8e6,    NA,
-  "SITE US Equity",  "SiteOne Landscape Supply Inc","US",     "XNYS", "USD",  "20107010", 21,     39,      1650,     1.00, 0.30, 1.2,   0.32,   0.05,   0.00,    1.40,      0.08, 0.35, 0.4e6,    NA,
-  "AJRD US Equity",  "Aerojet Rocketdyne Holdings Inc", "US", "XNYS", "USD",  "20101010", 15.5,   64,      1750,     1.00, 0.30, 1.0,   0.15,   0.05,   0.00,    0.80,      0.15, 0.30, 0.6e6,    NA,
-  "COMM US Equity",  "CommScope Holding Co Inc",    "US",     "XNGS", "USD",  "45201020", 25,     192,     4900,     1.00, 0.30, 1.3,   0.40,   0.12,   0.00,    0.70,      0.10, 0.50, 1.5e6,    NA,
-  "GME US Equity",   "GameStop Corp",               "US",     "XNYS", "USD",  "25504050", 28,     104,     8900,     1.00, 0.38, 1.1,   0.32,   0.06,   0.35,    1.80,      0.08, 0.12, 3e6,      NA,
-  "MEI US Equity",   "Methode Electronics Inc",     "US",     "XNYS", "USD",  "45203015", 31,     38,      800,      1.00, 0.30, 1.2,   0.27,   0.13,   0.20,    1.20,      0.20, 0.03, 0.25e6,   NA,
-  "SMP US Equity",   "Standard Motor Products Inc", "US",     "XNYS", "USD",  "25101010", 37,     23,      1060,     1.00, 0.26, 1.0,   0.30,   0.09,   0.30,    1.30,      0.10, 0.10, 0.15e6,   NA,
-  "BHP US Equity",   "BHP Group Ltd",               "AU",     "XNYS", "USD",  "15104030", 60,     2530,    55000,    1.00, 0.30, 1.2,   0.55,   0.30,   0.60,    0.45,      0.55, 0.20, 3e6,      NA,
-  "NUE US Equity",   "Nucor Corp",                  "US",     "XNYS", "USD",  "15104050", 130,    240,     30000,    1.00, 0.32, 1.4,   0.15,   0.10,   0.25,    1.10,      0.40, 0.20, 2e6,      NA,
-  "RIO US Equity",   "Rio Tinto PLC",               "GB",     "XNYS", "USD",  "15104030", 65,     1625,    54000,    1.00, 0.28, 1.2,   0.45,   0.28,   0.60,    0.40,      0.60, 0.18, 2.5e6,    NA,
-  "RNO FP Equity",   "Renault SA",                  "FR",     "XPAR", "EUR",  "25102010", 42,     296,     50000,    1.00, 0.32, 1.4,   0.18,   0.06,   0.30,    0.55,      0.12, 0.45, 1.2e6,    NA
+  "BP/ LN Equity",   "BP PLC",                      "GB",     "XLON", "GBp",  "10102010", 410,    18400,   211000,   1.35, 0.28, 1.1,   0.14,   0.03,   0.95,    0.70,      0.55, 0.22, 40e6,     NA,
+  "WEIR LN Equity",  "Weir Group PLC/The",          "GB",     "XLON", "GBp",  "20106020", 2150,   218,     4190,     1.00, 0.38, 1.3,   0.32,   0.10,   0.45,    0.75,      0.20, 0.28, 0.9e6,    NA,
+  "AAPL US Equity",  "Apple Inc",                   "US",     "XNGS", "USD",  "45202030", 225,    5500,    471000,   1.00, 0.23, 1.1,   0.385,  0.27,   0.25,    0.70,      0.10, 0.25, 35e6,     NA,
+  "LZB US Equity",   "La-Z-Boy Inc",                "US",     "XNYS", "USD",  "25201020", 42,     50,      2710,     1.00, 0.28, 1.2,   0.42,   0.08,   0.25,    1.60,      0.20, 0.05, 0.5e6,    NA,
+  "SGA US Equity",   "Saga Communications Inc",     "US",     "XNGS", "USD",  "25401020", 17,     5.9,     56.7,     1.00, 0.25, 0.8,   0.35,   0.18,   0.50,    0.65,      0.25, 0.10, 0.02e6,   NA,
+  "AGCO US Equity",  "AGCO Corp",                   "US",     "XNYS", "USD",  "20106015", 95,     87,      15600,    1.00, 0.25, 1.3,   0.20,   0.05,   0.25,    1.00,      0.20, 0.25, 0.9e6,    NA,
+  "CLR US Equity",   "Continental Resources Inc/OK","US",     "XNYS", "USD",  "10102020", 55,     372,     5000,     1.00, 0.55, 1.8,   0.55,   0.05,   0.00,    0.14,      0.85, 0.45, 3e6,      NA,
+  "GHC US Equity",   "Graham Holdings Co",          "US",     "XNYS", "USD",  "25302010", 900,    5.7,     4690,     1.00, 0.22, 0.9,   0.40,   0.06,   0.15,    0.45,      0.20, 0.12, 0.03e6,   NA,
+  "MAN US Equity",   "ManpowerGroup Inc",           "US",     "XNYS", "USD",  "20202010", 60,     72,      14300,    1.00, 0.25, 1.3,   0.17,   0.04,   0.25,    2.40,      0.03, 0.12, 0.8e6,    NA,
+  "SITE US Equity",  "SiteOne Landscape Supply Inc","US",     "XNYS", "USD",  "20107010", 130,    39,      10200,    1.00, 0.30, 1.2,   0.32,   0.05,   0.00,    1.40,      0.08, 0.35, 0.4e6,    NA,
+  "AJRD US Equity",  "Aerojet Rocketdyne Holdings Inc", "US", "XNYS", "USD",  "20101010", 58,     64,      6550,     1.00, 0.30, 1.0,   0.15,   0.05,   0.00,    0.80,      0.15, 0.30, 0.6e6,    NA,
+  "COMM US Equity",  "CommScope Holding Co Inc",    "US",     "XNGS", "USD",  "45201020", 3.5,    192,     686,      1.00, 0.30, 1.3,   0.40,   0.12,   0.00,    0.70,      0.10, 0.50, 1.5e6,    NA,
+  "GME US Equity",   "GameStop Corp",               "US",     "XNYS", "USD",  "25504050", 25,     104,     7950,     1.00, 0.38, 1.1,   0.32,   0.06,   0.35,    1.80,      0.08, 0.12, 3e6,      NA,
+  "MEI US Equity",   "Methode Electronics Inc",     "US",     "XNYS", "USD",  "45203015", 12,     38,      310,      1.00, 0.30, 1.2,   0.27,   0.13,   0.20,    1.20,      0.20, 0.03, 0.25e6,   NA,
+  "SMP US Equity",   "Standard Motor Products Inc", "US",     "XNYS", "USD",  "25101010", 33,     23,      945,      1.00, 0.26, 1.0,   0.30,   0.09,   0.30,    1.30,      0.10, 0.10, 0.15e6,   NA,
+  "BHP US Equity",   "BHP Group Ltd",               "AU",     "XNYS", "USD",  "15104030", 55,     2530,    50400,    1.00, 0.30, 1.2,   0.55,   0.30,   0.60,    0.45,      0.55, 0.20, 3e6,      NA,
+  "NUE US Equity",   "Nucor Corp",                  "US",     "XNYS", "USD",  "15104050", 135,    240,     31200,    1.00, 0.32, 1.4,   0.15,   0.10,   0.25,    1.10,      0.40, 0.20, 2e6,      NA,
+  "RIO US Equity",   "Rio Tinto PLC",               "GB",     "XNYS", "USD",  "15104030", 60,     1625,    49800,    1.00, 0.28, 1.2,   0.45,   0.28,   0.60,    0.40,      0.60, 0.18, 2.5e6,    NA,
+  "RNO FP Equity",   "Renault SA",                  "FR",     "XPAR", "EUR",  "25102010", 48,     296,     57100,    1.00, 0.32, 1.4,   0.18,   0.06,   0.30,    0.55,      0.12, 0.45, 1.2e6,    NA
 )
 
 simulate_markets <- function() {
@@ -266,8 +266,8 @@ simulate_fundamentals <- function(e, market) {
 
 fund <- tibble::tribble(
   ~ticker,          ~name,                         ~parent,            ~type, ~leverage, ~focus,          ~price, ~shares, ~volume,
-  "SPY US Equity",  "SPDR S&P 500 ETF Trust",      "State Street Corp", "ETF", "FALSE",   "Equity",        201,    950,     95e6,
-  "UGAZ US Equity", "3x Long Natural Gas ETN",     "",                  "ETN", "TRUE",    "Commodity",     35,     12,      6e6
+  "SPY US Equity",  "SPDR S&P 500 ETF Trust",      "State Street Corp", "ETF", "FALSE",   "Equity",        575,    950,     95e6,
+  "UGAZ US Equity", "3x Long Natural Gas ETN",     "",                  "ETN", "TRUE",    "Commodity",     30,     12,      6e6
 )
 
 simulate_fund_market <- function(market_us) {
@@ -312,22 +312,22 @@ simulate_index_market <- function(market_us) {
 # contract months, sector, front-month open interest and volume
 futures <- tibble::tribble(
   ~ticker,       ~root, ~price, ~vol, ~carry, ~cycle,              ~sector,  ~oi,    ~volume, ~option,
-  "C A Comdty",  "C",   360,    0.22,  0.08,  "3,5,7,9,12",        "grains", 6.5e5,  1.6e5,   0.35,
-  "S A Comdty",  "S",   870,    0.18,  0.04,  "1,3,5,7,8,9,11",    "grains", 3.5e5,  1.1e5,   0.35,
-  "W A Comdty",  "W",   470,    0.28,  0.10,  "3,5,7,9,12",        "grains", 2.2e5,  7.0e4,   0.30,
-  "SBA Comdty",  "SB",  15,     0.30, -0.02,  "3,5,7,10",          "softs",  4.0e5,  8.0e4,   0.30,
-  "CLA Comdty",  "CL",  37,     0.40,  0.12,  "1,2,3,4,5,6,7,8,9,10,11,12", "energy", 4.5e5, 5.0e5, 0.25,
-  "SIA Comdty",  "SI",  13.9,   0.22,  0.015, "3,5,7,9,12",        "metals", 1.2e5,  5.0e4,   0.20,
-  "LNA Comdty",  "LN",  15000,  0.28, -0.01,  "1,2,3,4,5,6,7,8,9,10,11,12", "metals", 4.0e4, 1.0e4, 0.05,
-  "LPA Comdty",  "LP",  9000,   0.22,  0.00,  "1,2,3,4,5,6,7,8,9,10,11,12", "metals", 2.0e5, 3.0e4, 0.05,
-  "LTA Comdty",  "LT",  32000,  0.28,  0.01,  "1,2,3,4,5,6,7,8,9,10,11,12", "metals", 1.5e4, 2.0e3, 0.05,
+  "C A Comdty",  "C",   430,    0.22,  0.08,  "3,5,7,9,12",        "grains", 6.5e5,  1.6e5,   0.35,
+  "S A Comdty",  "S",   1000,   0.18,  0.04,  "1,3,5,7,8,9,11",    "grains", 3.5e5,  1.1e5,   0.35,
+  "W A Comdty",  "W",   550,    0.28,  0.10,  "3,5,7,9,12",        "grains", 2.2e5,  7.0e4,   0.30,
+  "SBA Comdty",  "SB",  20,     0.30, -0.02,  "3,5,7,10",          "softs",  4.0e5,  8.0e4,   0.30,
+  "CLA Comdty",  "CL",  70,     0.40,  0.12,  "1,2,3,4,5,6,7,8,9,10,11,12", "energy", 4.5e5, 5.0e5, 0.25,
+  "SIA Comdty",  "SI",  31,     0.22,  0.015, "3,5,7,9,12",        "metals", 1.2e5,  5.0e4,   0.20,
+  "LNA Comdty",  "LN",  16000,  0.28, -0.01,  "1,2,3,4,5,6,7,8,9,10,11,12", "metals", 4.0e4, 1.0e4, 0.05,
+  "LPA Comdty",  "LP",  9200,   0.22,  0.00,  "1,2,3,4,5,6,7,8,9,10,11,12", "metals", 2.0e5, 3.0e4, 0.05,
+  "LTA Comdty",  "LT",  30000,  0.28,  0.01,  "1,2,3,4,5,6,7,8,9,10,11,12", "metals", 1.5e4, 2.0e3, 0.05,
   "LXA Comdty",  "LX",  3000,   0.24,  0.00,  "1,2,3,4,5,6,7,8,9,10,11,12", "metals", 2.0e5, 2.5e4, 0.05,
-  "NGA Comdty",  "NG",  3.2,    0.55,  0.12,  "1,2,3,4,5,6,7,8,9,10,11,12", "energy", 1.5e6, 4.0e5, 0.30,
-  "O A Comdty",  "O",   360,    0.30,  0.06,  "3,5,7,9,12",        "grains", 4.0e3,  1.0e3,   0.10,
-  "PAA Comdty",  "PA",  1100,   0.30,  0.02,  "3,6,9,12",          "metals", 2.0e4,  8.0e3,   0.10,
-  "PLA Comdty",  "PL",  1000,   0.22,  0.015, "1,4,7,10",          "metals", 7.0e4,  1.5e4,   0.10,
-  "SMA Comdty",  "SM",  320,    0.22,  0.03,  "1,3,5,7,8,9,10,12", "grains", 2.5e5,  8.0e4,   0.30,
-  "XBWA Comdty", "XBW", 2.2,    0.32,  0.04,  "1,2,3,4,5,6,7,8,9,10,11,12", "energy", 2.0e5, 1.0e5, 0.15
+  "NGA Comdty",  "NG",  2.9,    0.55,  0.12,  "1,2,3,4,5,6,7,8,9,10,11,12", "energy", 1.5e6, 4.0e5, 0.30,
+  "O A Comdty",  "O",   370,    0.30,  0.06,  "3,5,7,9,12",        "grains", 4.0e3,  1.0e3,   0.10,
+  "PAA Comdty",  "PA",  1050,   0.30,  0.02,  "3,6,9,12",          "metals", 2.0e4,  8.0e3,   0.10,
+  "PLA Comdty",  "PL",  950,    0.22,  0.015, "1,4,7,10",          "metals", 7.0e4,  1.5e4,   0.10,
+  "SMA Comdty",  "SM",  300,    0.22,  0.03,  "1,3,5,7,8,9,10,12", "grains", 2.5e5,  8.0e4,   0.30,
+  "XBWA Comdty", "XBW", 2,      0.32,  0.04,  "1,2,3,4,5,6,7,8,9,10,11,12", "energy", 2.0e5, 1.0e5, 0.15
 ) %>% dplyr::left_join(dplyr::select(tickers_futures, ticker, tick = `tick size`), by = "ticker")
 
 sector_vol <- c(grains = 0.18, meats = 0.20, softs = 0.25, energy = 0.35, metals = 0.15)
